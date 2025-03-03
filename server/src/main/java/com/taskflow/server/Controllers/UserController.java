@@ -73,32 +73,33 @@ public class UserController {
                                     @RequestParam("phoneNumber") String phoneNumber,
                                     @RequestParam("title") String title,
                                     @RequestParam("image") MultipartFile image) {
+        
         try {
             User user = new User();
 
             // Validate email format
-            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) 
                 return ResponseEntity.badRequest().body("Invalid email format.");
 
             // Validate password (at least 8 characters, 1 uppercase, 1 digit, 1 special char)
-            if (!password.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
+            if (!password.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) 
                 return ResponseEntity.badRequest().body("Password must have at least 8 characters, one uppercase letter, one number, and one special character.");
-            }
+            
             
             // Validate prenom and nom (only letters and spaces, but must start and end with a letter)
-            if (!prenom.matches("^[A-Za-z]+( [A-Za-z]+)*$") || !nom.matches("^[A-Za-z]+( [A-Za-z]+)*$")) {
+            if (!prenom.matches("^[A-Za-z]+( [A-Za-z]+)*$") || !nom.matches("^[A-Za-z]+( [A-Za-z]+)*$")) 
                 return ResponseEntity.badRequest().body("Prenom and Nom must contain only letters and spaces, without leading or trailing spaces.");
-            }
+            
 
             // Validate phone number (digits only, 8-15 digits long)
-            if (!phoneNumber.isEmpty() && !phoneNumber.matches("^\\d{8,15}$")) {
+            if (!phoneNumber.isEmpty() && !phoneNumber.matches("^\\d{8,15}$")) 
                 return ResponseEntity.badRequest().body("Invalid phone number format.");
-            }
+            
 
             // Validate title (only letters, spaces, and apostrophes, must start and end with a letter)
-            if (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) {
+            if (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) 
                 return ResponseEntity.badRequest().body("Invalid title format. Only letters, spaces, and apostrophes are allowed.");
-            }
+            
 
             
             // Validate image (check size and format)
