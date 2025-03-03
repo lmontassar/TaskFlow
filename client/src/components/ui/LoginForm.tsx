@@ -59,7 +59,7 @@ export default function LoginForm({
                   Forgot your password?
                 </a>
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full bg-[var(--clickup1)]">
                 Login
               </Button>
               <div className="flex items-center justify-between flex-wrap">
