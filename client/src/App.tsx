@@ -1,7 +1,12 @@
 import "./App.css";
-import Login from "./pages/login";
+import { Button } from "@/components/ui/button";
+import Signup from "@/pages/signup";
 function App() {
-  return <Login />;
+  return (
+    <>
+      <Signup />
+    </>
+  );
 }
 
 export default App;
