@@ -1,83 +1,87 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
+import { useState } from "react";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Signup() {
-    const [step, setStep] = useState(1)
-    const [formData, setFormData] = useState({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      title: "",
-      avatar: null,
-      password: "",
-      confirmPassword: "",
-    })
-  
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value, type, files } = e.target
-  
-      if (type === "file" && files && files.length > 0) {
-        setFormData({
-          ...formData,
-          [name]: files[0],
-        })
-      } else {
-        setFormData({
-          ...formData,
-          [name]: value,
-        })
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    title: "",
+    avatar: null,
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, files } = e.target;
+
+    if (type === "file" && files && files.length > 0) {
+      setFormData({
+        ...formData,
+        [name]: files[0],
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const nextStep = () => {
+    setStep(step + 1);
+  };
+
+  const prevStep = () => {
+    setStep(step - 1);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          title: formData.title,
+          avatar: formData.avatar,
+          password: formData.password,
+        }),
+      });
+      if (response.ok) {
+        alert("login success");
       }
-    }
-  
-    const nextStep = () => {
-      setStep(step + 1)
-    }
-  
-    const prevStep = () => {
-      setStep(step - 1)
-    }
-  
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-        
-      const data = new FormData();
-      data.append("UserData",)
-      try{
-        const response = await fetch(
-            "/api/user/register",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type":"application/json"
-                },
-                body : data
-            }
-        )
-        if(response.ok){
-            alert("login success");
-        }
-
-      }
-
-
-      console.log("Form submitted:", formData)
+    } catch (error) {
+      console.error("Error:", error);
     }
 
-
+    console.log("Form submitted:", formData);
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white shadow-md">
         <div className="p-6">
           <div className="space-y-1 text-center">
-            <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
-            <p className="text-sm text-gray-500">Entrez vos informations pour vous inscrire</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Créer un compte
+            </h1>
+            <p className="text-sm text-gray-500">
+              Entrez vos informations pour vous inscrire
+            </p>
           </div>
 
           {/* Progress indicator */}
@@ -87,18 +91,23 @@ export default function Signup() {
                 <div key={stepNumber} className="flex flex-col items-center">
                   <div
                     className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
-                      step >= stepNumber ? "border-[var(--clickup1)] bg-[var(--clickup1)] text-white" :  "border-[var(--clickup2)] bg-[var(--clickup2)] text-gray-500"
+                      step >= stepNumber
+                        ? "border-[var(--clickup1)] bg-[var(--clickup1)] text-white"
+                        : "border-[var(--clickup2)] bg-[var(--clickup2)] text-gray-500"
                     }`}
                   >
                     {stepNumber}
                   </div>
                   <div className="mt-1 text-xs text-gray-500">
-                    {stepNumber === 1 ? "Informations" : stepNumber === 2 ? "Profil" : "Sécurité"}
+                    {stepNumber === 1
+                      ? "Informations"
+                      : stepNumber === 2
+                      ? "Profil"
+                      : "Sécurité"}
                   </div>
                 </div>
               ))}
             </div>
-
 
             <div className="mt-2 h-1 w-full bg-[var(--clickup2)]">
               <div
@@ -108,15 +117,16 @@ export default function Signup() {
             </div>
           </div>
 
-
-
           <form onSubmit={handleSubmit} className="mt-6">
             {/* Step 1 */}
             {step === 1 && (
               <div className="space-y-5">
                 <div className="flex gap-3 w-full">
                   <div className="w-full">
-                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="lastName"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Nom*
                     </label>
                     <input
@@ -131,7 +141,10 @@ export default function Signup() {
                     />
                   </div>
                   <div className="w-full">
-                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="firstName"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Prénom*
                     </label>
                     <input
@@ -147,7 +160,10 @@ export default function Signup() {
                   </div>
                 </div>
                 <div className="w-full">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Email*
                   </label>
                   <input
@@ -173,8 +189,6 @@ export default function Signup() {
               </div>
             )}
 
-
-
             {/* Step 2 */}
             {step === 2 && (
               <div className="space-y-5">
@@ -183,13 +197,20 @@ export default function Signup() {
                     <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-gray-300">
                       {formData.avatar ? (
                         <img
-                          src={URL.createObjectURL(formData.avatar) || "/placeholder.svg"}
+                          src={
+                            URL.createObjectURL(formData.avatar) ||
+                            "/placeholder.svg"
+                          }
                           alt="Profile preview"
                           className="h-full w-full object-cover"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center bg-gray-100">
-                          <svg className="h-12 w-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                          <svg
+                            className="h-12 w-12 text-gray-400"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
                             <path
                               fillRule="evenodd"
                               d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
@@ -217,7 +238,10 @@ export default function Signup() {
                 </div>
 
                 <div className="w-full">
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="phone"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Téléphone
                   </label>
                   <input
@@ -232,7 +256,10 @@ export default function Signup() {
                   />
                 </div>
                 <div className="w-full">
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="title"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Titre
                   </label>
                   <input
@@ -246,10 +273,6 @@ export default function Signup() {
                     required
                   />
                 </div>
-                
-                
-                
-
 
                 <div className="flex gap-3 pt-4">
                   <button
@@ -274,7 +297,10 @@ export default function Signup() {
             {step === 3 && (
               <div className="space-y-5">
                 <div className="w-full">
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Mot de passe*
                   </label>
                   <input
@@ -289,7 +315,10 @@ export default function Signup() {
                   />
                 </div>
                 <div className="w-full">
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Confirmation du mot de passe*
                   </label>
                   <input
@@ -325,13 +354,15 @@ export default function Signup() {
         <div className="border-t border-gray-200 p-4 text-center">
           <p className="text-sm text-gray-500">
             Vous avez déjà un compte ?{" "}
-            <a href="/login" className="font-medium text-[var(--clickup1)] hover:text-blue-500">
+            <a
+              href="/login"
+              className="font-medium text-[var(--clickup1)] hover:text-blue-500"
+            >
               Login
             </a>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

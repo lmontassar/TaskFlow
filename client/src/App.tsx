@@ -2,10 +2,33 @@ import "./App.css";
 import { Button } from "@/components/ui/button";
 import Signup from "@/pages/signup";
 import Login from "@/pages/login";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 function App() {
   return (
     <>
-      <Login />
+      <Router>
+        <Routes>
+          {/* Protected Routes */}
+
+          {/* Public Routes */}
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Fallback for undefined routes */}
+          <Route
+            path="*"
+            element={
+              <div className="flex items-center justify-center w-full h-screen bg-gray-900 text-white text-2xl">
+                Page not found. Go to{" "}
+                <a className="text-blue-500 underline ml-1" href="/login">
+                  Login
+                </a>
+              </div>
+            }
+          />
+        </Routes>
+      </Router>
     </>
   );
 }
