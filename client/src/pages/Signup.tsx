@@ -3,7 +3,10 @@
 import type React from "react";
 
 import { useState } from "react";
-
+import { Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import Input46 from "@/components/ui/phoneInput";
+import PasswordInput from "@/components/ui/passwordInput";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Signup() {
@@ -46,7 +49,7 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/user/register", {
+      const response = await fetch("api/user/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +132,7 @@ export default function Signup() {
                     >
                       Nom*
                     </label>
-                    <input
+                    <Input
                       id="lastName"
                       name="lastName"
                       value={formData.lastName}
@@ -147,7 +150,7 @@ export default function Signup() {
                     >
                       Prénom*
                     </label>
-                    <input
+                    <Input
                       id="firstName"
                       name="firstName"
                       value={formData.firstName}
@@ -166,12 +169,12 @@ export default function Signup() {
                   >
                     Email*
                   </label>
-                  <input
+                  <Input
                     id="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-[var(--clickup1)] focus:outline-none focus:ring-1 focus:ring-[var(--clickup1)]"
+                    className=""
                     type="email"
                     placeholder="Saisissez votre email"
                     required
@@ -238,20 +241,13 @@ export default function Signup() {
                 </div>
 
                 <div className="w-full">
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Téléphone
-                  </label>
-                  <input
+                  <Input46
                     id="phone"
-                    name="phone"
+                    placeholder="Téléphone"
                     value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-[var(--clickup1)] focus:outline-none focus:ring-1 focus:ring-[var(--clickup1)]"
-                    type="tel"
-                    placeholder="Saisissez votre numéro tel"
+                    onChange={(value: any) => {
+                      setFormData((prev) => ({ ...prev, phone: value }));
+                    }}
                     required
                   />
                 </div>
@@ -262,7 +258,7 @@ export default function Signup() {
                   >
                     Titre
                   </label>
-                  <input
+                  <Input
                     id="title"
                     name="title"
                     value={formData.title}
@@ -297,38 +293,22 @@ export default function Signup() {
             {step === 3 && (
               <div className="space-y-5">
                 <div className="w-full">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Mot de passe*
-                  </label>
-                  <input
+                  <PasswordInput
                     id="password"
                     name="password"
+                    label="Mot de passe*"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-[var(--clickup1)] focus:outline-none focus:ring-1 focus:ring-[var(--clickup1)]"
-                    type="password"
-                    placeholder="Saisissez votre mot de passe"
                     required
                   />
                 </div>
                 <div className="w-full">
-                  <label
-                    htmlFor="confirmPassword"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Confirmation du mot de passe*
-                  </label>
-                  <input
+                  <PasswordInput
                     id="confirmPassword"
                     name="confirmPassword"
+                    label="Confirmation du mot de passe*"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-[var(--clickup1)] focus:outline-none focus:ring-1 focus:ring-[var(--clickup1)]"
-                    type="password"
-                    placeholder="Re-saisissez votre mot de passe"
                     required
                   />
                 </div>
@@ -354,12 +334,12 @@ export default function Signup() {
         <div className="border-t border-gray-200 p-4 text-center">
           <p className="text-sm text-gray-500">
             Vous avez déjà un compte ?{" "}
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="font-medium text-[var(--clickup1)] hover:text-blue-500"
             >
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </div>

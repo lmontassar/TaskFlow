@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Github, GoalIcon } from "lucide-react";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
+import PasswordInput from "./passwordInput";
 
 // 1. Define a TypeScript interface for form data
 interface LoginFormData {
@@ -85,7 +86,7 @@ export default function LoginForm({
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input
+                <PasswordInput
                   id="password"
                   name="password"
                   type="password"
