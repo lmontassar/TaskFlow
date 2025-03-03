@@ -28,7 +28,6 @@ public class JWT {
     // Generate JWT Token
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
 
         return Jwts.builder()

@@ -49,6 +49,8 @@ public class UserController {
 
     @Autowired
     private JWT myJWT;
+
+
     private String saveUserImage(MultipartFile image) throws IOException {
         String uploadDir = "upload/avatar/";
 
@@ -59,38 +61,85 @@ public class UserController {
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String newFilename = "avatar_" + LocalDateTime.now().format(formatter) + extension;
 
-        // Save the file to the target directory
         Files.copy(image.getInputStream(), Paths.get(uploadDir + newFilename), StandardCopyOption.REPLACE_EXISTING);
         return newFilename;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> signUp(@RequestParam("username") String username,
-                                    @RequestParam("email") String email,
+    public ResponseEntity<?> signUp(@RequestParam("email") String email,
                                     @RequestParam("password") String password,
-                                    @RequestParam("firstname") String firstname,
-                                    @RequestParam("lastname") String lastname,
+                                    @RequestParam("prenom") String prenom,
+                                    @RequestParam("nom") String nom,
                                     @RequestParam("phoneNumber") String phoneNumber,
+                                    @RequestParam("title") String title,
                                     @RequestParam("image") MultipartFile image) {
         try {
             User user = new User();
-            user.setUsername(username);
-            user.setPassword(password);
+
+            // Validate email format
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                return ResponseEntity.badRequest().body("Invalid email format.");
+
+            // Validate password (at least 8 characters, 1 uppercase, 1 digit, 1 special char)
+            if (!password.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
+                return ResponseEntity.badRequest().body("Password must have at least 8 characters, one uppercase letter, one number, and one special character.");
+            }
+            
+            // Validate prenom and nom (only letters and spaces, but must start and end with a letter)
+            if (!prenom.matches("^[A-Za-z]+( [A-Za-z]+)*$") || !nom.matches("^[A-Za-z]+( [A-Za-z]+)*$")) {
+                return ResponseEntity.badRequest().body("Prenom and Nom must contain only letters and spaces, without leading or trailing spaces.");
+            }
+
+            // Validate phone number (digits only, 8-15 digits long)
+            if (!phoneNumber.isEmpty() && !phoneNumber.matches("^\\d{8,15}$")) {
+                return ResponseEntity.badRequest().body("Invalid phone number format.");
+            }
+
+            // Validate title (only letters, spaces, and apostrophes, must start and end with a letter)
+            if (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) {
+                return ResponseEntity.badRequest().body("Invalid title format. Only letters, spaces, and apostrophes are allowed.");
+            }
+
+            
+            // Validate image (check size and format)
+            if (image != null && !image.isEmpty()) {
+                String contentType = image.getContentType();
+                long maxSize = 5 * 1024 * 1024; // 5MB
+                if (!contentType.matches("image/(jpeg|png|jpg)")) {
+                    return ResponseEntity.badRequest().body("Only JPEG, PNG images are allowed.");
+                }
+                if (image.getSize() > maxSize) {
+                    return ResponseEntity.badRequest().body("Image size must be under 5MB.");
+                }
+            }
+            
             user.setEmail(email);
-            user.setNom(firstname);
-            user.setPrenom(lastname);
-            user.setPhoneNumber(phoneNumber);
+            user.setNom(nom);
+            user.setPrenom(prenom);
+
+            if(phoneNumber!="")
+                user.setPhoneNumber(phoneNumber);
+            if(title!="")
+                user.setTitle(title);
+
+            user.setPassword(password);
+
+
+
             if (image != null && !image.isEmpty()) {
                 user.setAvatar(saveUserImage(image));
             }
+
             User newUser = userService.createUser(user);
             return ResponseEntity.ok(newUser);
+
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+    
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest user) {

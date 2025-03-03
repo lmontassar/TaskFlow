@@ -17,10 +17,11 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public User createUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
-        }
+        // if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+        //     throw new RuntimeException("Username already exists");
+        // }
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
@@ -45,6 +46,7 @@ public class UserService {
         BeanUtils.copyProperties(upUser, u , getNullPropertyNames(upUser) );
         return userRepository.save(u);
     }
+
     private String[] getNullPropertyNames(Object source) {
         return Arrays.stream(BeanUtils.getPropertyDescriptors(source.getClass()))
                 .map(pd -> pd.getName())

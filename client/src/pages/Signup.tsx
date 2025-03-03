@@ -38,16 +38,23 @@ export default function Signup() {
     }
   };
 
+
+
   const nextStep = () => {
     setStep(step + 1);
   };
+
 
   const prevStep = () => {
     setStep(step - 1);
   };
 
+
+
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const response = await fetch("api/user/register", {
         method: "POST",
@@ -55,13 +62,13 @@ export default function Signup() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          prenom: formData.firstName,
+          nom: formData.lastName,
           email: formData.email,
-          phone: formData.phone,
+          phoneNumber: formData.phone,
           title: formData.title,
-          avatar: formData.avatar,
           password: formData.password,
+          avatar: formData.avatar,
         }),
       });
       if (response.ok) {
