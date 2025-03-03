@@ -38,44 +38,43 @@ export default function Signup() {
     }
   };
 
-
-
   const nextStep = () => {
     setStep(step + 1);
   };
-
 
   const prevStep = () => {
     setStep(step - 1);
   };
 
-
-
-  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const data = new FormData();
+    data.append("email", formData.email);
+    data.append("prenom", formData.firstName);
+    data.append("nom", formData.lastName);
+    data.append("phoneNumber", formData.phone || "");
+    data.append("title", formData.title || "");
+    data.append("password", formData.password);
+
+    if (formData.avatar) {
+      data.append("image", formData.avatar);
+    }
 
     try {
-      const response = await fetch("api/user/register", {
+      const response = await fetch("/api/user/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prenom: formData.firstName,
-          nom: formData.lastName,
-          email: formData.email,
-          phoneNumber: formData.phone,
-          title: formData.title,
-          password: formData.password,
-          avatar: formData.avatar,
-        }),
+        body: data,
       });
+
       if (response.ok) {
-        alert("login success");
+        alert("Registration successful!");
+      } else {
+        const errorText = await response.text();
+        alert(`Registration failed: ${errorText}`);
       }
     } catch (error) {
       console.error("Error:", error);
+      alert("An error occurred. Please try again.");
     }
 
     console.log("Form submitted:", formData);
@@ -127,7 +126,11 @@ export default function Signup() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-6">
+          <form
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+            className="mt-6"
+          >
             {/* Step 1 */}
             {step === 1 && (
               <div className="space-y-5">

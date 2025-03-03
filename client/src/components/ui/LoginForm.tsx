@@ -8,6 +8,7 @@ import { Github, GoalIcon } from "lucide-react";
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import PasswordInput from "./passwordInput";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // 1. Define a TypeScript interface for form data
 interface LoginFormData {
@@ -20,6 +21,7 @@ export default function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -33,6 +35,7 @@ export default function LoginForm({
   };
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    setError(null);
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -54,6 +57,9 @@ export default function LoginForm({
       if (response.ok) {
         alert("login success");
       }
+      if (response.status === 400) {
+        setError("Invalid credentials");
+      }
     } catch (error) {
       console.error("Error:", error);
     }
@@ -68,6 +74,15 @@ export default function LoginForm({
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert
+              variant="destructive"
+              className="mb-4 border border-destructive-foreground"
+            >
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
               <div className="grid gap-2">
@@ -89,7 +104,6 @@ export default function LoginForm({
                 <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -126,9 +140,14 @@ export default function LoginForm({
                 </Button>
               </div>
             </div>
+
             <div className="mt-4 text-center text-sm">
+              <hr className="my-2 " />
               Don&apos;t have an account?{" "}
-              <Link to="/signup" className="underline underline-offset-4">
+              <Link
+                to="/signup"
+                className="underline underline-offset-4 text-primary font-bold"
+              >
                 Sign up
               </Link>
             </div>
