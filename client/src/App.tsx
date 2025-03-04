@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 import Signup from "@/pages/signup";
 import Login from "@/pages/login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Project/Dashboard";
+import DashboardHome from "./pages/Project/Dashboard-home";
+import Tasks from "./pages/Project/Tasks";
+import Calendar from "./pages/Project/Calendar";
+import Project from "./pages/Project/Project";
 
 function App() {
   return (
@@ -10,7 +15,7 @@ function App() {
       <Router>
         <Routes>
           {/* Protected Routes */}
-
+          <Route path="/dashboard" element={<Dashboard />}></Route>
           {/* Public Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
