@@ -4,6 +4,9 @@ import Signup from "@/pages/signup";
 import Login from "@/pages/login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import EmailVerification from "./pages/EmailVerification";
+import Dashboard from "./pages/Project/Dashboard";
+import Home from "./pages/Project/Home";
+import Inbox from "./pages/Project/Inbox";
 
 function App() {
   return (
@@ -11,7 +14,10 @@ function App() {
       <Router>
         <Routes>
           {/* Protected Routes */}
-
+          <Route path="/home" element={<Dashboard />}>
+            <Route path="" element={<Home />} />
+            <Route path="inbox" element={<Inbox />} />
+          </Route>
           {/* Public Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
