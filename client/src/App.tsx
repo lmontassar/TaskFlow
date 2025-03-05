@@ -8,6 +8,8 @@ import DashboardHome from "./pages/Project/Dashboard-home";
 import Tasks from "./pages/Project/Tasks";
 import Calendar from "./pages/Project/Calendar";
 import Project from "./pages/Project/Project";
+import Home from "./pages/Project/Home";
+import Inbox from "./pages/Project/Inbox";
 
 function App() {
   return (
@@ -15,7 +17,10 @@ function App() {
       <Router>
         <Routes>
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<Dashboard />}></Route>
+          <Route path="/home" element={<Dashboard />}>
+            <Route path="" element={<Home />} />
+            <Route path="inbox" element={<Inbox />} />
+          </Route>
           {/* Public Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />

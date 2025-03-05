@@ -2,7 +2,9 @@
 
 import {
   ArrowUpRightIcon,
+  BadgePlus,
   CircleFadingPlusIcon,
+  ClipboardCheck,
   FileInputIcon,
   FolderPlusIcon,
   SearchIcon,
@@ -59,30 +61,17 @@ export default function Search() {
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Quick start">
             <CommandItem>
-              <FolderPlusIcon
+              <ClipboardCheck
                 size={16}
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>New folder</span>
+              <span>New Task</span>
               <CommandShortcut className="justify-center">⌘N</CommandShortcut>
             </CommandItem>
             <CommandItem>
-              <FileInputIcon
-                size={16}
-                className="opacity-60"
-                aria-hidden="true"
-              />
-              <span>Import document</span>
-              <CommandShortcut className="justify-center">⌘I</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <CircleFadingPlusIcon
-                size={16}
-                className="opacity-60"
-                aria-hidden="true"
-              />
-              <span>Add block</span>
+              <BadgePlus size={16} className="opacity-60" aria-hidden="true" />
+              <span>Add Collaborator</span>
               <CommandShortcut className="justify-center">⌘B</CommandShortcut>
             </CommandItem>
           </CommandGroup>
@@ -102,7 +91,7 @@ export default function Search() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Go to apps</span>
+              <span>Go to Tasks</span>
             </CommandItem>
             <CommandItem>
               <ArrowUpRightIcon
@@ -110,7 +99,15 @@ export default function Search() {
                 className="opacity-60"
                 aria-hidden="true"
               />
-              <span>Go to connections</span>
+              <span>Go to Inbox</span>
+            </CommandItem>
+            <CommandItem>
+              <ArrowUpRightIcon
+                size={16}
+                className="opacity-60"
+                aria-hidden="true"
+              />
+              <span>Go to Documentations</span>
             </CommandItem>
           </CommandGroup>
         </CommandList>
