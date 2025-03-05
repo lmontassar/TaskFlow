@@ -23,6 +23,5 @@ public class User {
     private String title;
     private String avatar;
     private String region;
-    private String OTPCode;
     private Boolean activation;
 }

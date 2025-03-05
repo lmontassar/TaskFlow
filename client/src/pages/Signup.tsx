@@ -2,15 +2,19 @@
 
 import type React from "react";
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useRoutes } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import Input46 from "@/components/ui/phoneInput";
 import PasswordInput from "@/components/ui/passwordInput";
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
+import SignupVerification from "../components/ui/SignupVerification";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Signup() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [FirstStepMessage,setFirstStepMessage] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -22,9 +26,10 @@ export default function Signup() {
     confirmPassword: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, files } = e.target;
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFirstStepMessage("");
+    const { name, value, type, files } = e.target;
     if (type === "file" && files && files.length > 0) {
       setFormData({
         ...formData,
@@ -39,6 +44,31 @@ export default function Signup() {
   };
 
   const nextStep = () => {
+    setFirstStepMessage("");
+    if(step == 1) {
+      if( !formData.lastName.match("^[A-Za-z]+( [A-Za-z]+)*$") || formData.firstName == "" )  {
+        setFirstStepMessage("Nom must contain only letters and spaces, without leading or trailing spaces.");
+        return;
+      }
+      if( !formData.firstName.match("^[A-Za-z]+( [A-Za-z]+)*$") || formData.firstName == ""  )  {
+        setFirstStepMessage("Prenom  must contain only letters and spaces, without leading or trailing spaces.");
+        return;
+      }
+      if(!formData.email.match("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$") || formData.email == "" ) {
+        setFirstStepMessage("Invalid email format.");
+        return;
+      }
+    } else if(step == 2) {
+     if (!formData.phone.match(/^(\+\d{1,3})?\d{8,15}$/) && formData.phone !== "") { 
+        setFirstStepMessage("Invalid phone number format.");
+        return;
+      }
+      if(!formData.title.match("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$") && formData.title !== "" ){
+        setFirstStepMessage("Invalid title format. Only letters, spaces, and apostrophes are allowed.");
+        return;
+      }
+    } 
+    
     setStep(step + 1);
   };
 
@@ -46,8 +76,22 @@ export default function Signup() {
     setStep(step - 1);
   };
 
+
+
+
   const handleSubmit = async (e: React.FormEvent) => {
+    setFirstStepMessage("");
     e.preventDefault();
+
+    if (!formData.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
+      setFirstStepMessage("Password must have at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
+      return;
+    }
+    if ( formData.password !== formData.confirmPassword ) {
+      setFirstStepMessage("passwords don't match");
+      return;
+    }
+
     const data = new FormData();
     data.append("email", formData.email);
     data.append("prenom", formData.firstName);
@@ -67,23 +111,28 @@ export default function Signup() {
       });
 
       if (response.ok) {
-        alert("Registration successful!");
+        const rep = await response.json();
+        localStorage.setItem("token",rep.token);
+        navigate("/emailverification");
       } else {
         const errorText = await response.text();
-        alert(`Registration failed: ${errorText}`);
+        setStep(1);
+        setFirstStepMessage(`Registration failed: ${errorText}`);
       }
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred. Please try again.");
     }
 
-    console.log("Form submitted:", formData);
+    
+    
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white shadow-md">
         <div className="p-6">
+
           <div className="space-y-1 text-center">
             <h1 className="text-2xl font-bold text-gray-900">
               Créer un compte
@@ -126,6 +175,7 @@ export default function Signup() {
             </div>
           </div>
 
+
           <form
             onSubmit={handleSubmit}
             encType="multipart/form-data"
@@ -134,6 +184,18 @@ export default function Signup() {
             {/* Step 1 */}
             {step === 1 && (
               <div className="space-y-5">
+
+              {FirstStepMessage !== "" && (
+                <Alert
+                  variant="destructive"
+                  className="mb-4 border border-destructive-foreground"
+                >
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription> {FirstStepMessage} </AlertDescription>
+                </Alert>
+              )}
+
+
                 <div className="flex gap-3 w-full">
                   <div className="w-full">
                     <label
@@ -249,6 +311,16 @@ export default function Signup() {
                     </label>
                   </div>
                 </div>
+                
+                {FirstStepMessage !== "" && (
+                <Alert
+                  variant="destructive"
+                  className="mb-4 border border-destructive-foreground"
+                >
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription> {FirstStepMessage} </AlertDescription>
+                </Alert>
+              )}
 
                 <div className="w-full">
                   <Input46
@@ -302,6 +374,15 @@ export default function Signup() {
             {/* Step 3 */}
             {step === 3 && (
               <div className="space-y-5">
+                {FirstStepMessage !== "" && (
+                <Alert
+                  variant="destructive"
+                  className="mb-4 border border-destructive-foreground"
+                >
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription> {FirstStepMessage} </AlertDescription>
+                </Alert>
+              )}
                 <div className="w-full">
                   <PasswordInput
                     id="password"
@@ -341,6 +422,9 @@ export default function Signup() {
             )}
           </form>
         </div>
+        
+
+
         <div className="border-t border-gray-200 p-4 text-center">
           <p className="text-sm text-gray-500">
             Vous avez déjà un compte ?{" "}

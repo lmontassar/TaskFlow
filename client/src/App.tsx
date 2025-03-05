@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Signup from "@/pages/signup";
 import Login from "@/pages/login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import EmailVerification from "./pages/EmailVerification";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/emailverification" element={<EmailVerification/> } />
 
           {/* Fallback for undefined routes */}
           <Route

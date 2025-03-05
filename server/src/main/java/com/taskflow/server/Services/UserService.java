@@ -4,8 +4,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.taskflow.server.Entities.LoginRequest;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.UserRepository;
 
@@ -22,9 +20,16 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
-        if (userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
-            throw new RuntimeException("Phone number already exists");
-        }
+
+        
+
+        if( !user.getPhoneNumber().equals("") )
+            if ( userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
+                throw new RuntimeException("Phone number already exists");
+            }
+            
+        
+        
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -54,6 +59,10 @@ public class UserService {
                         return false;
                     }
                 }).toArray(String[]::new);
+    }
+
+    public void setActivation(User u,boolean b){
+        userRepository.updateActivationById(u.getId(), b);
     }
 
     public User findById(String id)
