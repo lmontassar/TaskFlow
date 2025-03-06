@@ -4,11 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Github, GoalIcon } from "lucide-react";
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Github } from "lucide-react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import PasswordInput from "./passwordInput";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { RiGoogleFill } from "@remixicon/react";
 
 // 1. Define a TypeScript interface for form data
 interface LoginFormData {
@@ -16,6 +17,111 @@ interface LoginFormData {
   password: string;
   rememberMe: boolean;
 }
+import { useGoogleLogin } from "@react-oauth/google";
+const GoogleLoginButton = () => {
+  const login = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        const userInfoResponse = await fetch(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${response.access_token}`,
+            },
+          }
+        );
+        if (!userInfoResponse.ok) throw new Error("Failed to fetch user info.");
+        const userInfo = await userInfoResponse.json();
+        console.log("Google user info:", userInfo);
+        const res = await fetch("/api/user/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: userInfo.email,
+            nom: userInfo.given_name,
+            prenom: userInfo.family_name,
+            image: userInfo.picture,
+          }),
+        });
+
+        if (res.ok) {
+          const jwt = await res.text();
+          console.log("JWT:", jwt);
+        } else if (res.status === 401) {
+          console.log("Invalid ID token");
+        } else {
+          console.log("Login failed");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+      }
+    },
+    onError: () => console.log("Login Failed"),
+  });
+
+  return (
+    <Button variant="outline" onClick={() => login()}>
+      <RiGoogleFill
+        className="dark:text-primary"
+        size={16}
+        aria-hidden="true"
+      />
+      Login with Google
+    </Button>
+  );
+};
+
+const GitHubLogin = () => {
+  const handleGitHubLogin = () => {
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${
+      import.meta.env.VITE_GITHUB_CLIENT_ID || ""
+    }&scope=user`;
+  };
+
+  return (
+    <Button variant="outline" onClick={handleGitHubLogin}>
+      <Github />
+      Login with Github
+    </Button>
+  );
+};
+
+const GitHubCallback = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const exchangeCodeForToken = async () => {
+      const params = new URLSearchParams(location.search);
+      const code = params.get("code");
+      if (code) {
+        try {
+          const res = await fetch("/api/user/github", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ code }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            console.log("GitHub user info:", data);
+          } else {
+            console.log("GitHub login failed.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+    };
+
+    exchangeCodeForToken();
+  }, [location]);
+
+  return null;
+};
 
 export default function LoginForm({
   className,
@@ -27,6 +133,7 @@ export default function LoginForm({
     password: "",
     rememberMe: false,
   });
+
   const handleCheckboxChange = () => {
     setFormData((prev) => ({
       ...prev,
@@ -55,7 +162,7 @@ export default function LoginForm({
         }),
       });
       if (response.ok) {
-        alert("login success");
+        console.log("login success");
       }
       if (response.status === 400) {
         setError("Invalid credentials");
@@ -67,6 +174,7 @@ export default function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <GitHubCallback />
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl text-center font-bold">
@@ -130,14 +238,8 @@ export default function LoginForm({
                 Login
               </Button>
               <div className="flex items-center justify-between flex-wrap">
-                <Button variant="outline">
-                  <GoalIcon />
-                  Login with Google
-                </Button>
-                <Button variant="outline">
-                  <Github />
-                  Login with Github
-                </Button>
+                <GoogleLoginButton />
+                <GitHubLogin />
               </div>
             </div>
 

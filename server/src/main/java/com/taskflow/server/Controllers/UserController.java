@@ -1,15 +1,16 @@
 package com.taskflow.server.Controllers;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.taskflow.server.Config.JWT;
 
-import org.springframework.http.HttpStatus;
+import com.taskflow.server.Entities.*;
+import org.springframework.http.*;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import com.taskflow.server.Entities.LoginRequest;
-import com.taskflow.server.Entities.LoginResponce;
-import com.taskflow.server.Entities.OTPVerification;
-import com.taskflow.server.Entities.User;
 import com.taskflow.server.Services.EmailService;
 import com.taskflow.server.Services.OTPVerificationService;
 import com.taskflow.server.Services.UserService;
@@ -18,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
+
+import com.google.api.client.json.jackson2.JacksonFactory;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -37,7 +37,8 @@ import org.springframework.beans.factory.annotation.Value;
 public class UserController {
     @Autowired
     private UserService userService;
-
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String CLIENT_ID;
     @Autowired
     private OTPVerificationService OTPVser;
 
@@ -53,6 +54,12 @@ public class UserController {
     @Autowired
     private JWT myJWT;
 
+
+    @Value("${spring.security.oauth2.client.registration.github.client-id}")
+    private String GH_CLIENT_ID;
+
+    @Value("${spring.security.oauth2.client.registration.github.client-secret}")
+    private String GH_CLIENT_SECRET;
 
      private String saveUserImage(MultipartFile image) throws IOException {
         String uploadDir = "upload/avatar/";
@@ -103,9 +110,9 @@ public class UserController {
             }
 
             // Validate title (only letters, spaces, and apostrophes, must start and end with a letter)
-            if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
+            /*if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
                 return ResponseEntity.badRequest().body("Password must have at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
-            }
+            }*/
             
             // Validate image (check size and format)
             if (image != null && !image.isEmpty()) {
@@ -149,8 +156,82 @@ public class UserController {
             throw new RuntimeException(e);
         }
     }
-    
 
+    @PostMapping("/google")
+    public ResponseEntity<?> googleLogin(@RequestBody GoogleLoginRequest authentication) {
+
+        if (authentication != null) {
+            User userInfo = new User();
+            userInfo.setEmail(authentication.getEmail());
+            userInfo.setNom(authentication.getNom());
+            userInfo.setPrenom(authentication.getPrenom());
+            userInfo.setAvatar(authentication.getImage());
+            User user = userService.findOrCreateUser(userInfo);
+            String jwtToken = myJWT.generateToken(user);
+            LoginResponce loginResponse = new LoginResponce(jwtToken, user);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(loginResponse);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated.");
+    }
+    @PostMapping("/github")
+    public ResponseEntity<?> githubAuth(@RequestBody Map<String, String> payload) {
+        String code = payload.get("code");
+        RestTemplate restTemplate = new RestTemplate();
+
+        String accessTokenUrl = "https://github.com/login/oauth/access_token";
+        String userUrl = "https://api.github.com/user";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        // Exchange code for access token
+        Map<String, String> params = new HashMap<>();
+        params.put("client_id", GH_CLIENT_ID);
+        params.put("client_secret", GH_CLIENT_SECRET);
+        params.put("code", code);
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(params, headers);
+        ResponseEntity<Map> response = restTemplate.postForEntity(accessTokenUrl, entity, Map.class);
+
+        if (response.getBody() != null && response.getBody().get("access_token") != null) {
+            String accessToken = (String) response.getBody().get("access_token");
+
+            // Use access token to get user info
+            headers.setBearerAuth(accessToken);
+            HttpEntity<String> userEntity = new HttpEntity<>(headers);
+            ResponseEntity<Map> userResponse = restTemplate.exchange(userUrl, HttpMethod.GET, userEntity, Map.class);
+
+            if (userResponse.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> userData = userResponse.getBody();
+                User userInfo = new User();
+
+                String email = (String) userData.get("email");
+                if (email == null) {
+                    // Use ID as a fallback for email (or handle differently if needed)
+                    userInfo.setEmail(userData.get("id") + "@github.com");
+                } else {
+                    userInfo.setEmail(email);
+                }
+
+                String fullName = (String) userData.getOrDefault("name", "");
+                String[] nameParts = fullName.split(" ", 2);  // Split into first and last name
+
+                userInfo.setNom(nameParts[0]);                      // First name
+                userInfo.setPrenom(nameParts.length > 1 ? nameParts[1] : "");
+
+                userInfo.setAvatar((String) userData.getOrDefault("avatar_url", ""));
+
+                User user = userService.findOrCreateUser(userInfo);
+
+                String jwtToken = myJWT.generateToken(user);
+                LoginResponce loginResponse = new LoginResponce(jwtToken, user);
+
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(loginResponse);
+
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid GitHub login.");
+    }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest user) {
         return userService.findByEmail(user.getEmail())

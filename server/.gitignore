@@ -18,7 +18,11 @@ target/
 *.iws
 *.iml
 *.ipr
-
+##images
+*.png
+*.jpg
+*.jpeg
+*.gif
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
