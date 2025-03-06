@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.UserRepository;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -15,7 +19,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
+    public User findOrCreateUser(User u) {
+        User existingUser = userRepository.findByEmail(u.getEmail()).orElse(null);
+        if (existingUser != null) {
+            return existingUser;
+        } else {
+            u.setActivation(Boolean.TRUE);
+            return userRepository.save(u);
+        }
+    }
     public User createUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return null;
@@ -31,6 +43,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
+
 
 
     public boolean validatePassword(String rawPassword, String encodedPassword) {
