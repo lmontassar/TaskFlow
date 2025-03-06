@@ -1,0 +1,11 @@
+{
+  "welcome": "Welcome",
+  "description": "This is an internationalized React app.",
+  "sidebar": {
+    "home": "Home",
+    "inbox": "Inbox",
+    "chat": "Chat",
+    "documentations": "Documentations",
+    "dashboard": "Dashboard"
+  }
+}

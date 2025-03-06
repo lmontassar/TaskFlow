@@ -6,18 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Github } from "lucide-react";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import PasswordInput from "./passwordInput";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RiGoogleFill } from "@remixicon/react";
 
-// 1. Define a TypeScript interface for form data
-interface LoginFormData {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-}
 import { useGoogleLogin } from "@react-oauth/google";
+import useLogin from "../../hooks/useLogin";
 const GoogleLoginButton = () => {
   const login = useGoogleLogin({
     onSuccess: async (response) => {
@@ -127,51 +122,8 @@ export default function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
-
-  const handleCheckboxChange = () => {
-    setFormData((prev) => ({
-      ...prev,
-      ["rememberMe"]: !formData.rememberMe,
-    }));
-  };
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setError(null);
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-      if (response.ok) {
-        console.log("login success");
-      }
-      if (response.status === 400) {
-        setError("Invalid credentials");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
+  const { formData, handleChange, handleCheckboxChange, error, handleSubmit } =
+    useLogin();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <GitHubCallback />

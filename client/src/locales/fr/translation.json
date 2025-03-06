@@ -1,0 +1,11 @@
+{
+  "welcome": "Bienvenue",
+  "description": "C'est une application React internationalisée.",
+  "sidebar": {
+    "home": "Accueil",
+    "inbox": "Inbox",
+    "chat": "Chat",
+    "documentations": "Documentations",
+    "dashboard": "Tableau de bord"
+  }
+}
