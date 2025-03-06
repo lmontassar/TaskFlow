@@ -142,9 +142,10 @@ public class UserController {
                 user.setAvatar(saveUserImage(image));
             }
 
-            OTPVser.setCode(email);
+            
             
             User newUser = userService.createUser(user);
+            OTPVser.setCode(email);
             String jwt = myJWT.generateToken(newUser);
             Map<String,String> res = new TreeMap<>();
             res.put("token", jwt);
