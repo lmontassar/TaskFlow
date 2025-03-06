@@ -8,6 +8,7 @@ import Dashboard from "./pages/Project/Dashboard";
 import Home from "./pages/Project/Home";
 import Inbox from "./pages/Project/Inbox";
 import ResetPassword from "./pages/ResetPassword";
+import ProtectedRoutes from "./utils/protectedroutes";
 
 function App() {
   return (
@@ -15,15 +16,18 @@ function App() {
       <Router>
         <Routes>
           {/* Protected Routes */}
-          <Route path="/home" element={<Dashboard />}>
-            <Route path="" element={<Home />} />
-            <Route path="inbox" element={<Inbox />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/home" element={<Dashboard />}>
+              <Route path="" element={<Home />} />
+              <Route path="inbox" element={<Inbox />} />
+            </Route>
           </Route>
+
           {/* Public Routes */}
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/emailverification" element={<EmailVerification/> } />
-          <Route path="/reset" element={<ResetPassword/> } />
+          <Route path="/emailverification" element={<EmailVerification />} />
+          <Route path="/reset" element={<ResetPassword />} />
           {/* Fallback for undefined routes */}
           <Route
             path="*"
