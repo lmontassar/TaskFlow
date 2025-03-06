@@ -323,7 +323,6 @@ public class UserController {
         @RequestParam("password") String password
         ) {
         try{
-            System.out.println(password+"--"+RPT);
             String id = myJWT.extractUserId(RPT);
             System.out.println(id);
             User u = userService.findById(id);

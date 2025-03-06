@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/input-otp"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react";
-import { stringify } from "querystring";
 
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { useNavigate } from "react-router-dom";
