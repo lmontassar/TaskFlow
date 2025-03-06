@@ -24,36 +24,87 @@ public class OTPVerificationService {
         return (code.length() == 6)  ? code : createCode(code + new Random().nextInt(10) );
     }
 
-    public void setCode(String email) throws RuntimeException{
+    public boolean compareWithNow(Date date , int seconds, int c ){
+        return  c*( (new Date().getTime()-date.getTime()) /1000   ) > c*( seconds   );
+    }
+
+    // public void setCode(String email) throws RuntimeException{
+    //     OTPVerification o =  OTPVrepo.findOneByEmail(email) ;
+
+    //     if(o!= null){
+    //         if(o.getAttempt() == 0 ){
+    //             if ( compareWithNow(o.getDate(), 60*60,-1 ) ){  // 1 hour
+    //                 throw new RuntimeException("Vous ne pouvez pas renvoyer le code avant 1 heure.");
+    //             } else {
+    //                 String cod = createCode("");
+    //                 OTPVrepo.updateOTPVerification(o.getId(),5,cod,new Date());
+    //                 try{
+    //                     emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+cod );
+    //                 } catch(Exception e){
+    //                     throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
+    //                 }
+    //                 return;
+    //             }
+    //         }
+    //         if ( compareWithNow(o.getDate(), 60,1 )) {
+    //             String cod = createCode("");
+    //             OTPVrepo.updateOTPVerification(o.getId(),o.getAttempt(),cod ,new Date());
+    //             try{
+    //                 emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+cod );
+    //             } catch(Exception e){
+    //                 throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
+    //             }
+    //             return;
+    //         } else {
+    //             throw new RuntimeException("Vous ne pouvez pas renvoyer le code avant 60 secondes.");
+    //         }
+    //     }
+        
+    //     OTPVerification otp = new OTPVerification();
+    //     otp.setAttempt(5);
+    //     otp.setEmail(email);
+    //     otp.setDate(new Date());
+    //     otp.setCode( createCode("") );
+    //     OTPVrepo.save(otp);
+    //     try{
+    //         emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+otp.getCode() );
+    //     } catch(Exception e){
+    //         throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
+    //     }
+    // }
+
+
+    public int setCode(String email) {
         OTPVerification o =  OTPVrepo.findOneByEmail(email) ;
 
         if(o!= null){
             if(o.getAttempt() == 0 ){
-                System.out.println(( (new Date().getTime() - o.getDate().getTime())/1000 < (60 )*60 ) );
-                if (( (new Date().getTime() - o.getDate().getTime())/1000 < (60 )*60 ) ){  // 1 hour
-                    throw new RuntimeException("Vous ne pouvez pas renvoyer le code avant 1 heure.");
+                if ( compareWithNow(o.getDate(), 60*60,-1 ) ){  // 1 hour
+                    
+                    return 1; // Vous ne pouvez pas renvoyer le code avant 1 heure.
                 } else {
                     String cod = createCode("");
                     OTPVrepo.updateOTPVerification(o.getId(),5,cod,new Date());
                     try{
                         emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+cod );
                     } catch(Exception e){
-                        throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
+                        return 2; //Une erreur est survenue ! Vérifiez votre e-mail.
                     }
-                    return;
+                    return 0;
                 }
             }
-            if ( ( (new Date().getTime() - o.getDate().getTime())/1000 > (60 ) )) {
+            if ( compareWithNow(o.getDate(), 60,1 )) {
                 String cod = createCode("");
                 OTPVrepo.updateOTPVerification(o.getId(),o.getAttempt(),cod ,new Date());
                 try{
                     emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+cod );
                 } catch(Exception e){
-                    throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
+                    
+                    return 2; // Une erreur est survenue ! Vérifiez votre e-mail;
                 }
-                return;
+                return 0;
             } else {
-                throw new RuntimeException("Vous ne pouvez pas renvoyer le code avant 60 secondes.");
+                return 3; // Vous ne pouvez pas renvoyer le code avant 60 secondes.
             }
         }
         
@@ -66,15 +117,16 @@ public class OTPVerificationService {
         try{
             emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+otp.getCode() );
         } catch(Exception e){
-            throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
+            return 2; // Une erreur est survenue ! Vérifiez votre e-mail."
         }
+        return 0;
     }
 
     public boolean verify(String email,String code){
         OTPVerification o =  OTPVrepo.findOneByEmail(email);
         if (o== null) return false;
         if(o.getAttempt() == 0 ){
-            if (( (new Date().getTime() - o.getDate().getTime())/1000 < (60 )*60 ) ){  // 1 hour
+            if ( compareWithNow(o.getDate(), 60,-1 ) ){  // 1 hour
                 throw new RuntimeException("Vous ne pouvez pas vérifier le code avant 1 heure.");
             } else {
                 throw new RuntimeException("Veuillez essayer de renvoyer le code.");
@@ -82,7 +134,7 @@ public class OTPVerificationService {
 
         }
         
-        if( o.getCode().equals(code) && ( ( new Date().getTime() - o.getDate().getTime() ) / 1000 < ( 60*10 )  /*10 minutes*/ )) 
+        if( o.getCode().equals(code) && compareWithNow(o.getDate(), 60*10,-1 )  /*10 minutes*/ ) 
             return true;
         else OTPVrepo.updateOTPVerification(o.getId(),o.getAttempt()-1,o.getCode(),o.getDate());
 

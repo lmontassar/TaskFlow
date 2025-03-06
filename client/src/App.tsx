@@ -7,6 +7,7 @@ import EmailVerification from "./pages/EmailVerification";
 import Dashboard from "./pages/Project/Dashboard";
 import Home from "./pages/Project/Home";
 import Inbox from "./pages/Project/Inbox";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/emailverification" element={<EmailVerification/> } />
-
+          <Route path="/reset" element={<ResetPassword/> } />
           {/* Fallback for undefined routes */}
           <Route
             path="*"

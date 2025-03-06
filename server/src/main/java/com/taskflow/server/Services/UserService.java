@@ -18,18 +18,16 @@ public class UserService {
 
     public User createUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            return null;
         }
 
         
 
         if( !user.getPhoneNumber().equals("") )
             if ( userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
-                throw new RuntimeException("Phone number already exists");
+                return null;
             }
             
-        
-        
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -47,6 +45,11 @@ public class UserService {
         if (u == null) return null;
         BeanUtils.copyProperties(upUser, u , getNullPropertyNames(upUser) );
         return userRepository.save(u);
+    }
+
+    public void resetPassword(User u,String password){
+        password = passwordEncoder.encode(password);
+        userRepository.updatePasswordById(u.getId(), password);
     }
 
     private String[] getNullPropertyNames(Object source) {

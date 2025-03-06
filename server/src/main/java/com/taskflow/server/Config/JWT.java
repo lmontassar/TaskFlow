@@ -40,6 +40,22 @@ public class JWT {
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+    
+    // Generate JWT Token
+    public String generateResetPasswordToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        
+        claims.put("id", user.getId());
+        claims.put("resetpassword", true);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(user.getId()) // Unique user identifier
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     // Extract Claims from Token
     public String extractClaim(String token, String key) {

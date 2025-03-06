@@ -21,7 +21,7 @@ export default function SignupVerification() {
     const navigator = useNavigate();
 
     useEffect(() => {
-        let interval;
+        let interval:any;
 
         if (disabled) {
         interval = setInterval(() => {
@@ -58,7 +58,7 @@ export default function SignupVerification() {
                 const errorText = await res.text();
                 setError(errorText);
             }
-        } catch(error){
+        } catch(error:any){
             setError(error.message);
         }
         
@@ -107,7 +107,7 @@ export default function SignupVerification() {
                     setError(errorText);
                     setOtp("");
                 }
-            } catch(err){
+            } catch(err:any){
                 
                 setError(err.message);
             }

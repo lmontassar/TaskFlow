@@ -115,13 +115,24 @@ export default function Signup() {
         localStorage.setItem("token",rep.token);
         navigate("/emailverification");
       } else {
-        const errorText = await response.text();
         setStep(1);
-        setFirstStepMessage(`Registration failed: ${errorText}`);
+        let ErrorMessage : any ="";
+        switch (response.status) {
+          case 400 :{   ErrorMessage = "Server error" ;break }
+          case 403:{    ErrorMessage = "Vous ne pouvez pas renvoyer le code avant 1 heure." ;break }
+          case 429:{    ErrorMessage = "Vous ne pouvez pas renvoyer le code avant 60 secondes." ;break }
+          case 500:{    ErrorMessage = "Une erreur est survenue ! Vérifiez votre e-mail." ;break }
+          case 406:{    ErrorMessage = "Invalid data" ;break }
+          case 415:{    ErrorMessage = "Only JPEG, PNG images are allowed." ;break }
+          case 413:{    ErrorMessage = "Image size must be under 5MB.";break } 
+          case 409:{    ErrorMessage = "The email or the phone is already used.";break } 
+        }
+        setFirstStepMessage(`Registration failed: ${ErrorMessage}`);
+      
       }
     } catch (error) {
+      setStep(1);
       console.error("Error:", error);
-      alert("An error occurred. Please try again.");
     }
 
     

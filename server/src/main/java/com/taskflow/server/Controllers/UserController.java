@@ -2,6 +2,7 @@ package com.taskflow.server.Controllers;
 import com.taskflow.server.Config.JWT;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,9 +42,6 @@ public class UserController {
     @Autowired
     private OTPVerificationService OTPVser;
 
-    @Autowired
-    private EmailService emailService;
-
     @Value("${file.upload-dir}")
     private String uploadDir;
 
@@ -81,41 +79,32 @@ public class UserController {
             User user = new User();
 
             // Validate email format
-            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) 
-                return ResponseEntity.badRequest().body("Invalid email format.");  
+            if ( (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) 
             
             // Validate prenom and nom (only letters and spaces, but must start and end with a letter)
-            if (!prenom.matches("^[A-Za-z]+( [A-Za-z]+)*$") || !nom.matches("^[A-Za-z]+( [A-Za-z]+)*$")) 
-                return ResponseEntity.badRequest().body("Prenom and Nom must contain only letters and spaces, without leading or trailing spaces.");
+            || (!prenom.matches("^[A-Za-z]+( [A-Za-z]+)*$") || !nom.matches("^[A-Za-z]+( [A-Za-z]+)*$")) 
 
             // Validate title (only letters, spaces, and apostrophes, must start and end with a letter)
-            if (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) 
-                return ResponseEntity.badRequest().body("Invalid title format. Only letters, spaces, and apostrophes are allowed.");
+            || (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) 
 
             // Validate phone number (digits only, 8-15 digits long)
-            if (!phoneNumber.isEmpty() && !phoneNumber.matches("^(\\+\\d{1,3})?\\d{8,15}$")) {
-                return ResponseEntity.badRequest().body("Invalid phone number format.");
-            }
+            || (!phoneNumber.isEmpty() && !phoneNumber.matches("^(\\+\\d{1,3})?\\d{8,15}$")) 
 
             // Validate title (only letters, spaces, and apostrophes, must start and end with a letter)
-            if (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) {
-                return ResponseEntity.badRequest().body("Invalid title format. Only letters, spaces, and apostrophes are allowed.");
-            }
+            || (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) 
 
             // Validate title (only letters, spaces, and apostrophes, must start and end with a letter)
-            if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) {
-                return ResponseEntity.badRequest().body("Password must have at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
-            }
-            
-            // Validate image (check size and format)
+            || (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) )
+                return ResponseEntity.status(406).build();
+
             if (image != null && !image.isEmpty()) {
                 String contentType = image.getContentType();
                 long maxSize = 5 * 1024 * 1024; // 5MB
                 if (!contentType.matches("image/(jpeg|png|jpg)")) {
-                    return ResponseEntity.badRequest().body("Only JPEG, PNG images are allowed.");
+                    return ResponseEntity.status(415).build(); //415 Unsupported Media Type → If the image format is not JPEG or PNG.
                 }
                 if (image.getSize() > maxSize) {
-                    return ResponseEntity.badRequest().body("Image size must be under 5MB.");
+                    return ResponseEntity.status(413).build(); //413 Payload Too Large → If the image size exceeds 5MB.
                 }
             }
             user.setActivation(false);
@@ -135,17 +124,24 @@ public class UserController {
                 user.setAvatar(saveUserImage(image));
             }
 
-            
-            
             User newUser = userService.createUser(user);
-            OTPVser.setCode(email);
+            if (newUser == null ) return ResponseEntity.status(409).build();
+
+            int ret = OTPVser.setCode(email);
+
+            switch (ret){
+                case 1 : return ResponseEntity.status(403).build() ; // (You cannot resend the code before 1 hour) → 403 Forbidden (User must wait a long time before retrying)
+                case 2 : return ResponseEntity.status(500).build() ; // (Email sending error) → 500 Internal Server Error
+                case 3 : return ResponseEntity.status(429).build() ; // (You cannot resend the code before 60 seconds) → 429 Too Many Requests (Temporary rate limit: wait 60s)
+            }
+
             String jwt = myJWT.generateToken(newUser);
             Map<String,String> res = new TreeMap<>();
             res.put("token", jwt);
             return ResponseEntity.ok(res);
 
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(400).build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -180,6 +176,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
     }
+
     @PostMapping("/verifyEmail")
     public ResponseEntity<?> verifyEmail(
             @RequestHeader("Authorization") String token,
@@ -197,5 +194,63 @@ public class UserController {
                 System.out.println(e.getMessage());
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
+    }
+
+    /*       reset password         */
+    @PostMapping("/sendcode")
+    public ResponseEntity<?> send(
+        @RequestBody String email
+        ) {
+            
+        try {
+            return userService.findByEmail(email)
+            .map(u->{
+                OTPVser.setCode(u.getEmail());
+                return ResponseEntity.status(200).build();
+            }).orElse(ResponseEntity.status(404).build());
+                            
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(400).build();
+        }
+    }
+    @PostMapping("/resetpasswordtoken")
+    public ResponseEntity<?> generateRPT(
+        @RequestParam("otp") String otp,
+        @RequestParam("email") String email
+    ) { 
+        try{
+            if(OTPVser.verify(email, otp)) {
+                User u = userService.findByEmail(email).orElse(null);
+                String RPT = myJWT.generateResetPasswordToken(u);
+                Map<String , String > res = new TreeMap<>();
+                res.put("RPToken",RPT);
+                return ResponseEntity.status(200).body( res);
+            } else {
+                return ResponseEntity.status(402).build();
+            }
+
+        } catch (Exception e){
+            return ResponseEntity.status(400).build();
+        }
+    }
+
+    @PostMapping("/resetpassword")
+    public ResponseEntity<?> resetPassword(
+        @RequestHeader("Authorization") String RPT,
+        @RequestParam("password") String password
+        ) {
+        try{
+            System.out.println(password+"--"+RPT);
+            String id = myJWT.extractUserId(RPT);
+            System.out.println(id);
+            User u = userService.findById(id);
+            System.out.println(id);
+            if(u == null) return ResponseEntity.status(404).build();
+            userService.resetPassword(u,password);
+            return ResponseEntity.ok().build();
+        } catch (Exception e){
+            return ResponseEntity.status(400).build();
+        }
     }
 }
