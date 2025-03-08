@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Github } from "lucide-react";
+import { Github, Loader2 } from "lucide-react";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import PasswordInput from "./passwordInput";
@@ -122,7 +122,7 @@ export default function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { formData, handleChange, handleCheckboxChange, error, handleSubmit } =
+  const { formData, handleChange, handleCheckboxChange, error, handleSubmit ,isLoading} =
     useLogin();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -179,16 +179,25 @@ export default function LoginForm({
                     Remember me
                   </label>
                 </div>
-                <a
-                  href="#"
+                <Link
+                  to="/reset"
                   className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                 >
                   Forgot your password?
-                </a>
+                </Link>
               </div>
+
               <Button type="submit" className="w-full bg-[var(--clickup1)]">
-                Login
+                { isLoading && (
+                    <Loader2 className="animate-spin" />
+                ) || (
+                  "Login"
+                ) 
+                
+                } 
+                
               </Button>
+              
               <div className="flex items-center justify-between flex-wrap">
                 <GoogleLoginButton />
                 <GitHubLogin />

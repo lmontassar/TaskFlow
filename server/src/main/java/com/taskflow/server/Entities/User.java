@@ -24,4 +24,5 @@ public class User {
     private String avatar;
     private String region;
     private Boolean activation;
+    private Boolean twoFactorAuth;
 }

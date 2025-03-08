@@ -122,24 +122,22 @@ public class OTPVerificationService {
         return 0;
     }
 
-    public boolean verify(String email,String code){
+    public int verify(String email,String code){
         OTPVerification o =  OTPVrepo.findOneByEmail(email);
-        if (o== null) return false;
+        if (o== null) return 0;
         if(o.getAttempt() == 0 ){
             if ( compareWithNow(o.getDate(), 60,-1 ) ){  // 1 hour
-                throw new RuntimeException("Vous ne pouvez pas vérifier le code avant 1 heure.");
+                return 2;
+                // throw new RuntimeException("Vous ne pouvez pas vérifier le code avant 1 heure.");
             } else {
-                throw new RuntimeException("Veuillez essayer de renvoyer le code.");
+                return 3;
+                // throw new RuntimeException("Veuillez essayer de renvoyer le code.");
             }
-
         }
-        
         if( o.getCode().equals(code) && compareWithNow(o.getDate(), 60*10,-1 )  /*10 minutes*/ ) 
-            return true;
+            return 1;
         else OTPVrepo.updateOTPVerification(o.getId(),o.getAttempt()-1,o.getCode(),o.getDate());
-
-
-        return false;
+        return 0;
     }
 
     public OTPVerification findOneByEmail(String email){

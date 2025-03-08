@@ -3,9 +3,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.taskflow.server.Config.JWT;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import com.taskflow.server.Entities.*;
 import org.springframework.http.*;
 import org.springframework.util.StringUtils;
@@ -120,6 +117,7 @@ public class UserController {
             user.setNom(nom);
             user.setPrenom(prenom);
             user.setTitle(title);
+            user.setTwoFactorAuth(false);
             user.setPassword(password);
             System.out.println(user.toString());
             if(phoneNumber != ""){
@@ -235,7 +233,13 @@ public class UserController {
         return userService.findByEmail(user.getEmail())
                 .map(u -> {
                     if (userService.validatePassword(user.getPassword(), u.getPassword())) {
-                        String jwt = myJWT.generateToken(u);
+                        
+                        String jwt ;
+                        if(u.getTwoFactorAuth()){
+                            jwt = myJWT.generateTwoFactoAuthToken(u);
+                        } else {
+                            jwt = myJWT.generateToken(u);
+                        }
                         LoginResponce lr = new LoginResponce(jwt,u);
                         return ResponseEntity.status(HttpStatus.ACCEPTED).body(lr);
                     } else {
@@ -247,13 +251,26 @@ public class UserController {
     
     @PostMapping("/resendcode")
     public ResponseEntity<?> resendCode(
-            @RequestHeader("Authorization") String token
-        ) {
-            try{
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestParam(value = "email", required = false) String email
+    ) {
+        try {
+            User u = null;
+            if (token != null) {
                 String s = myJWT.extractUserId(token);
-                User u = userService.findById(s);
-                OTPVser.setCode(u.getEmail());
-                return ResponseEntity.ok("code sent");
+                u = userService.findById(s);
+            } else if (email != null) {
+                u = userService.findByEmail(email).orElse(null);
+            }
+
+            if (u== null) return ResponseEntity.notFound().build();
+            int ret = OTPVser.setCode(u.getEmail());
+            switch (ret){
+                case 1 : return ResponseEntity.status(403).build() ; // (You cannot resend the code before 1 hour) → 403 Forbidden (User must wait a long time before retrying)
+                case 2 : return ResponseEntity.status(500).build() ; // (Email sending error) → 500 Internal Server Error
+                case 3 : return ResponseEntity.status(429).build() ; // (You cannot resend the code before 60 seconds) → 429 Too Many Requests (Temporary rate limit: wait 60s)
+            }
+            return ResponseEntity.ok().build();
             }catch(Exception e){
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
@@ -267,14 +284,19 @@ public class UserController {
             try{
                 String s = myJWT.extractUserId(token);
                 User u = userService.findById(s);
-                if ( !OTPVser.verify(u.getEmail(),code) ){
-                    return ResponseEntity.badRequest().body("Le code est erroné, réessayez");
-                } 
-                userService.setActivation(u,true);
-                return ResponseEntity.ok().build();
+                if (u == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 Not Found
+                }
+                int res = OTPVser.verify(u.getEmail(), code);
+                switch (res) {
+                    case 0: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 Unauthorized
+                    case 2: return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build(); // 429 Too Many Requests
+                    case 3: return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+                }
+                userService.setActivation(u, true);
+                return ResponseEntity.ok().build(); // 200 OK
             }catch(Exception e){
-                System.out.println(e.getMessage());
-                return ResponseEntity.badRequest().body(e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
             }
     }
 
@@ -302,14 +324,19 @@ public class UserController {
         @RequestParam("email") String email
     ) { 
         try{
-            if(OTPVser.verify(email, otp)) {
+            int r = OTPVser.verify(email, otp);
+            if( r == 1) {
                 User u = userService.findByEmail(email).orElse(null);
                 String RPT = myJWT.generateResetPasswordToken(u);
                 Map<String , String > res = new TreeMap<>();
                 res.put("RPToken",RPT);
                 return ResponseEntity.status(200).body( res);
             } else {
-                return ResponseEntity.status(402).build();
+                switch (r) {
+                    case 0: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 Unauthorized
+                    case 2: return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build(); // 429 Too Many Requests
+                    default: return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+                }
             }
 
         } catch (Exception e){
@@ -323,10 +350,9 @@ public class UserController {
         @RequestParam("password") String password
         ) {
         try{
+            if ( JWT.isTokenExpired(RPT) == true  ) return ResponseEntity.status(401).build();
             String id = myJWT.extractUserId(RPT);
-            System.out.println(id);
             User u = userService.findById(id);
-            System.out.println(id);
             if(u == null) return ResponseEntity.status(404).build();
             userService.resetPassword(u,password);
             return ResponseEntity.ok().build();
@@ -334,4 +360,36 @@ public class UserController {
             return ResponseEntity.status(400).build();
         }
     }
+
+    @PostMapping("/twofactoauth")
+    public ResponseEntity<?> twoFactorAuth(
+        @RequestHeader("Authorization") String TFAToken,
+        @RequestBody String otp
+    ) {
+        try{
+            if ( JWT.isTokenExpired(TFAToken) == true  ) return ResponseEntity.status(401).build();
+            String id = myJWT.extractUserId(TFAToken);
+            User u = userService.findById(id);
+            if(u == null) return ResponseEntity.status(404).build();
+            int r = OTPVser.verify(u.getEmail(), otp);
+            if( r == 1) {
+                String jwt = myJWT.generateToken(u);
+                LoginResponce lr = new LoginResponce(jwt,u);
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(lr);
+            } else {
+                switch (r) {
+                    case 0: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 Unauthorized
+                    case 2: return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build(); // 429 Too Many Requests
+                    default: return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden
+                }
+            }
+
+        }catch (Exception e ){
+            return ResponseEntity.status(400).build();
+        }
+        
+
+    }
+    
+
 }

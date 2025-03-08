@@ -2,148 +2,32 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Input } from "@/components/ui/input"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import PasswordInput from "../components/ui/passwordInput"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../components/ui/input-otp"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { Loader2 } from "lucide-react"
+import useResetPassword from "../hooks/useResetPassword"
 
 // Custom password input component with visibility toggle
 
 export default function ResetPassword() {
-  const [step, setStep] = useState(1)
-  const [errorMessage, setErrorMessage] = useState("")
-  const [otp,setOtp] = useState("");
-  const navigator = useNavigate();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-  })
-
-
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const nextStep = async () => {
-    // Basic validation
-    if (step === 1) {
-        await handleEmail();
-    }
-    else if(step === 2) {
-        await handleOTP();
-    }
-
-  }
-
-  const prevStep = () => {
-    setStep((prevStep) => prevStep - 1)
-    setErrorMessage("")
-  }
-
-  const handleEmail = async ()=>{
-    if(formData.email == ""){
-        setErrorMessage("Veuillez saisir votre adresse email")
-        return
-    } else {
-        try{
-            const response = await fetch("/api/user/sendcode",
-                {
-                    method:"POST",
-                    body:formData.email
-                }
-            )
-            if(response.ok){
-                setStep(2);
-                setErrorMessage("")
-            } else {    
-                const status = await response.status;
-                if(status == 404) setErrorMessage("User doesn't exist");
-                else setErrorMessage("something wrong");
-            }   
-        }catch(error){
-            setErrorMessage("something wrong");
-        }
-    }
-  }
-
-  const handleOTP = async () => {
-    if(otp.length != 6) {
-        setErrorMessage("Veuillez saisir le code de verification");
-        return
-    } else {
-        try{
-            const data = new FormData();
-            data.append("otp",otp);
-            data.append("email",formData.email)
-            const response = await fetch("/api/user/resetpasswordtoken",
-                {
-                    method:"POST",
-                    body: data
-                }
-            )
-            if ( response.ok ){
-                const res = await response.json();
-                localStorage.setItem("RPT",res.RPToken) ;
-                setStep(3);
-            } else {
-                if(response.status == 402) {
-                    setErrorMessage("code invalid");
-                } else {
-                    setErrorMessage("something wrong");
-                }
-            }
-        } catch (error) {
-            setErrorMessage("something wrong");
-        }
-
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (formData.password !== formData.confirmPassword) {
-      setErrorMessage("Les mots de passe ne correspondent pas")
-      return
-    }
-    const RPT:any = localStorage.getItem("RPT");
-    if(RPT == null){
-        setStep(1);
-    }
-    try{
-        const data = new FormData();
-        data.append("password",formData.password);
-        const response = await fetch("/api/user/resetpassword",
-            {
-                headers: { Authorization:RPT },
-                method:"POST",
-                body: data
-            }
-        )
-        if ( response.ok ){
-            localStorage.removeItem("RPT");
-            navigator("/login");
-        } else {
-            if(response.status == 402) {
-                setErrorMessage("");
-            } else {
-                setErrorMessage("something wrong");
-            }
-        }
-    } catch (error) {
-        setErrorMessage("something wrong");
-    }
-
-    console.log("Password reset submitted:", formData)
-
-  }
+  const {   step,
+            errorMessage,
+            otp,
+            formData,
+            disabled,
+            timer,
+            isLoading,
+            handleChange,
+            nextStep,
+            prevStep,
+            handleSubmit,
+            resendCode,
+            setOtp } = useResetPassword(); 
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
@@ -219,9 +103,14 @@ export default function ResetPassword() {
                   <button
                     type="button"
                     onClick={nextStep}
-                    className="w-full rounded-md cursor-pointer bg-[var(--clickup1)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--clickup3)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="w-full flex justify-center gap-5 rounded-md cursor-pointer bg-[var(--clickup1)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--clickup3)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    SUIVANT
+                    { isLoading && (
+                      <Loader2 className="animate-spin" />
+                    ) || (
+                      "SUIVANT"
+                    )}
+                    
                   </button>
                 </div>
               </div>
@@ -232,8 +121,7 @@ export default function ResetPassword() {
               <div className="space-y-5">
                 {errorMessage !== "" && (
                   <Alert variant="destructive" className="mb-4 border border-destructive-foreground">
-                    <AlertTitle>Erreur</AlertTitle>
-                    <AlertDescription>{errorMessage}</AlertDescription>
+                    <AlertTitle>{errorMessage}</AlertTitle>
                   </Alert>
                 )}
 
@@ -257,7 +145,12 @@ export default function ResetPassword() {
                             </InputOTPGroup>
                         </InputOTP>
                 </div>
-
+                <div
+                            className={`text-blue-600 underline cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+                            onClick={resendCode}
+                            >
+                            {disabled ? `Renvoyer le code (${timer}s)` : "Renvoyer le code"}
+                  </div>
 
                 </div>
                 <div className="flex gap-3 pt-4">
@@ -284,8 +177,7 @@ export default function ResetPassword() {
               <div className="space-y-5">
                 {errorMessage !== "" && (
                   <Alert variant="destructive" className="mb-4 border border-destructive-foreground">
-                    <AlertTitle>Erreur</AlertTitle>
-                    <AlertDescription>{errorMessage}</AlertDescription>
+                    <AlertTitle>{errorMessage}</AlertTitle>
                   </Alert>
                 )}
 
@@ -332,9 +224,12 @@ export default function ResetPassword() {
         <div className="border-t border-gray-200 p-4 text-center">
           <p className="text-sm text-gray-500">
             Retour à la page de{" "}
-            {/* <Link href="/login" className="font-medium text-[var(--clickup1)] hover:text-blue-500">
-              connexion
-            </Link> */}
+            <Link
+              to="/login"
+              className="font-medium text-[var(--clickup1)] hover:text-blue-500"
+            >
+              Login
+            </Link>
           </p>
         </div>
       </div>

@@ -9,123 +9,27 @@ import { useEffect, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { useNavigate } from "react-router-dom";
+import useEmailVerification from "../hooks/useEmailVerification";
+import useTwoFactorAuth from "../hooks/useTwoFactorAuth";
 
 
 export default function SignupVerification() {
-    const [otp , setOtp] = useState("");
-    const [email , setEmail] = useState();
-    const [error,setError] = useState("");
-    const [timer, setTimer] = useState(2);
-    const [disabled, setDisabled] = useState(false);
-    const navigator = useNavigate();
+    const isTFAEnabled = localStorage.getItem("TFAToken");
 
-    useEffect(() => {
-        let interval:any;
+    const {
+        otp,
+        setOtp,
+        email,
+        error,
+        timer,
+        disabled,
+        resendCode,
+        handleCancel,
+    } = isTFAEnabled ? useTwoFactorAuth() : useEmailVerification();
 
-        if (disabled) {
-        interval = setInterval(() => {
-            setTimer((prev) => {
-            if (prev === 1) {
-                clearInterval(interval);
-                setDisabled(false);
-                return 60; // Reset timer to 60 after it reaches 0
-            }
-            return prev - 1;
-            });
-        }, 1000);
-        }
-
-        return () => clearInterval(interval);
-    }, [disabled]);
     
 
-    const resendCode = async()=>{
-        setDisabled(true);
-        if (timer != 0 && timer != 60 ) return;
-        try{
-            const token = localStorage.getItem("token") || ""
-            const res = await fetch("/api/user/resendcode", {
-                method: "POST",
-                headers: {
-                    "Authorization": token,
-                    "Content-Type": "application/json"
-                }
-            });
-            if(res.ok){
-                
-            } else {
-                const errorText = await res.text();
-                setError(errorText);
-            }
-        } catch(error:any){
-            setError(error.message);
-        }
-        
-    } 
-
-    useEffect(()=>{
-        let token = localStorage.getItem("token");
-        if(token){
-            try{
-                const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode payload
-                if( decodedToken.activation == true){
-                    navigator("/login");
-                }
-                setEmail(decodedToken.email); // Set email state
-                setDisabled(true);
-            }catch(error){
-               
-            }
-        } else { navigator("/login"); }
-    },[])
-
-    const handleCancle = async ()=>{
-        localStorage.removeItem("token");
-        navigator("/login");
-    }
-
-    const handleSubmit = async ()=>{
-        if(otp.length == 6 ){
-            const token = localStorage.getItem("token") || ""
-            try{
-                
-                const response = await fetch("/api/user/verifyEmail",{
-                    method: "POST",
-                    headers: {
-                        "Authorization": token,
-                        "Content-Type": "application/json"
-                    },
-                    body:otp
-                    
-                })
-                if(response.ok) {
-                    handleCancle();
-                }
-                else {
-                    const errorText = await response.text();
-                    setError(errorText);
-                    setOtp("");
-                }
-            } catch(err:any){
-                
-                setError(err.message);
-            }
-
-        }
-    }
-
-    useEffect(
-        () =>{
-            if(otp.length>0) setError("");
-            handleSubmit();
-        }
-         , [otp]
-    )
-
     return (
-
-
-
         <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
         <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white shadow-md">
           <div className="p-6">
@@ -138,13 +42,8 @@ export default function SignupVerification() {
                         {email}
                     </p>
                 </div>
-                
                 <div className="space-y-5 mt-6 flex justify-center">
-                    
-                    <div className="grid gap-5">
-                    
-                    
-                        
+                    <div className="grid gap-5">  
                     {error !== "" && (
                         <Alert
                         variant="destructive"
@@ -179,7 +78,7 @@ export default function SignupVerification() {
                             >
                             {disabled ? `Renvoyer le code (${timer}s)` : "Renvoyer le code"}
                             </div>
-                        <Button className="bg-white hover:bg-gray-200 text-color-black border-1 border-gray-200" onClick={handleCancle }>
+                        <Button className="bg-white hover:bg-gray-200 text-color-black border-1 border-gray-200" onClick={handleCancel }>
                             ANNULER
                         </Button>
                     </div>

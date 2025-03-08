@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode }from "jwt-decode";
 
 // 1. Define a TypeScript interface for form data
 type LoginFormData = {
@@ -10,7 +11,7 @@ type LoginFormData = {
 
 const useLogin = () => {
   const navigate = useNavigate();
-
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -34,6 +35,7 @@ const useLogin = () => {
   };
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await fetch("/api/user/login", {
         method: "POST",
@@ -47,11 +49,19 @@ const useLogin = () => {
       });
       if (response.ok) {
         const data = await response.json();
+        const decode = jwtDecode<{twoFactorAuth ?: boolean}>(data.jwt);
+        if ( decode.twoFactorAuth  ){
+          localStorage.setItem("TFAToken", data.jwt);
+          navigate("/emailverification");
+          setIsLoading(false);
+          return;
+        }
+
         localStorage.setItem("authToken", data.jwt);
         console.log(data);
         await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
+        setIsLoading(false);
         navigate("/home");
-        console.log("login success");
       }
       if (response.status === 400) {
         setError("Invalid credentials");
@@ -59,6 +69,7 @@ const useLogin = () => {
     } catch (error) {
       console.error("Error:", error);
     }
+    setIsLoading(false);
   };
   return {
     formData,
@@ -66,6 +77,7 @@ const useLogin = () => {
     handleCheckboxChange,
     error,
     handleSubmit,
+    isLoading
   };
 };
 

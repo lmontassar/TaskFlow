@@ -17,7 +17,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class JWT {
     private static final long EXPIRATION_TIME = 864000000; // 10 days
+    private static final long RPT_EXPIRATION_TIME =  10 * 60 * 1000; // 10 minutes in milliseconds
+    private static final long TFA_EXPIRATION_TIME = 10 * 60 * 1000 ;
+
     private static final String SECRET_KEY = "ifbzeibfeibzicbufbfiadaihazuehazpidpidsipqjcncdbvbdiuabih"; // Replace with at least 256-bit key
+
+
+    private static  String hideEmail(String email , int length ){
+        if(length == 0) return email;
+        else if ( email.indexOf('@')-2 < length ) return hideEmail(email,  email.indexOf('@')-2);
+        return hideEmail(   email.substring(0, length)+ "*" + email.substring(length+1)  , length-1);
+    }
 
     // Get SecretKey from Base64 Encoded String
     private SecretKey getKey() {
@@ -44,7 +54,7 @@ public class JWT {
     // Generate JWT Token
     public String generateResetPasswordToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        
+
         claims.put("id", user.getId());
         claims.put("resetpassword", true);
 
@@ -52,7 +62,21 @@ public class JWT {
                 .setClaims(claims)
                 .setSubject(user.getId()) // Unique user identifier
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() +  RPT_EXPIRATION_TIME ))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateTwoFactoAuthToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+        claims.put("email",  hideEmail(user.getEmail() , user.getEmail().length())) ;
+        claims.put("twoFactorAuth", true);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(user.getId()) // Unique user identifier
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() +  TFA_EXPIRATION_TIME ))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -97,4 +121,18 @@ public class JWT {
             throw new RuntimeException("Invalid or expired JWT token");
         }
     }
+    public static boolean isTokenExpired(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            Date expiration = claims.getExpiration();
+            return expiration.before(new Date()); // Returns true if token is expired
+        } catch (Exception e) {
+            return true; // If token is invalid, consider it expired
+        }
+    }
+
 }
