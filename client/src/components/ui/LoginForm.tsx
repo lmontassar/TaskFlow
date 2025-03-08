@@ -13,8 +13,10 @@ import { RiGoogleFill } from "@remixicon/react";
 
 import { useGoogleLogin } from "@react-oauth/google";
 import useLogin from "../../hooks/useLogin";
+
 const GoogleLoginButton = () => {
-  const login = useGoogleLogin({
+  const navigate = useNavigate();
+  const loginGoogle = useGoogleLogin({
     onSuccess: async (response) => {
       try {
         const userInfoResponse = await fetch(
@@ -42,8 +44,9 @@ const GoogleLoginButton = () => {
         });
 
         if (res.ok) {
-          const jwt = await res.text();
-          console.log("JWT:", jwt);
+          const data = await res.json();
+          await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
+          navigate("/home");
         } else if (res.status === 401) {
           console.log("Invalid ID token");
         } else {
@@ -57,7 +60,7 @@ const GoogleLoginButton = () => {
   });
 
   return (
-    <Button variant="outline" onClick={() => login()}>
+    <Button type="button" variant="outline" onClick={() => loginGoogle()}>
       <RiGoogleFill
         className="dark:text-primary"
         size={16}
@@ -76,7 +79,7 @@ const GitHubLogin = () => {
   };
 
   return (
-    <Button variant="outline" onClick={handleGitHubLogin}>
+    <Button type="button" variant="outline" onClick={handleGitHubLogin}>
       <Github />
       Login with Github
     </Button>
@@ -85,6 +88,7 @@ const GitHubLogin = () => {
 
 const GitHubCallback = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const exchangeCodeForToken = async () => {
@@ -102,6 +106,8 @@ const GitHubCallback = () => {
 
           if (res.ok) {
             const data = await res.json();
+            await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
+            navigate("/home");
             console.log("GitHub user info:", data);
           } else {
             console.log("GitHub login failed.");
@@ -111,7 +117,6 @@ const GitHubCallback = () => {
         }
       }
     };
-
     exchangeCodeForToken();
   }, [location]);
 
