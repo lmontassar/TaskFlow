@@ -1,6 +1,7 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode }from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import { Context } from "../App";
 
 // 1. Define a TypeScript interface for form data
 type LoginFormData = {
@@ -11,6 +12,7 @@ type LoginFormData = {
 
 const useLogin = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<LoginFormData>({
@@ -49,18 +51,18 @@ const useLogin = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        const decode = jwtDecode<{twoFactorAuth ?: boolean}>(data.jwt);
-        if ( decode.twoFactorAuth  ){
+        const decode = jwtDecode<{ twoFactorAuth?: boolean }>(data.jwt);
+        if (decode.twoFactorAuth) {
           localStorage.setItem("TFAToken", data.jwt);
           navigate("/emailverification");
           setIsLoading(false);
           return;
         }
-
-        localStorage.setItem("authToken", data.jwt);
         console.log(data);
-        await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
+        await localStorage.setItem("authToken", data.jwt);
+        setUser(data.user);
         setIsLoading(false);
+
         navigate("/home");
       }
       if (response.status === 400) {
@@ -77,7 +79,7 @@ const useLogin = () => {
     handleCheckboxChange,
     error,
     handleSubmit,
-    isLoading
+    isLoading,
   };
 };
 

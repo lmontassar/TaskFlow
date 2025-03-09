@@ -5,7 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Github, Loader2 } from "lucide-react";
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useContext,
+} from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import PasswordInput from "./passwordInput";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -13,9 +19,11 @@ import { RiGoogleFill } from "@remixicon/react";
 
 import { useGoogleLogin } from "@react-oauth/google";
 import useLogin from "../../hooks/useLogin";
+import { Context } from "../../App";
 
 const GoogleLoginButton = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(Context);
   const loginGoogle = useGoogleLogin({
     onSuccess: async (response) => {
       try {
@@ -46,6 +54,7 @@ const GoogleLoginButton = () => {
         if (res.ok) {
           const data = await res.json();
           await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
+          setUser(data.user);
           navigate("/home");
         } else if (res.status === 401) {
           console.log("Invalid ID token");
@@ -89,6 +98,7 @@ const GitHubLogin = () => {
 const GitHubCallback = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { setUser } = useContext(Context);
 
   useEffect(() => {
     const exchangeCodeForToken = async () => {
@@ -107,6 +117,7 @@ const GitHubCallback = () => {
           if (res.ok) {
             const data = await res.json();
             await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
+            setUser(data.user);
             navigate("/home");
             console.log("GitHub user info:", data);
           } else {
@@ -127,8 +138,14 @@ export default function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const { formData, handleChange, handleCheckboxChange, error, handleSubmit ,isLoading} =
-    useLogin();
+  const {
+    formData,
+    handleChange,
+    handleCheckboxChange,
+    error,
+    handleSubmit,
+    isLoading,
+  } = useLogin();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <GitHubCallback />
@@ -193,16 +210,9 @@ export default function LoginForm({
               </div>
 
               <Button type="submit" className="w-full bg-[var(--clickup1)]">
-                { isLoading && (
-                    <Loader2 className="animate-spin" />
-                ) || (
-                  "Login"
-                ) 
-                
-                } 
-                
+                {(isLoading && <Loader2 className="animate-spin" />) || "Login"}
               </Button>
-              
+
               <div className="flex items-center justify-between flex-wrap">
                 <GoogleLoginButton />
                 <GitHubLogin />
