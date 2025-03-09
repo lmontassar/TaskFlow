@@ -9,10 +9,49 @@ import Home from "./pages/Project/Home";
 import Inbox from "./pages/Project/Inbox";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoutes from "./utils/protectedroutes";
+import useGetUser from "./hooks/useGetUser";
+import { createContext, useEffect, useState } from "react";
+
+import { Dispatch, SetStateAction } from "react";
+
+export type UserType = {
+  id: string;
+  email: string;
+  nom: string;
+  prenom: string;
+  activation: boolean;
+  title: string;
+  phoneNumber: string;
+  avatar: string;
+  region: string;
+  twoFactorAuth: boolean;
+};
+
+export const Context = createContext<{
+  isSignedIn: boolean;
+  setIsSignedIn: Dispatch<SetStateAction<boolean>>;
+  user: UserType | null;
+  setUser: Dispatch<SetStateAction<UserType | null>>;
+}>({
+  isSignedIn: false,
+  setIsSignedIn: () => {},
+  user: null,
+  setUser: () => {},
+});
 
 function App() {
+  const { user, setUser, loading, error } = useGetUser();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  useEffect(() => {
+    if (user) {
+      setIsSignedIn(true);
+    }
+  }, [user]);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
-    <>
+    <Context.Provider value={{ isSignedIn, setIsSignedIn, user, setUser }}>
       <Router>
         <Routes>
           {/* Protected Routes */}
@@ -42,7 +81,7 @@ function App() {
           />
         </Routes>
       </Router>
-    </>
+    </Context.Provider>
   );
 }
 

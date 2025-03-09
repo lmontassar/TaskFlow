@@ -19,15 +19,15 @@ import {
   PinIcon,
   UserPenIcon,
 } from "lucide-react";
-
-export default function UserProfileLogo() {
+export default function UserProfileLogo(userdata: any) {
+  const user = userdata.user;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
           <Avatar>
-            <AvatarImage src="./avatar.jpg" alt="Profile image" />
-            <AvatarFallback>KK</AvatarFallback>
+            <AvatarImage src={user.avatar} alt="Profile image" />
+            <AvatarFallback>TF</AvatarFallback>
           </Avatar>
           <ChevronDownIcon
             size={16}
@@ -39,10 +39,10 @@ export default function UserProfileLogo() {
       <DropdownMenuContent className="max-w-64">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="text-foreground truncate text-sm font-medium">
-            Keith Kennedy
+            {user.name}
           </span>
           <span className="text-muted-foreground truncate text-xs font-normal">
-            k.kennedy@originui.com
+            {user.email}
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

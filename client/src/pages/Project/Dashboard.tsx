@@ -17,12 +17,21 @@ import Search from "@/components/search";
 import UserProfileLogo from "../../components/userProfile";
 import { useIsMobile } from "../../hooks/use-mobile";
 import { Outlet } from "react-router-dom";
-const user = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-};
+import { useContext } from "react";
+import { Context } from "@/App";
+import { UserType } from "../../App";
 export default function Page() {
+  const {
+    user,
+  }: {
+    user: UserType | null;
+  } = useContext(Context);
+  const userData = {
+    name: user?.nom + " " + user?.prenom,
+    email: user?.email,
+    avatar: user?.avatar,
+  };
+  console.log(userData);
   return (
     <>
       <div className=" m-3 flex justify-between items-center gap-4">
@@ -31,7 +40,7 @@ export default function Page() {
           <Search />
         </div>
         <div>
-          <UserProfileLogo />
+          <UserProfileLogo user={userData} />
         </div>
       </div>
       <SidebarProvider>

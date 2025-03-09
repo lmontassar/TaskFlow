@@ -4,25 +4,25 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.*;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import com.taskflow.server.Services.EmailService;
 import com.taskflow.server.Services.OTPVerificationService;
 import com.taskflow.server.Services.UserService;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -390,6 +390,46 @@ public class UserController {
         
 
     }
-    
+
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<?> getOneById(@PathVariable("id")String id){
+        try{
+            User u = userService.findById(id);
+            return ResponseEntity.accepted().body(u);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User user) {
+        try {
+            User updatedUser = userService.updateById(id, user);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // Delete user
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/upload/avatar/{imageName:.+}")
+    public ResponseEntity<Resource> serveFile(@PathVariable String imageName) throws MalformedURLException {
+        Path file = Paths.get("upload/avatar/" + imageName);
+        Resource resource = new UrlResource(file.toUri());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
 
 }
