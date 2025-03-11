@@ -32,7 +32,6 @@ const useTwoFactorAuth = ()=>{
     
 
     const resendCode = async()=>{
-        alert("test");
         setDisabled(true);
         if (timer != 0 && timer != 60 ) return;
         try{
@@ -54,7 +53,7 @@ const useTwoFactorAuth = ()=>{
                 }
             }
         } catch(error:any){
-            setError(error.message);
+
         }
     } 
 

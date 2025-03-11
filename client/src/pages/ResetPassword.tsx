@@ -98,7 +98,7 @@ export default function ResetPassword() {
                     onChange={handleChange}
                     className="w-full"
                     type="email"
-                    placeholder="Saisissez votre email"
+                    placeholder={t("signup.inputs.email.placeholder")}
                     required
                   />
                 </div>
@@ -188,7 +188,7 @@ export default function ResetPassword() {
                   <PasswordInput
                     id="password"
                     name="password"
-                    label="Nouveau mot de passe*"
+                    label={t("reset.new_password")}
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -198,7 +198,7 @@ export default function ResetPassword() {
                   <PasswordInput
                     id="confirmPassword"
                     name="confirmPassword"
-                    label="Confirmation du mot de passe*"
+                    label= {t("reset.confirmation_password")}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required

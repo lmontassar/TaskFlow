@@ -75,7 +75,7 @@ export default function SignupVerification() {
                             className={`text-blue-600 underline cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
                             onClick={resendCode}
                             >
-                            {disabled ? `Renvoyer le code (${timer}s)` : "Renvoyer le code"}
+                            {disabled ? `Renvoyer le code (${timer}s)` : <>{t("OTP.resend")} </>}
                             </div>
                         <Button className="bg-white hover:bg-gray-200 text-color-black border-1 border-gray-200" onClick={handleCancel }>
                             {t("OTP.cancel")} 

@@ -140,7 +140,7 @@ const useResetPassword = ()=>{
                   setErrorMessage( t("errors.server") );
                   break;
               case 401: {
-                  setErrorMessage( t("expired_token") );
+                  setErrorMessage( t("reset.expired_token") );
                   localStorage.removeItem("RPT");
                   setStep(1);
                   break;

@@ -1,5 +1,5 @@
 {
-  "server_error":"Oops! Un problème est survenu.",
+  "server_error": "Oops! Un problème est survenu.",
   "welcome": "Bienvenue",
   "description": "C'est une application React internationalisée.",
   "sidebar": {
@@ -23,6 +23,7 @@
         "status_401": "Code invalide. Veuillez réessayer."
       }
     },
+    "resend": "Renvoyer le code",
     "title": "Vérification de l'email",
     "subtitle": "Veuillez entrer le code de vérification.",
     "cancel": "Annuler"
@@ -37,11 +38,28 @@
     "otp_code": "Code de vérification (OTP) :",
     "reset": "RÉINITIALISER",
     "email_invalid": "Veuillez saisir votre adresse email",
-    "expired_token": "Votre session a expiré. Veuillez vous reconnecter."
+    "expired_token": "Votre session a expiré. Veuillez réessayer",
+    "confirmation_password": "Confirm Password*",
+    "new_password": "New Password*"
   },
   "login": {
-    "github": "Se connecter avec Github",
-    "google": "Se connecter avec Google"
+    "github": "Login avec Github",
+    "google": "Login avec Google",
+    "title": "Se connecter",
+    "inputs": {
+      "email": {
+        "title": "Email"
+      },
+      "password": {
+        "title": "Mot de passe"
+      }
+    },
+    "remember_me": "Se souvenir de moi",
+    "forget": "Mot de passe oublié ?",
+    "or": "ou",
+    "dont_have_acc": "Vous n'avez pas de compte ?",
+    "signup": "S'inscrire",
+    "error": "Veuillez vérifier votre email et réessayer."
   },
   "signup": {
     "errors": {
@@ -58,13 +76,32 @@
       "three": "Sécurité"
     },
     "inputs": {
-      "name": { "title": "Nom", "placeholder": "Entrez votre nom" },
-      "first_name": { "title": "Prénom", "placeholder": "Entrez votre prénom" },
-      "email": { "title": "Email", "placeholder": "Entrez votre email" },
-      "phone": { "title": "Téléphone", "placeholder": "Entrez votre téléphone" },
-      "title": { "title": "Titre", "placeholder": "Entrez votre titre" },
-      "password": { "label": "Mot de passe" },
-      "confirm_password": { "label": "Confirmer le mot de passe" },
+      "name": {
+        "title": "Nom",
+        "placeholder": "Entrez votre nom"
+      },
+      "first_name": {
+        "title": "Prénom",
+        "placeholder": "Entrez votre prénom"
+      },
+      "email": {
+        "title": "Email",
+        "placeholder": "Entrez votre email"
+      },
+      "phone": {
+        "title": "Téléphone",
+        "placeholder": "Entrez votre téléphone"
+      },
+      "title": {
+        "title": "Titre",
+        "placeholder": "Entrez votre titre"
+      },
+      "password": {
+        "label": "Mot de passe"
+      },
+      "confirm_password": {
+        "label": "Confirmer le mot de passe"
+      },
       "image": "Choisir une photo"
     },
     "buttons": {
@@ -75,9 +112,6 @@
     "login": "Se connecter",
     "have_account": "Vous avez déjà un compte ?"
   },
-
-
-
   "inputs": {
     "validation": {
       "email": "Format d'email invalide.",

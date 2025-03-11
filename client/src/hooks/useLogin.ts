@@ -68,7 +68,7 @@ const useLogin = () => {
         navigate("/home");
       }
       if (response.status === 400) {
-        setError("Invalid credentials");
+        setError(t("login.error"));
       }
     } catch (error) {
       console.error("Error:", error);

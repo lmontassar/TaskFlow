@@ -20,10 +20,11 @@ import { RiGoogleFill } from "@remixicon/react";
 import { useGoogleLogin } from "@react-oauth/google";
 import useLogin from "../../hooks/useLogin";
 import { useTranslation } from "react-i18next";
-const {t} = useTranslation();
+
 import { Context } from "../../App";
 
 const GoogleLoginButton = () => {
+  const {t} = useTranslation();
   const navigate = useNavigate();
   const { setUser } = useContext(Context);
   const loginGoogle = useGoogleLogin({
@@ -83,6 +84,7 @@ const GoogleLoginButton = () => {
 };
 
 const GitHubLogin = () => {
+  const {t} = useTranslation();
   const handleGitHubLogin = () => {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${
       import.meta.env.VITE_GITHUB_CLIENT_ID || ""
@@ -146,7 +148,7 @@ export default function LoginForm({
     handleCheckboxChange,
     error,
     handleSubmit,
-    isLoading,
+    isLoading,t
   } = useLogin();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -154,7 +156,7 @@ export default function LoginForm({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl text-center font-bold">
-            Login
+            {t("login.title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -170,7 +172,7 @@ export default function LoginForm({
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("login.inputs.email.title")}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -183,7 +185,7 @@ export default function LoginForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{t("login.inputs.password.title")}</Label>
                 </div>
                 <PasswordInput
                   id="password"
@@ -200,22 +202,27 @@ export default function LoginForm({
                     htmlFor="terms"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    Remember me
+                    {t("login.remember_me")}
                   </label>
                 </div>
                 <Link
                   to="/reset"
                   className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                 >
-                  Forgot your password?
+                  {t("login.forget")}
                 </Link>
               </div>
 
               <Button type="submit" className="w-full bg-[var(--clickup1)]">
-                {(isLoading && <Loader2 className="animate-spin" />) || "Login"}
+                {(isLoading && <Loader2 className="animate-spin" />) || <>{t("login.title")}</>}
               </Button>
+              <div className="flex justify-between items-center">
+                <hr className="w-2/5 border-gray-300" />
+                <span className="px-4 text-gray-600">or</span>
+                <hr className="w-2/5 border-gray-300" />
+              </div>
 
-              <div className="flex items-center justify-between flex-wrap">
+              <div className="flex items-center flex-wrapith">
                 <GoogleLoginButton />
                 <GitHubLogin />
               </div>
@@ -223,12 +230,12 @@ export default function LoginForm({
 
             <div className="mt-4 text-center text-sm">
               <hr className="my-2 " />
-              Don&apos;t have an account?{" "}
+              {t("login.dont_have_acc")}{" "}
               <Link
                 to="/signup"
                 className="underline underline-offset-4 text-primary font-bold"
               >
-                Sign up
+                {t("login.signup")}
               </Link>
             </div>
           </form>
