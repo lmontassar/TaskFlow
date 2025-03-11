@@ -13,7 +13,8 @@ import { RiGoogleFill } from "@remixicon/react";
 
 import { useGoogleLogin } from "@react-oauth/google";
 import useLogin from "../../hooks/useLogin";
-
+import { useTranslation } from "react-i18next";
+const {t} = useTranslation();
 const GoogleLoginButton = () => {
   const navigate = useNavigate();
   const loginGoogle = useGoogleLogin({
@@ -66,7 +67,7 @@ const GoogleLoginButton = () => {
         size={16}
         aria-hidden="true"
       />
-      Login with Google
+      {t("login.google")}
     </Button>
   );
 };
@@ -81,7 +82,7 @@ const GitHubLogin = () => {
   return (
     <Button type="button" variant="outline" onClick={handleGitHubLogin}>
       <Github />
-      Login with Github
+      {t("login.github")}
     </Button>
   );
 };

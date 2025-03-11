@@ -88,6 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
     ],
   };
+  
   // Track the current language
   const [currentLang, setCurrentLang] = React.useState(i18n.language || "en");
 

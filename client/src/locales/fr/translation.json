@@ -1,4 +1,5 @@
 {
+  "server_error":"Oops! Un problème est survenu.",
   "welcome": "Bienvenue",
   "description": "C'est une application React internationalisée.",
   "sidebar": {
@@ -7,5 +8,89 @@
     "chat": "Chat",
     "documentations": "Documentations",
     "dashboard": "Tableau de bord"
+  },
+  "OTP": {
+    "errors": {
+      "send_code": {
+        "status_403": "Vous devez attendre une heure avant de demander un nouveau code.",
+        "status_500": "Une erreur s'est produite lors de l'envoi de l'email.",
+        "status_429": "Vous devez attendre 60 secondes avant de demander un nouveau code."
+      },
+      "verify": {
+        "status_404": "Utilisateur introuvable. Veuillez réessayer.",
+        "status_403": "Veuillez demander un nouveau code de vérification.",
+        "status_429": "Vous devez attendre une heure avant de vérifier le code à nouveau.",
+        "status_401": "Code invalide. Veuillez réessayer."
+      }
+    },
+    "title": "Vérification de l'email",
+    "subtitle": "Veuillez entrer le code de vérification.",
+    "cancel": "Annuler"
+  },
+  "reset": {
+    "title": "Réinitialiser le mot de passe",
+    "enter_email": "Entrez votre email pour recevoir un code de réinitialisation",
+    "enter_code": "Entrez le code reçu par email",
+    "new_pass": "Créez un nouveau mot de passe",
+    "next": "SUIVANT",
+    "previous": "PRÉCÉDENT",
+    "otp_code": "Code de vérification (OTP) :",
+    "reset": "RÉINITIALISER",
+    "email_invalid": "Veuillez saisir votre adresse email",
+    "expired_token": "Votre session a expiré. Veuillez vous reconnecter."
+  },
+  "login": {
+    "github": "Se connecter avec Github",
+    "google": "Se connecter avec Google"
+  },
+  "signup": {
+    "errors": {
+      "status_406": "Données invalides",
+      "status_415": "Seules les images JPEG, PNG sont autorisées.",
+      "status_413": "La taille de l'image doit être inférieure à 5 Mo.",
+      "status_409": "L'email ou le téléphone est déjà utilisé."
+    },
+    "title": "Créer un compte",
+    "subtitle": "Entrez vos informations pour vous inscrire",
+    "step": {
+      "one": "Informations",
+      "two": "Profil",
+      "three": "Sécurité"
+    },
+    "inputs": {
+      "name": { "title": "Nom", "placeholder": "Entrez votre nom" },
+      "first_name": { "title": "Prénom", "placeholder": "Entrez votre prénom" },
+      "email": { "title": "Email", "placeholder": "Entrez votre email" },
+      "phone": { "title": "Téléphone", "placeholder": "Entrez votre téléphone" },
+      "title": { "title": "Titre", "placeholder": "Entrez votre titre" },
+      "password": { "label": "Mot de passe" },
+      "confirm_password": { "label": "Confirmer le mot de passe" },
+      "image": "Choisir une photo"
+    },
+    "buttons": {
+      "next": "Suivant",
+      "previous": "Précédent",
+      "signup": "S'INSCRIRE"
+    },
+    "login": "Se connecter",
+    "have_account": "Vous avez déjà un compte ?"
+  },
+
+
+
+  "inputs": {
+    "validation": {
+      "email": "Format d'email invalide.",
+      "last_name": "Le nom de famille doit contenir uniquement des lettres et des espaces, sans espaces au début ou à la fin.",
+      "first_name": "Le prénom doit contenir uniquement des lettres et des espaces, sans espaces au début ou à la fin.",
+      "phone_number": "Format de numéro de téléphone invalide.",
+      "title": "Format de titre invalide. Seules les lettres, les espaces et les apostrophes sont autorisés.",
+      "password": "Mot de passe : 8+ caractères, majuscule, minuscule, chiffre, spécial.",
+      "confirm_password": "La confirmation du mot de passe ne correspond pas"
+    }
+  },
+  "errors": {
+    "user_not_found": "Utilisateur non trouvé. Veuillez réessayer.",
+    "server": "Oups! Un problème est survenu"
   }
 }

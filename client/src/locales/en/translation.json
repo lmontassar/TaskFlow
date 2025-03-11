@@ -1,4 +1,5 @@
 {
+
   "welcome": "Welcome",
   "description": "This is an internationalized React app.",
   "sidebar": {
@@ -7,5 +8,89 @@
     "chat": "Chat",
     "documentations": "Documentations",
     "dashboard": "Dashboard"
+  },
+  "OTP" :{
+      "errors": {
+        "send_code":{
+          "status_403": "You must wait one hour before requesting a new code.",
+          "status_500": "An error occurred while sending the email.",
+          "status_429": "You must wait 60 seconds before requesting a new code."
+        },
+        "verify":{
+          "status_404": "User not found. Please try again.",
+          "status_403": "Please request a new verification code.",
+          "status_429": "You must wait one hour before verifying the code again.",
+          "status_401": "Invalid code. Please try again."
+        }
+      },
+      "title": "Email Verification",
+      "subtitle": "Please enter the verification code.",
+      "cancel": "Cancel"
+  },
+  "reset": {
+      "title":"Reset Password",
+      "enter_email": "Enter your email to receive a reset code",
+      "enter_code": "Enter the code received by email",
+      "new_pass": "Create a new password",
+      "next" : "NEXT",
+      "previous" : "PREVIOUS",
+      "otp_code":"Verification code (OTP):",
+      "reset": "RESET",
+      "email_invalid" : "Veuillez saisir votre adresse email",
+      "expired_token" : "Your session expired. Please log in again."
+  },
+
+  "login" : {
+    "github" : "Login with Github",
+    "google" : "Login with Google" 
+  },
+  "signup": {
+    "errors": {
+      "status_406":"Invalid data",
+      "status_415":"Only JPEG, PNG images are allowed.",
+      "status_413":"Image size must be under 5MB.",
+      "status_409":"The email or the phone is already used."
+    },
+    "title":"Create an account",
+    "subtitle":"Enter your information to sign up",
+    "step" : {
+      "one" : "Information",
+      "two": "Profile",
+      "three": "Security"
+    },
+    "inputs":{
+      "name" : {"title" : "Name" , "placeholder": "Enter your name"},
+      "first_name":{"title" : "First Name" , "placeholder": "Enter your First Name"},
+      "email":{"title" : "Email" , "placeholder": "Enter your E-mail"},
+      "phone": {"title" : "Phone" , "placeholder": "Enter your Phone"},
+      "title":{"title" : "Title" , "placeholder": "Enter your Title"},
+      "password":{"label":"Password"},
+      "confirm_password" : {"label": "Confirm password"},
+      "image": "Choose a photo"
+    },
+    "buttons" : {
+      "next" : "Next",
+      "previous" : "Previous",
+      "signup" : "SIGN UP"
+    },
+    "login":"Login",
+    "have_account": "Already have an account?"
+
+
+  },
+  "inputs":{
+    "validation":{
+      "email":"Invalid email format.",
+      "last_name":"Last Name must contain only letters and spaces, without leading or trailing spaces.",
+      "first_name":"First Name must contain only letters and spaces, without leading or trailing spaces.",
+      "phone_number":"Invalid phone number format.",
+      "title":"Invalid title format. Only letters, spaces, and apostrophes are allowed.",
+      "password" : "Password: 8+ chars, uppercase, lowercase, number, special.",
+      "confirm_password":"Password confirmation does not match"
+    }
+  },
+  "errors":{
+    "user_not_found":"User not found. Please try again.",
+    "server":"Oops! Something went wrong"
   }
 }

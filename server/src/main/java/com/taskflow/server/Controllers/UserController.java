@@ -368,6 +368,7 @@ public class UserController {
     ) {
         try{
             if ( JWT.isTokenExpired(TFAToken) == true  ) return ResponseEntity.status(401).build();
+            
             String id = myJWT.extractUserId(TFAToken);
             User u = userService.findById(id);
             if(u == null) return ResponseEntity.status(404).build();

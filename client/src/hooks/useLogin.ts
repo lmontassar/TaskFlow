@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode }from "jwt-decode";
+import { useTranslation } from "react-i18next";
 
 // 1. Define a TypeScript interface for form data
 type LoginFormData = {
@@ -13,6 +14,7 @@ const useLogin = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const {t,i18n} = useTranslation();
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -77,7 +79,8 @@ const useLogin = () => {
     handleCheckboxChange,
     error,
     handleSubmit,
-    isLoading
+    isLoading,
+    t
   };
 };
 

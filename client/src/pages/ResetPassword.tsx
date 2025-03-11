@@ -27,20 +27,23 @@ export default function ResetPassword() {
             prevStep,
             handleSubmit,
             resendCode,
-            setOtp } = useResetPassword(); 
+            setOtp,
+            t
+          } = useResetPassword(); 
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white shadow-md">
         <div className="p-6">
           <div className="space-y-1 text-center">
-            <h1 className="text-2xl font-bold text-gray-900">Réinitialiser le mot de passe</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("reset.title")}</h1>
             <p className="text-sm text-gray-500">
               {step === 1
-                ? "Entrez votre email pour recevoir un code de réinitialisation"
-                : step === 2
-                  ? "Entrez le code reçu par email"
-                  : "Créez un nouveau mot de passe"}
+                &&  ( <> { t('reset.enter_email') } </> )
+                || step === 2
+                  && ( <> { t('reset.enter_code') } </> )
+                  || ( <> { t('reset.new_pass') } </> )
+                  }
             </p>
           </div>
 
@@ -108,7 +111,7 @@ export default function ResetPassword() {
                     { isLoading && (
                       <Loader2 className="animate-spin" />
                     ) || (
-                      "SUIVANT"
+                      <> {t("reset.next")} </>
                     )}
                     
                   </button>
@@ -127,7 +130,7 @@ export default function ResetPassword() {
 
                 <div className="w-full">
                   <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1">
-                    Code de vérification*({formData.email})
+                    {t("reset.otp_code")} ({formData.email})
                   </label>
 
                 <div className="flex justify-center">
@@ -159,14 +162,14 @@ export default function ResetPassword() {
                     onClick={prevStep}
                     className="cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    PRECEDENT
+                    { t("reset.previous") }
                   </button>
                   <button
                     type="button"
                     onClick={nextStep}
                     className="cursor-pointer w-full rounded-md bg-[var(--clickup1)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--clickup3)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    SUIVANT
+                    { t("reset.next") }
                   </button>
                 </div>
               </div>
@@ -207,13 +210,13 @@ export default function ResetPassword() {
                     onClick={prevStep}
                     className="cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    PRECEDENT
+                    { t("reset.previous") }
                   </button>
                   <button
                     type="submit"
                     className="w-full rounded-md bg-[var(--clickup1)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--clickup3)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    RÉINITIALISER
+                    {t("reset.reset")}
                   </button>
                 </div>
               </div>

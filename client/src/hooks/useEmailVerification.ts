@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const useEmailVerification = ()=>{
@@ -7,11 +8,11 @@ const useEmailVerification = ()=>{
     const [error,setError] = useState("");
     const [timer, setTimer] = useState(2);
     const [disabled, setDisabled] = useState(false);
+    const { t, i18n } = useTranslation();
     const navigator = useNavigate();
 
     useEffect(() => {
         let interval:any;
-
         if (disabled) {
         interval = setInterval(() => {
             setTimer((prev) => {
@@ -45,9 +46,9 @@ const useEmailVerification = ()=>{
                 
             } else {
                 switch (res.status) {
-                    case 403: {setError("You cannot resend the code before 1 hour");break}
-                    case 500: {setError("Email sending error");break}
-                    case 429: {setError("You cannot resend the code before 60 seconds");break} 
+                    case 403: {setError( t("OTP.errors.send_code.status_403")  );break}
+                    case 500: {setError( t("OTP.errors.send_code.status_500")  );break}
+                    case 429: {setError( t("OTP.errors.send_code.status_429")  );break} 
                 }
             }
         } catch(error:any){
@@ -95,10 +96,10 @@ const useEmailVerification = ()=>{
                 }
                 else {
                     switch (response.status){
-                        case 404: {setError("This user is not found! try again");break}
-                        case 403: {setError("Veuillez essayer de renvoyer le code");break}
-                        case 429 : {setError("Vous ne pouvez pas vérifier le code avant 1 heure");break}
-                        case 401: {setError("Le code est erroné, réessayez");break}
+                        case 404: {setError( t("OTP.errors.verify.status_404") );break}
+                        case 403: {setError( t("OTP.errors.verify.status_403") );break}
+                        case 429 : {setError( t("OTP.errors.verify.status_429") );break}
+                        case 401: {setError( t("OTP.errors.verify.status_401") );break}
                     }
                     setOtp("");
                 }
@@ -125,6 +126,7 @@ const useEmailVerification = ()=>{
         disabled,
         resendCode,
         handleCancel,
+        t
     };
 }
 

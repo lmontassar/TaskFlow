@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const useResetPassword = ()=>{
@@ -9,7 +10,7 @@ const useResetPassword = ()=>{
     const [timer, setTimer] = useState(60);
     const [disabled, setDisabled] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-  
+    const { t, i18n } = useTranslation();
   
     const [formData, setFormData] = useState({
       email: "",
@@ -43,7 +44,7 @@ const useResetPassword = ()=>{
     const handleEmail = async ()=>{
       setIsLoading(true);
       if(formData.email == ""){
-          setErrorMessage("Veuillez saisir votre adresse email")
+          setErrorMessage(t("reset.email_invalid"))
           return
       } else {
           try{
@@ -58,11 +59,11 @@ const useResetPassword = ()=>{
                   setErrorMessage("")
               } else {    
                   const status = await response.status;
-                  if(status == 404) setErrorMessage("User doesn't exist");
-                  else setErrorMessage("something wrong");
+                  if(status == 404) setErrorMessage( t("OTP.errors.verify.status_404") );
+                  else setErrorMessage( t("errors.server") );
               }   
           }catch(error){
-              setErrorMessage("something wrong");
+              setErrorMessage( t("errors.server") );
           }
       }
       setIsLoading(false);
@@ -88,15 +89,15 @@ const useResetPassword = ()=>{
                   setErrorMessage("");
               } else {
                 switch (response.status){
-                  case 404: {setErrorMessage("This user is not found! try again");break}
-                  case 403: {setErrorMessage("Veuillez essayer de renvoyer le code");break}
-                  case 429 : {setErrorMessage("Vous ne pouvez pas vérifier le code avant 1 heure");break}
-                  case 401: {setErrorMessage("Le code est erroné, réessayez");break}
+                    case 404: {setErrorMessage( t("OTP.errors.verify.status_404") );break}
+                    case 403: {setErrorMessage( t("OTP.errors.verify.status_403") );break}
+                    case 429 : {setErrorMessage( t("OTP.errors.verify.status_429") );break}
+                    case 401: {setErrorMessage( t("OTP.errors.verify.status_401") );break}
               }
               setOtp("");
               }
           } catch (error) {
-              setErrorMessage("something wrong");
+              setErrorMessage(t("errors.server"));
               
           }
   
@@ -108,12 +109,12 @@ const useResetPassword = ()=>{
       if(step !== 3 ) return ;
   
       if (!formData.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
-        setErrorMessage("Password must have at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.");
+        setErrorMessage(t("inputs.validation.password"));
         return;
       }
   
       if (formData.password !== formData.confirmPassword) {
-        setErrorMessage("Les mots de passe ne correspondent pas")
+        setErrorMessage( t("inputs.validation.confirm_password") );
         return
       }
       const RPT:any = localStorage.getItem("RPT");
@@ -136,16 +137,16 @@ const useResetPassword = ()=>{
           } else {
             switch (response.status) {
               case 400:
-                  setErrorMessage("Something went wrong. Please try again.");
+                  setErrorMessage( t("errors.server") );
                   break;
               case 401: {
-                  setErrorMessage("Your session has expired. Please log in again.");
+                  setErrorMessage( t("expired_token") );
                   localStorage.removeItem("RPT");
                   setStep(1);
                   break;
               }
               case 404: {
-                  setErrorMessage("User not found. Please check your information and try again.");
+                  setErrorMessage( t("errors.user_not_found") );
                   localStorage.removeItem("RPT");
                   setStep(1);
                   break;
@@ -153,7 +154,7 @@ const useResetPassword = ()=>{
           }  
           }
       } catch (error) {
-          setErrorMessage("something wrong");
+          setErrorMessage( t("errors.server") );
       }
     }
   
@@ -199,13 +200,13 @@ const useResetPassword = ()=>{
                   
               } else {
                   switch (res.status) {
-                      case 403: {setErrorMessage("You cannot resend the code before 1 hour");break}
-                      case 500: {setErrorMessage("Email sending error");break}
-                      case 429: {setErrorMessage("You cannot resend the code before 60 seconds");break} 
+                    case 403: {setErrorMessage( t("OTP.errors.send_code.status_403")  );break}
+                    case 500: {setErrorMessage( t("OTP.errors.send_code.status_500")  );break}
+                    case 429: {setErrorMessage( t("OTP.errors.send_code.status_429")  );break} 
                   }
               }
           } catch(error:any){
-              setErrorMessage(error.message);
+              setErrorMessage( t("errors.server") );
           }
       } 
     return {
@@ -222,6 +223,7 @@ const useResetPassword = ()=>{
         handleSubmit,
         resendCode,
         setOtp,
+        t
     };
 }
 export default useResetPassword;

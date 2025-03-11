@@ -25,9 +25,8 @@ export default function SignupVerification() {
         disabled,
         resendCode,
         handleCancel,
+        t
     } = isTFAEnabled ? useTwoFactorAuth() : useEmailVerification();
-
-    
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
@@ -36,7 +35,7 @@ export default function SignupVerification() {
 
                 <div className="space-y-1 text-center">
                     <h1 className="text-2xl font-bold text-gray-900">
-                        Email Verification
+                        {t("OTP.title")} 
                     </h1>
                     <p className="text-sm text-gray-500">
                         {email}
@@ -53,7 +52,7 @@ export default function SignupVerification() {
                         </Alert>
                     )}
                         <div>
-                            Veuillez entrer le code
+                            {t("OTP.subtitle")} 
                         </div>
                         
                         <div className="flex justify-center">
@@ -79,7 +78,7 @@ export default function SignupVerification() {
                             {disabled ? `Renvoyer le code (${timer}s)` : "Renvoyer le code"}
                             </div>
                         <Button className="bg-white hover:bg-gray-200 text-color-black border-1 border-gray-200" onClick={handleCancel }>
-                            ANNULER
+                            {t("OTP.cancel")} 
                         </Button>
                     </div>
                 </div>

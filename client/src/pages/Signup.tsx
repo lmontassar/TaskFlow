@@ -15,7 +15,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Signup() {
 
-const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoading,nextStep,setFormData} = useSignup();
+const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoading,nextStep,setFormData,t} = useSignup();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
@@ -24,10 +24,10 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
 
           <div className="space-y-1 text-center">
             <h1 className="text-2xl font-bold text-gray-900">
-              Créer un compte
+              {t('signup.title')}
             </h1>
             <p className="text-sm text-gray-500">
-              Entrez vos informations pour vous inscrire
+              {t('signup.subtitle')}
             </p>
           </div>
 
@@ -47,10 +47,10 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                   </div>
                   <div className="mt-1 text-xs text-gray-500">
                     {stepNumber === 1
-                      ? "Informations"
-                      : stepNumber === 2
-                      ? "Profil"
-                      : "Sécurité"}
+                      && <> {t('signup.step.one')} </>
+                      || stepNumber === 2
+                      && <> {t('signup.step.two')} </>
+                      || <> {t('signup.step.three')} </> }
                   </div>
                 </div>
               ))}
@@ -91,7 +91,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                       htmlFor="lastName"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Nom*
+                      {t('signup.inputs.name.title')}
                     </label>
                     <Input
                       id="lastName"
@@ -100,7 +100,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                       onChange={handleChange}
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-[var(--clickup1)] focus:outline-none focus:ring-1 focus:ring-[var(--clickup1)]"
                       type="text"
-                      placeholder="Saisissez votre nom"
+                      placeholder= {t('signup.inputs.name.placeholder')}
                       required
                     />
                   </div>
@@ -109,7 +109,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                       htmlFor="firstName"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Prénom*
+                       {t('signup.inputs.first_name.title')}
                     </label>
                     <Input
                       id="firstName"
@@ -118,7 +118,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                       onChange={handleChange}
                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-[var(--clickup1)] focus:outline-none focus:ring-1 focus:ring-[var(--clickup1)]"
                       type="text"
-                      placeholder="Saisissez votre prénom"
+                      placeholder= {t('signup.inputs.first_name.placeholder')}
                       required
                     />
                   </div>
@@ -128,7 +128,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Email*
+                    {t('signup.inputs.email.title')}
                   </label>
                   <Input
                     id="email"
@@ -137,7 +137,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                     onChange={handleChange}
                     className=""
                     type="email"
-                    placeholder="Saisissez votre email"
+                    placeholder={t('signup.inputs.email.placeholder')}
                     required
                   />
                 </div>
@@ -147,7 +147,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                     onClick={nextStep}
                     className="w-full rounded-md cursor-pointer bg-[var(--clickup1)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--clickup3)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    SUIVANT
+                    {t('signup.buttons.next')}
                   </button>
                 </div>
               </div>
@@ -188,7 +188,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                       htmlFor="avatar"
                       className="cursor-pointer rounded-md bg-blue-50 px-3 py-1.5 text-sm font-medium text-[var(--clickup3)] hover:bg-blue-100"
                     >
-                      Choisir une photo
+                      {t('signup.inputs.image')}
                       <input
                         id="avatar"
                         name="avatar"
@@ -214,7 +214,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                 <div className="w-full">
                   <Input46
                     id="phone"
-                    placeholder="Téléphone"
+                    placeholder={t("signup.inputs.phone.placeholder")}
                     value={formData.phone}
                     onChange={(value: any) => {
                       setFormData((prev) => ({ ...prev, phone: value }));
@@ -227,7 +227,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                     htmlFor="title"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Titre
+                    {t("signup.inputs.title.title")}
                   </label>
                   <Input
                     id="title"
@@ -236,7 +236,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                     onChange={handleChange}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-[var(--clickup1)] focus:outline-none focus:ring-1 focus:ring-[var(--clickup1)]"
                     type="text"
-                    placeholder="Saisissez votre titre"
+                    placeholder={t("signup.inputs.title.placeholder")}
                     required
                   />
                 </div>
@@ -247,14 +247,14 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                     onClick={prevStep}
                     className="cursor-pointer rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    PRECEDENT
+                    {t('signup.buttons.previous')}
                   </button>
                   <button
                     type="button"
                     onClick={nextStep}
                     className="cursor-pointer w-full rounded-md bg-[var(--clickup1)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--clickup3)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    SUIVANT
+                    {t('signup.buttons.next')}
                   </button>
                 </div>
               </div>
@@ -276,7 +276,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                   <PasswordInput
                     id="password"
                     name="password"
-                    label="Mot de passe*"
+                    label={t('signup.inputs.password.label')}
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -286,7 +286,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                   <PasswordInput
                     id="confirmPassword"
                     name="confirmPassword"
-                    label="Confirmation du mot de passe*"
+                    label={t('signup.inputs.confirm_password.label')}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
@@ -298,7 +298,7 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                     onClick={prevStep}
                     className="cursor-pointer  rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
-                    PRECEDENT
+                   {t('signup.buttons.previous')}
                   </button>
                   <button
                     type="submit"
@@ -307,7 +307,9 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
                     { isLoading && (
                       <Loader2 className="animate-spin" />
                     ) || (
-                      "S'INSCRIRE"
+                      <>
+                        {t('signup.buttons.signup')}
+                      </>
                     )}
 
                   </button>
@@ -321,12 +323,12 @@ const {step,handleSubmit,FirstStepMessage,formData,handleChange,prevStep,isLoadi
 
         <div className="border-t border-gray-200 p-4 text-center">
           <p className="text-sm text-gray-500">
-            Vous avez déjà un compte ?{" "}
+            {t('signup.have_account')} {" "}
             <Link
               to="/login"
               className="font-medium text-[var(--clickup1)] hover:text-blue-500"
             >
-              Login
+              {t('signup.login')}
             </Link>
           </p>
         </div>
