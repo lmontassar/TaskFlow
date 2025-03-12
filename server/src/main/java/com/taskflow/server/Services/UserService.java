@@ -60,9 +60,23 @@ public class UserService {
         BeanUtils.copyProperties(upUser, u , getNullPropertyNames(upUser) );
         return userRepository.save(u);
     }
-
+    public void lockAccount(String email){
+        User u = userRepository.findByEmail(email).orElse(null);
+        if (u != null) {
+            u.setLocked(true);
+            userRepository.save(u);
+        }
+    }
+    public void unlockAccount(String email){
+        User u = userRepository.findByEmail(email).orElse(null);
+        if (u != null) {
+            u.setLocked(false);
+            userRepository.save(u);
+        }
+    }
     public void resetPassword(User u,String password){
         password = passwordEncoder.encode(password);
+        userRepository.updateLockedById(u.getId(),true);
         userRepository.updatePasswordById(u.getId(), password);
     }
 

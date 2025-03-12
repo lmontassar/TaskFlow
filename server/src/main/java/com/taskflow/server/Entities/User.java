@@ -1,8 +1,10 @@
 package com.taskflow.server.Entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -25,4 +27,5 @@ public class User {
     private String region;
     private Boolean activation;
     private Boolean twoFactorAuth;
+    private Boolean locked=false;
 }

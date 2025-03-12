@@ -4,6 +4,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.*;
+import com.taskflow.server.Services.LoginSecurityService;
+import jakarta.mail.MessagingException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
@@ -49,7 +51,8 @@ public class UserController {
 
     @Autowired
     private JWT myJWT;
-
+    @Autowired
+    private LoginSecurityService loginSecurityService;
 
     @Value("${spring.security.oauth2.client.registration.github.client-id}")
     private String GH_CLIENT_ID;
@@ -232,6 +235,9 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody LoginRequest user) {
         return userService.findByEmail(user.getEmail())
                 .map(u -> {
+                    if(u.getLocked()){
+                        return ResponseEntity.status(403).build();
+                    }
                     if (userService.validatePassword(user.getPassword(), u.getPassword())) {
                         
                         String jwt ;
@@ -243,10 +249,15 @@ public class UserController {
                         LoginResponce lr = new LoginResponce(jwt,u);
                         return ResponseEntity.status(HttpStatus.ACCEPTED).body(lr);
                     } else {
-                        return ResponseEntity.badRequest().body("Invalid password");
+                        try {
+                            loginSecurityService.checkAttempt(user.getEmail());
+                        } catch (MessagingException e) {
+                            throw new RuntimeException(e);
+                        }
+                        return ResponseEntity.status(400).build();
                     }
                 })
-                .orElse(ResponseEntity.badRequest().body("User not found"));
+                .orElse(ResponseEntity.status(400).build());
     }
     
     @PostMapping("/resendcode")
