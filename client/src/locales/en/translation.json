@@ -50,7 +50,7 @@
         "title": "Email"
       },
       "password": {
-        "title": "Mot de passe"
+        "title": "Password"
       }
     },
     "remember_me": "Remember me",
