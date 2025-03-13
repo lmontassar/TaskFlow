@@ -17,12 +17,6 @@ import { Link } from "react-router-dom";
 export function QuickActions() {
   const actions = [
     {
-      icon: <FolderPlus className="h-5 w-5" />,
-      title: "New Project",
-      description: "Create a new project",
-      href: "/projects/new",
-    },
-    {
       icon: <FileText className="h-5 w-5" />,
       title: "New Task",
       description: "Add a new task",
