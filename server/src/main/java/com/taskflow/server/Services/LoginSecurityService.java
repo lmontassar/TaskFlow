@@ -33,9 +33,7 @@ public class LoginSecurityService {
             if (lastAttemptDate != null) {
                 long diffInMillies = now.getTime() - lastAttemptDate.getTime();
                 long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillies);
-
-                System.out.println("Time since last failed attempt: " + diffInMinutes + " minutes");
-
+                
                 if (diffInMinutes > LOCK_TIME_THRESHOLD) {
                     currentAttempts = 0;
                 }
@@ -49,11 +47,16 @@ public class LoginSecurityService {
             if (currentAttempts >= MAX_ATTEMPTS) {
                 emailService.sendEmail(
                         email,
-                        "Account Locked Due to Too Many Failed Login Attempts",
-                        "Your account has been temporarily locked due to multiple failed login attempts. Please try again later or reset your password."
+                        "⚠️ Security Alert: Unsuccessful Login Attempt",
+                        "Dear user,\n\n" +
+                                "We noticed an unsuccessful login attempt to your account.\n" +
+                                "If this was you, please ensure you are entering the correct credentials.\n" +
+                                "If this was not you, we recommend resetting your password immediately to secure your account.\n\n" +
+                                "Best regards,\nTaskFlow Security Team"
                 );
-                userService.lockAccount(email);
-
+                ls.setLoginAttempt(0);
+                ls.setLoginAttemptDate(now);
+                loginSecurityRepository.save(ls);
             }
 
         } else {
@@ -61,9 +64,7 @@ public class LoginSecurityService {
             newLoginSecurity.setEmail(email);
             newLoginSecurity.setLoginAttempt(1);
             newLoginSecurity.setLoginAttemptDate(now);
-
             loginSecurityRepository.save(newLoginSecurity);
-
         }
     }
 

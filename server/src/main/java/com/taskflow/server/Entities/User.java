@@ -27,5 +27,4 @@ public class User {
     private String region;
     private Boolean activation;
     private Boolean twoFactorAuth;
-    private Boolean locked=false;
 }

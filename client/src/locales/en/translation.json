@@ -58,7 +58,8 @@
     "or": "or",
     "dont_have_acc": "Don't have an account?",
     "signup": "Signup",
-    "error": "Please check your email and try again."
+    "error": "Please check your email and try again.",
+    "locked": "Your account is locked. Please reset your password."
   },
   "signup": {
     "errors": {

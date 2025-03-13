@@ -59,7 +59,8 @@
     "or": "ou",
     "dont_have_acc": "Vous n'avez pas de compte ?",
     "signup": "S'inscrire",
-    "error": "Veuillez vérifier votre email et réessayer."
+    "error": "Veuillez vérifier votre email et réessayer.",
+    "locked": "Votre compte est verrouillé. Veuillez réinitialiser votre mot de passe."
   },
   "signup": {
     "errors": {

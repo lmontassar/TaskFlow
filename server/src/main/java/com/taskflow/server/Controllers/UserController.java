@@ -235,9 +235,6 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody LoginRequest user) {
         return userService.findByEmail(user.getEmail())
                 .map(u -> {
-                    if(u.getLocked()){
-                        return ResponseEntity.status(403).build();
-                    }
                     if (userService.validatePassword(user.getPassword(), u.getPassword())) {
                         
                         String jwt ;

@@ -23,9 +23,7 @@ public interface UserRepository extends MongoRepository<User,String> {
     @Query("{ '_id': ?0 }")
     @Update("{ '$set': { 'activation': ?1 } }")
     public void updateActivationById(String id, boolean isActive);
-    @Query("{ '_id': ?0 }")
-    @Update("{ '$set': { 'locked': ?1 } }")
-    public void updateLockedById(String id, boolean isActive);
+
 
 
     @Query("{ '_id': ?0 }")
