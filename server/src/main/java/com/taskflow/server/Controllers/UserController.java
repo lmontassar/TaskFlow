@@ -29,9 +29,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import javax.ws.rs.HeaderParam;
+
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import org.springframework.beans.factory.annotation.Value;
+
+
+
 
 @RestController
 @RequestMapping("/user")
@@ -60,8 +65,23 @@ public class UserController {
     @Value("${spring.security.oauth2.client.registration.github.client-secret}")
     private String GH_CLIENT_SECRET;
 
-     private String saveUserImage(MultipartFile image) throws IOException {
-        String uploadDir = "upload/avatar/";
+
+    @GetMapping("/avatar/{filename}")
+    public ResponseEntity<Resource> getImage(@PathVariable String filename) throws IOException {
+        Path filePath = Paths.get(uploadDir).resolve(filename);
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG) // Adjust based on image type
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .body(resource);
+    }
+    
+    private String saveUserImage(MultipartFile image) throws IOException {   
 
         Files.createDirectories(Paths.get(uploadDir));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -75,7 +95,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> signUp(@RequestParam("email") String email,
+    public ResponseEntity<?> signUp(
+                                    @RequestParam("email") String email,
                                     @RequestParam("password") String password,
                                     @RequestParam("prenom") String prenom,
                                     @RequestParam("nom") String nom,
@@ -84,7 +105,7 @@ public class UserController {
                                     @RequestParam(value = "image", required = false) MultipartFile image) {
         
         try {
-            User user = new User();
+           
 
             // Validate email format
             if ( (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) 
@@ -97,9 +118,6 @@ public class UserController {
 
             // Validate phone number (digits only, 8-15 digits long)
             || (!phoneNumber.isEmpty() && !phoneNumber.matches("^(\\+\\d{1,3})?\\d{8,15}$")) 
-
-            // Validate title (only letters, spaces, and apostrophes, must start and end with a letter)
-            || (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) 
 
             // Validate title (only letters, spaces, and apostrophes, must start and end with a letter)
             || (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")) )
@@ -115,6 +133,7 @@ public class UserController {
                     return ResponseEntity.status(413).build(); //413 Payload Too Large → If the image size exceeds 5MB.
                 }
             }
+            User user = new User();
             user.setActivation(false);
             user.setEmail(email);
             user.setNom(nom);
@@ -122,11 +141,10 @@ public class UserController {
             user.setTitle(title);
             user.setTwoFactorAuth(false);
             user.setPassword(password);
+            user.setCreationDate(new Date());
             System.out.println(user.toString());
             if(phoneNumber != ""){
                 user.setPhoneNumber(phoneNumber);
-            } else {
-                user.setPhoneNumber(null);
             }
 
             if (image != null && !image.isEmpty()) {
@@ -165,6 +183,7 @@ public class UserController {
             userInfo.setNom(authentication.getNom());
             userInfo.setPrenom(authentication.getPrenom());
             userInfo.setAvatar(authentication.getImage());
+            userInfo.setCreationDate(new Date());
             User user = userService.findOrCreateUser(userInfo);
             String jwtToken = myJWT.generateToken(user);
             LoginResponce loginResponse = new LoginResponce(jwtToken, user);
@@ -219,7 +238,7 @@ public class UserController {
                 userInfo.setPrenom(nameParts.length > 1 ? nameParts[1] : "");
 
                 userInfo.setAvatar((String) userData.getOrDefault("avatar_url", ""));
-
+                userInfo.setCreationDate(new Date());
                 User user = userService.findOrCreateUser(userInfo);
 
                 String jwtToken = myJWT.generateToken(user);
@@ -358,7 +377,7 @@ public class UserController {
         @RequestParam("password") String password
         ) {
         try{
-            if ( JWT.isTokenExpired(RPT) == true  ) return ResponseEntity.status(401).build();
+            if ( myJWT.isTokenExpired(RPT) == true  ) return ResponseEntity.status(401).build();
             String id = myJWT.extractUserId(RPT);
             User u = userService.findById(id);
             if(u == null) return ResponseEntity.status(404).build();
@@ -375,7 +394,7 @@ public class UserController {
         @RequestBody String otp
     ) {
         try{
-            if ( JWT.isTokenExpired(TFAToken) == true  ) return ResponseEntity.status(401).build();
+            if ( myJWT.isTokenExpired(TFAToken) == true  ) return ResponseEntity.status(401).build();
             
             String id = myJWT.extractUserId(TFAToken);
             User u = userService.findById(id);
@@ -401,44 +420,153 @@ public class UserController {
     }
 
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<?> getOneById(@PathVariable("id")String id){
+    @GetMapping("/get")
+    public ResponseEntity<?> getOneById( 
+        @RequestHeader("Authorization") String jwt
+     ) {
         try{
+            if ( myJWT.isTokenExpired( jwt) == true ) {
+                System.out.println("Yes the token : "+jwt+ "\t is expired");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
+            } 
+            String id = myJWT.extractUserId(jwt);
             User u = userService.findById(id);
-            return ResponseEntity.accepted().body(u);
-        }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            if (u == null ) return ResponseEntity.status(404).build();
+            return ResponseEntity.ok().body(u); //200
+        } catch(Exception e) {
+            System.out.println(e);
+            return ResponseEntity.badRequest().body(null); // 403
         }
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User user) {
+    @PutMapping("/update/settings")
+    public ResponseEntity<?> putMethodName(
+        @RequestHeader("Authorization") String token,
+        @RequestParam(value="twoFactorAuth" ) boolean twoFactorAuth
+    ) {
         try {
-            User updatedUser = userService.updateById(id, user);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            
+            if ( token == null || myJWT.isTokenExpired( token) == true ) {
+                System.out.println("Yes the token : "+token+ "\t is expired");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
+            }
+            String id = myJWT.extractUserId(token);
+            User user = userService.findById(id);
+            if( user == null ) return ResponseEntity.notFound().build(); // 404
+            System.out.println(twoFactorAuth);
+
+                user.setTwoFactorAuth(twoFactorAuth);
+
+            User updatedUser = userService.updateById( id, user );
+            if (updatedUser == null ) return ResponseEntity.status(404).build();
+            return ResponseEntity.ok().build(); // 200
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(400).build(); // 403
         }
     }
 
-    // Delete user
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(
+        @RequestHeader("Authorization") String token,
+        @RequestParam("prenom") String prenom,
+        @RequestParam("nom") String nom,
+        @RequestParam("title") String title,
+        @RequestParam("phoneNumber") String phoneNumber,
+        @RequestParam("bio") String bio,
+        @RequestParam(value = "avatar", required = false) MultipartFile avatar
+    ) {
         try {
-            userService.deleteUser(id);
-            return ResponseEntity.ok("User deleted successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+            
+            if ( token == null || myJWT.isTokenExpired( token) == true ) {
+                System.out.println("Yes the token : "+token+ "\t is expired");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
+            }
+            String id = myJWT.extractUserId(token);
+            User user = userService.findById(id);
+            if( user == null ) return ResponseEntity.notFound().build(); // 404
 
-    @GetMapping("/upload/avatar/{imageName:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String imageName) throws MalformedURLException {
-        Path file = Paths.get("upload/avatar/" + imageName);
-        Resource resource = new UrlResource(file.toUri());
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+
+            if (
+            (!prenom.matches("^[A-Za-z]+( [A-Za-z]+)*$") || !nom.matches("^[A-Za-z]+( [A-Za-z]+)*$")) 
+            || (!title.isEmpty() && !title.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) 
+            || (!phoneNumber.isEmpty() && !phoneNumber.matches("^(\\+\\d{1,3})?\\d{8,15}$")) 
+            || (!bio.isEmpty() && !bio.matches("^[A-Za-zÀ-ÖØ-öø-ÿ]+([ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$")) )
+                return ResponseEntity.status(406).build();
+
+
+            if (avatar != null && !avatar.isEmpty()) {
+                String contentType = avatar.getContentType();
+                long maxSize = 5 * 1024 * 1024; // 5MB
+                if (!contentType.matches("image/(jpeg|png|jpg)")) {
+                    return ResponseEntity.status(415).build(); //415 Unsupported Media Type → If the image format is not JPEG or PNG.
+                }
+                if (avatar.getSize() > maxSize) {
+                    return ResponseEntity.status(413).build(); //413 Payload Too Large → If the image size exceeds 5MB.
+                }
+            }
+
+            user.setNom(nom);
+            user.setPrenom(prenom);
+            if( title != "" ) user.setTitle(title);
+            if( bio != "" ) user.setBio(bio);
+            if( phoneNumber != "" ) user.setPhoneNumber(phoneNumber);
+            if (avatar != null && !avatar.isEmpty()) {
+                user.setAvatar(saveUserImage(avatar));
+            }
+            User updatedUser = userService.updateById( id, user );
+            if (updatedUser == null ) return ResponseEntity.status(404).build();
+            return ResponseEntity.ok().build(); // 200
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(400).build(); // 403
+        }
+        
     }
+    
+    
+
+
+
+    
+    // @GetMapping("/get/{id}")
+    // public ResponseEntity<?> getOneById(@PathVariable("id")String id){
+    //     try{
+    //         User u = userService.findById(id);
+    //         return ResponseEntity.accepted().body(u);
+    //     }catch(Exception e){
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    //     }
+    // }
+
+    // @PutMapping("/update/{id}")
+    // public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User user) {
+    //     try {
+    //         User updatedUser = userService.updateById(id, user);
+    //         return ResponseEntity.ok(updatedUser);
+    //     } catch (RuntimeException e) {
+    //         return ResponseEntity.badRequest().body(e.getMessage());
+    //     }
+    // }
+
+    // // Delete user
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<?> deleteUser(@PathVariable String id) {
+    //     try {
+    //         userService.deleteUser(id);
+    //         return ResponseEntity.ok("User deleted successfully");
+    //     } catch (RuntimeException e) {
+    //         return ResponseEntity.badRequest().body(e.getMessage());
+    //     }
+    // }
+
+    // @GetMapping("/upload/avatar/{imageName:.+}")
+    // public ResponseEntity<Resource> serveFile(@PathVariable String imageName) throws MalformedURLException {
+    //     Path file = Paths.get("upload/avatar/" + imageName);
+    //     Resource resource = new UrlResource(file.toUri());
+    //     return ResponseEntity.ok()
+    //             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+    //             .body(resource);
+    // }
 
 }

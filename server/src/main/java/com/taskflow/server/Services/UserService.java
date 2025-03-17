@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.UserRepository;
 
+import io.micrometer.common.util.StringUtils;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -60,6 +63,8 @@ public class UserService {
         BeanUtils.copyProperties(upUser, u , getNullPropertyNames(upUser) );
         return userRepository.save(u);
     }
+
+
     public void resetPassword(User u,String password){
         password = passwordEncoder.encode(password);
         userRepository.updatePasswordById(u.getId(), password);
@@ -83,7 +88,11 @@ public class UserService {
 
     public User findById(String id)
     {
-        return userRepository.getUserById(id);
+        User u = userRepository.getUserById(id);
+        if (StringUtils.isNotEmpty(u.getPassword())) {
+            u.setPassword(null);
+        }
+        return u;
     }
 
 
