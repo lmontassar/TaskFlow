@@ -33,7 +33,7 @@ public class LoginSecurityService {
             if (lastAttemptDate != null) {
                 long diffInMillies = now.getTime() - lastAttemptDate.getTime();
                 long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillies);
-                
+
                 if (diffInMinutes > LOCK_TIME_THRESHOLD) {
                     currentAttempts = 0;
                 }
