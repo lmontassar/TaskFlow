@@ -18,8 +18,7 @@ import java.util.Date;
 public class LoginSecurity {
     @Id
     private String id;
-    @DBRef
-    private User user;
+    private String email;
     private int loginAttempt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date loginAttemptDate;

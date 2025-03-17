@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useContext, useState } from "react";
+import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { jwtDecode } from "jwt-decode";
@@ -12,11 +12,30 @@ type LoginFormData = {
 };
 
 const useLogin = () => {
+  // const [ip, setIp] = useState<string>("");
+  // useEffect(() => {
+  //   async function fetchIpAddress() {
+  //     try {
+  //       const response = await fetch("https://api.ipify.org?format=json");
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch IP address");
+  //       }
+  //       const data = await response.json();
+  //       console.log("IP Address:", data.ip);
+  //     } catch (err) {
+  //       setError("Error fetching IP address");
+  //       console.error(err);
+  //     }
+  //   }
+
+  //   fetchIpAddress();
+  //   console.log("IP Address:", ip);
+  // }, []);
   const navigate = useNavigate();
   const { setUser } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const {t,i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -70,6 +89,9 @@ const useLogin = () => {
       if (response.status === 400) {
         setError(t("login.error"));
       }
+      if (response.status === 403) {
+        setError(t("login.locked"));
+      }
     } catch (error) {
       console.error("Error:", error);
     }
@@ -82,7 +104,7 @@ const useLogin = () => {
     error,
     handleSubmit,
     isLoading,
-    t
+    t,
   };
 };
 
