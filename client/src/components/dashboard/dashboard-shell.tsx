@@ -42,6 +42,7 @@ import {
 import { NavMain } from "../nav-main";
 import { NavProjects } from "../nav-projects";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -63,22 +64,22 @@ export function DashboardShell({ children }: DashboardShellProps) {
       },
       {
         title: t("sidebar.inbox"),
-        url: "/home/inbox",
+        url: "/inbox",
         icon: Inbox,
       },
       {
         title: t("sidebar.chat"),
-        url: "/home/chat",
+        url: "/chat",
         icon: MessageCircle,
       },
       {
         title: t("sidebar.documentations"),
-        url: "/home/documentations",
+        url: "/documentations",
         icon: BookText,
       },
       {
         title: t("sidebar.dashboard"),
-        url: "/home/dashboard",
+        url: "/dashboard",
         icon: Gauge,
       },
     ],
@@ -140,15 +141,18 @@ export function DashboardShell({ children }: DashboardShellProps) {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <a href="/settings">
+                <Link to="/profile">
                   <Settings className="h-4 w-4" />
                   <span>Settings</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <a href="/logout">
+                <a
+                  onClick={() => localStorage.removeItem("token")}
+                  href="/login"
+                >
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
                 </a>

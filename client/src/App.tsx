@@ -57,33 +57,23 @@ function App() {
       <Router>
         <Routes>
           {/* Protected Routes */}
+
+          {/* Public Routes */}
+          <Route path="/signup" element={<Signup />} />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/emailverification" element={<EmailVerification />} />
+          <Route path="/reset" element={<ResetPassword />} />
           <Route element={<ProtectedRoutes />}>
-            <Route path="home" element={<Page />}>
+            <Route path="*" element={<Page />} />
+            <Route path="/" element={<Page />}>
               <Route path="" element={<Home />} />
+              <Route path="home" element={<Home />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
               <Route path="profile" element={<Profile />} />
             </Route>
-            
           </Route>
-
-          {/* Public Routes */}
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/emailverification" element={<EmailVerification />} />
-          <Route path="/reset" element={<ResetPassword />} />
-          {/* Fallback for undefined routes */}
-          <Route
-            path="*"
-            element={
-              <div className="flex items-center justify-center w-full h-screen bg-gray-900 text-white text-2xl">
-                Page not found. Go to{" "}
-                <a className="text-blue-500 underline ml-1" href="/login">
-                  Login
-                </a>
-              </div>
-            }
-          />
         </Routes>
       </Router>
     </Context.Provider>
