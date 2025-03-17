@@ -14,6 +14,7 @@ import { createContext, useEffect, useState } from "react";
 
 import { Dispatch, SetStateAction } from "react";
 import Page from "./pages/Project/page";
+import Profile from "./pages/profile";
 
 export type UserType = {
   id: string;
@@ -57,11 +58,13 @@ function App() {
         <Routes>
           {/* Protected Routes */}
           <Route element={<ProtectedRoutes />}>
-            <Route path="/home" element={<Page />}>
+            <Route path="home" element={<Page />}>
               <Route path="" element={<Home />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
+            
           </Route>
 
           {/* Public Routes */}

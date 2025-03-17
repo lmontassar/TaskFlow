@@ -28,51 +28,6 @@ public class OTPVerificationService {
         return  c*( (new Date().getTime()-date.getTime()) /1000   ) > c*( seconds   );
     }
 
-    // public void setCode(String email) throws RuntimeException{
-    //     OTPVerification o =  OTPVrepo.findOneByEmail(email) ;
-
-    //     if(o!= null){
-    //         if(o.getAttempt() == 0 ){
-    //             if ( compareWithNow(o.getDate(), 60*60,-1 ) ){  // 1 hour
-    //                 throw new RuntimeException("Vous ne pouvez pas renvoyer le code avant 1 heure.");
-    //             } else {
-    //                 String cod = createCode("");
-    //                 OTPVrepo.updateOTPVerification(o.getId(),5,cod,new Date());
-    //                 try{
-    //                     emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+cod );
-    //                 } catch(Exception e){
-    //                     throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
-    //                 }
-    //                 return;
-    //             }
-    //         }
-    //         if ( compareWithNow(o.getDate(), 60,1 )) {
-    //             String cod = createCode("");
-    //             OTPVrepo.updateOTPVerification(o.getId(),o.getAttempt(),cod ,new Date());
-    //             try{
-    //                 emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+cod );
-    //             } catch(Exception e){
-    //                 throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
-    //             }
-    //             return;
-    //         } else {
-    //             throw new RuntimeException("Vous ne pouvez pas renvoyer le code avant 60 secondes.");
-    //         }
-    //     }
-        
-    //     OTPVerification otp = new OTPVerification();
-    //     otp.setAttempt(5);
-    //     otp.setEmail(email);
-    //     otp.setDate(new Date());
-    //     otp.setCode( createCode("") );
-    //     OTPVrepo.save(otp);
-    //     try{
-    //         emailService.sendEmail( email , "Email Verification" ,"Votre code de vérification :  :"+otp.getCode() );
-    //     } catch(Exception e){
-    //         throw new RuntimeException("Une erreur est survenue ! Vérifiez votre e-mail.");
-    //     }
-    // }
-
 
     public int setCode(String email) {
         OTPVerification o =  OTPVrepo.findOneByEmail(email) ;

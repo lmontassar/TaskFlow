@@ -3,6 +3,9 @@ package com.taskflow.server.Entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -23,6 +26,8 @@ public class User {
     private String title;
     private String avatar;
     private String region;
+    private Date creationDate;
+    private String bio;
     private Boolean activation;
     private Boolean twoFactorAuth;
 }
