@@ -135,7 +135,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <SidebarContent>
           <NavMain items={data.navMain} />
           <hr />
-          <NavProjects projects={data.projects} />
+          <NavProjects projects={[]} />
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>

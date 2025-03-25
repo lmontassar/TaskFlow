@@ -445,11 +445,7 @@ public class UserController {
         @RequestParam(value="twoFactorAuth" ) boolean twoFactorAuth
     ) {
         try {
-            
-            if ( token == null || myJWT.isTokenExpired( token) == true ) {
-                System.out.println("Yes the token : "+token+ "\t is expired");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
-            }
+
             String id = myJWT.extractUserId(token);
             User user = userService.findById(id);
             if( user == null ) return ResponseEntity.notFound().build(); // 404

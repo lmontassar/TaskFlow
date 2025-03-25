@@ -42,7 +42,7 @@ public class JWT {
         claims.put("id", user.getId());
         claims.put("email", user.getEmail());
         claims.put("activation", user.getActivation());
-
+        claims.put("roles", "USER,ADMIN");
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getId())

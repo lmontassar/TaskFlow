@@ -1,5 +1,6 @@
 package com.taskflow.server.Services;
 
+import com.taskflow.server.Entities.Collaborator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
