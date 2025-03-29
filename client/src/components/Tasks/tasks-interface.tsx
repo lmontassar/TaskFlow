@@ -64,8 +64,11 @@ export interface Task {
   project: TaskProject;
   parent?: string;
 }
+type taskProps = {
+  projectId: string;
+};
 
-export function TasksInterface() {
+export function TasksInterface({ projectId }: taskProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [groupBy, setGroupBy] = useState<GroupBy>("status");
@@ -94,10 +97,12 @@ export function TasksInterface() {
     addTaskError,
     setAddTaskError,
     handleFindAllTasks,
+    getTasksByProjectID,
   } = useTasks();
 
   useEffect(() => {
-    handleFindAllTasks();
+    // handleFindAllTasks();
+    getTasksByProjectID(projectId);
   }, []);
 
   // Filter tasks based on search query and filter options

@@ -3,6 +3,7 @@ package com.taskflow.server.Services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.taskflow.server.Entities.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,9 @@ public class TacheService {
     public Tache findTacheById(String id){
         return tacheRep.findById(id).orElse(null);
     }
-
+    public List<Tache> findTacheByProjectId(Project project){
+        return tacheRep.getAllByProject(project);
+    }
     public Tache update(Tache t ){
         return tacheRep.save(t);
     }

@@ -195,7 +195,34 @@ const useTasks = () => {
     }
     return false;
   };
+  const getTasksByProjectID = async (projectID: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        return;
+      }
+      console.log(projectID);
 
+      const res = await fetch(`/api/tache/get/project/${projectID}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        console.log(result);
+        return setTasks(result);
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.log("error");
+    }
+    return [];
+  };
   return {
     handleUpdateTask,
     handleDeleteTask,
@@ -206,6 +233,7 @@ const useTasks = () => {
     setAddTaskError,
     tasks,
     setTasks,
+    getTasksByProjectID,
   };
 };
 export default useTasks;

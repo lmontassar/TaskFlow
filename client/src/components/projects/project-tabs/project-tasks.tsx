@@ -8,7 +8,5 @@ interface ProjectTasksProps {
 }
 
 export function ProjectTasks({ projectId }: ProjectTasksProps) {
-  const { mapRawTaskToTask, tasks, setTasks } = useTasks();
-
-  return <TasksInterface initialTasks={tasks} />;
+  return <TasksInterface projectId={projectId} />;
 }

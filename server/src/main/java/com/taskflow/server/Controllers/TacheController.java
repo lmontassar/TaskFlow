@@ -115,16 +115,30 @@ public class TacheController {
             return ResponseEntity.badRequest().build();
         }
     }
-
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getTasks(
-        @RequestHeader("Authorization") String token,
-        @PathVariable("id") String id
+            @RequestHeader("Authorization") String token,
+            @PathVariable("id") String id
     ) {
         try{
             Tache task = tacheSer.findTacheById(id);
             if (task == null ) return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(task);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    @GetMapping("/get/project/{id}")
+    public ResponseEntity<?> getByProject(
+        @RequestHeader("Authorization") String token,
+        @PathVariable("id") String id
+    ) {
+        try{
+            Project p = projectSer.getProjectById(id);
+            List<Tache> tasks = tacheSer.findTacheByProjectId(p);
+            if (tasks == null ) return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().body(tasks);
         } catch(Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
