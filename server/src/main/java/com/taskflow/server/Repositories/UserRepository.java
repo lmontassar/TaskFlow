@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.taskflow.server.Entities.User;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -24,6 +25,7 @@ public interface UserRepository extends MongoRepository<User,String> {
     @Update("{ '$set': { 'activation': ?1 } }")
     public void updateActivationById(String id, boolean isActive);
 
+    List<User> findByNomContainingIgnoreCaseOrEmailContainingIgnoreCase(String name, String email);
 
 
     @Query("{ '_id': ?0 }")

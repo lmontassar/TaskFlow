@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -96,7 +97,9 @@ public class UserService {
         return u;
     }
 
-
+    public List<User> search(String query){
+        return userRepository.findByNomContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
+    }
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }

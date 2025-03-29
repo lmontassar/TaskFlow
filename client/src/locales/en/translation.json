@@ -126,5 +126,23 @@
   "errors": {
     "user_not_found": "User not found. Please try again.",
     "server": "Oops! Something went wrong"
+  },
+  "project": {
+    "creation_form": {
+      "title": "Create a project",
+      "name": "Project name",
+      "name_placeholder": "Enter your project name",
+      "description": "Description",
+      "description_placeholder": "Enter a description",
+      "description_helper_text": "A short description of the project",
+      "estimated_time": "Estimated time",
+      "estimated_budget": "Estimated budget",
+      "tags": "Tags",
+      "tags_placeholder": "Enter tags",
+      "submit": "Create",
+      "submit_loading": "Creating...",
+      "success": "Project created successfully",
+      "server_error": "An error occurred while creating the project"
+    }
   }
 }

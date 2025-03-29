@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/project")
@@ -50,6 +52,7 @@ public class ProjectController {
             p.setDateDebut(projectRequest.getDateDebut() );
             p.setDateFinEstime(projectRequest.getDateFinEstime() );
             p.setDateCreation(new Date());
+            p.setStatus(Project.Status.NOT_STARTED);
             p.setBudgetEstime(projectRequest.getBudgetEstime());
             p.setTags(projectRequest.getTags());
             // Create the project with the user as the owner
@@ -64,9 +67,10 @@ public class ProjectController {
     @PutMapping("/addCollaborator")
     public ResponseEntity<?> joinProject(
             @RequestHeader("Authorization") String token,
-            @RequestBody String email,
-            @RequestBody String role
+            @RequestBody Map<String, String> requestBody
     ) {
+        String email = requestBody.get("email");
+        String role = requestBody.get("role");
         try {
             User user = userService.findById(myJWT.extractUserId(token));
             if (user == null) {
@@ -74,6 +78,9 @@ public class ProjectController {
             }
             Project pr = projectService.getMyProject(user.getId());
             User userC = userService.findByEmail(email).orElse(null);
+            if(pr.getListeCollaborateur().contains(userC)){
+                return ResponseEntity.badRequest().body("user already in the project");
+            }
             Collaborator collaborator = new Collaborator();
             collaborator.setUser(userC);
             collaborator.setRole(role);
@@ -81,6 +88,17 @@ public class ProjectController {
             return ResponseEntity.ok(updatedProject);
 
         } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getProject")
+    public ResponseEntity<?> getProject(@RequestHeader("Authorization") String token) {
+        try {
+            String userId = myJWT.extractUserId(token);
+            Project myProjects = projectService.getMyProject(userId);
+            return ResponseEntity.ok(myProjects);
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

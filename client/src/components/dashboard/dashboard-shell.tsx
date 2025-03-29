@@ -43,12 +43,15 @@ import { NavMain } from "../nav-main";
 import { NavProjects } from "../nav-projects";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import useGetProject from "../../hooks/useGetProjects";
 
 interface DashboardShellProps {
   children: React.ReactNode;
 }
 export function DashboardShell({ children }: DashboardShellProps) {
   const { t, i18n } = useTranslation();
+  const { projects, isLoading, error, setProjects } = useGetProject();
+
   const data = {
     user: {
       name: "shadcn",
@@ -95,13 +98,6 @@ export function DashboardShell({ children }: DashboardShellProps) {
         icon: Send,
       },
     ],
-    projects: [
-      {
-        name: "Design Engineering",
-        url: "#",
-        icon: Folder,
-      },
-    ],
   };
 
   // Track the current language
@@ -135,7 +131,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <SidebarContent>
           <NavMain items={data.navMain} />
           <hr />
-          <NavProjects projects={[]} />
+          <NavProjects userProject={projects} projectLoading={isLoading} />
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>

@@ -4,17 +4,18 @@ import Signup from "@/pages/signup";
 import Login from "@/pages/login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import EmailVerification from "./pages/EmailVerification";
-import Dashboard from "./pages/Project/Dashboard";
-import Home from "./pages/Project/Home";
-import Inbox from "./pages/Project/Inbox";
+import Dashboard from "./pages/Main/Dashboard";
+import Home from "./pages/Main/Home";
+import Inbox from "./pages/Main/Inbox";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoutes from "./utils/protectedroutes";
 import useGetUser from "./hooks/useGetUser";
 import { createContext, useEffect, useState } from "react";
 
 import { Dispatch, SetStateAction } from "react";
-import Page from "./pages/Project/page";
+import Page from "./pages/Main/page";
 import Profile from "./pages/profile";
+import ProjectPage from "./pages/Main/Project";
 
 export type UserType = {
   id: string;
@@ -57,13 +58,6 @@ function App() {
       <Router>
         <Routes>
           {/* Protected Routes */}
-
-          {/* Public Routes */}
-          <Route path="/signup" element={<Signup />} />
-
-          <Route path="/login" element={<Login />} />
-          <Route path="/emailverification" element={<EmailVerification />} />
-          <Route path="/reset" element={<ResetPassword />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="*" element={<Page />} />
             <Route path="/" element={<Page />}>
@@ -71,9 +65,16 @@ function App() {
               <Route path="home" element={<Home />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
+              <Route path="project" element={<ProjectPage />} />
               <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
+          {/* Public Routes */}
+          <Route path="/signup" element={<Signup />} />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/emailverification" element={<EmailVerification />} />
+          <Route path="/reset" element={<ResetPassword />} />
         </Routes>
       </Router>
     </Context.Provider>

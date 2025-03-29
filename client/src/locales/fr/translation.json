@@ -127,5 +127,23 @@
   "errors": {
     "user_not_found": "Utilisateur non trouvé. Veuillez réessayer.",
     "server": "Oups! Un problème est survenu"
+  },
+  "project": {
+    "creation_form": {
+      "title": "Créer un projet",
+      "name": "Nom du projet",
+      "name_placeholder": "Entrez le nom de votre projet",
+      "description": "Description",
+      "description_placeholder": "Entrez une description",
+      "description_helper_text": "Une courte description du projet",
+      "estimated_time": "Temps estimé",
+      "estimated_budget": "Budget estimé",
+      "tags": "Tags",
+      "tags_placeholder": "Entrez des tags",
+      "submit": "Créer",
+      "submit_loading": "Création en cours...",
+      "server_error": "Oups! Un problème est survenu.",
+      "success": "Projet créé avec succès."
+    }
   }
 }

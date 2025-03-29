@@ -1,6 +1,14 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import {
+  BookText,
+  ChevronRight,
+  Gauge,
+  House,
+  Inbox,
+  MessageCircle,
+  type LucideIcon,
+} from "lucide-react";
 
 import {
   Collapsible,
@@ -19,21 +27,38 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon: LucideIcon;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
-}) {
+export function NavMain() {
+  const { t } = useTranslation();
+  const items = [
+    {
+      title: t("sidebar.home"),
+      url: "/home",
+      icon: House,
+      isActive: true,
+    },
+    {
+      title: t("sidebar.inbox"),
+      url: "/inbox",
+      icon: Inbox,
+    },
+    {
+      title: t("sidebar.chat"),
+      url: "/chat",
+      icon: MessageCircle,
+    },
+    {
+      title: t("sidebar.documentations"),
+      url: "/documentations",
+      icon: BookText,
+    },
+    {
+      title: t("sidebar.dashboard"),
+      url: "/dashboard",
+      icon: Gauge,
+    },
+  ];
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>

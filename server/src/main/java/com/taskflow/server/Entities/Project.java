@@ -16,6 +16,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 public class Project {
+    public enum Status {
+        NOT_STARTED,
+        IN_PROGRESS,
+        COMPLETED;
+    }
     @Id
     private String id;
     private String nom;
@@ -26,6 +31,7 @@ public class Project {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date dateFinEstime;
     private Set<Collaborator> listeCollaborateur;
+    private Status status;
     @DBRef
     private User createur;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

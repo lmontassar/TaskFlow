@@ -519,8 +519,11 @@ public class UserController {
         }
         
     }
-    
-    
+
+    @GetMapping("/search")
+    public List<User> searchUsers(@RequestParam String query) {
+        return userService.search(query);
+    }
 
 
 

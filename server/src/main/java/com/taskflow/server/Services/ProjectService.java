@@ -51,8 +51,10 @@ public class ProjectService {
     }
     public Project getMyProject(String userId) {
         // Fetch all projects from the repository
-        Project project = projectRepository.getProjectByCreateur(userId);
-
+        User user = userService.findById(userId);
+        Project project = projectRepository.getProjectByCreateur(user);
+        project.getCreateur().setPassword(null);
+        project.getCreateur().setTwoFactorAuth(null);
         // Filter projects where the user is in the collaborators set
         return project;
     }

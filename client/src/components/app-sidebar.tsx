@@ -40,34 +40,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       email: "m@example.com",
       avatar: "/avatars/shadcn.jpg",
     },
-    navMain: [
-      {
-        title: t("sidebar.home"),
-        url: "/home",
-        icon: House,
-        isActive: true,
-      },
-      {
-        title: t("sidebar.inbox"),
-        url: "/inbox",
-        icon: Inbox,
-      },
-      {
-        title: t("sidebar.chat"),
-        url: "/chat",
-        icon: MessageCircle,
-      },
-      {
-        title: t("sidebar.documentations"),
-        url: "/documentations",
-        icon: BookText,
-      },
-      {
-        title: t("sidebar.dashboard"),
-        url: "/dashboard",
-        icon: Gauge,
-      },
-    ],
+
     navSecondary: [
       {
         title: "Support",
@@ -115,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Select>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain />
         <hr />
         <NavProjects projects={data.projects} />
       </SidebarContent>
