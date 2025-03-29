@@ -49,22 +49,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       {
         title: t("sidebar.inbox"),
-        url: "/home/inbox",
+        url: "/inbox",
         icon: Inbox,
       },
       {
         title: t("sidebar.chat"),
-        url: "/home/chat",
+        url: "/chat",
         icon: MessageCircle,
       },
       {
         title: t("sidebar.documentations"),
-        url: "/home/documentations",
+        url: "/documentations",
         icon: BookText,
       },
       {
         title: t("sidebar.dashboard"),
-        url: "/home/dashboard",
+        url: "/dashboard",
         icon: Gauge,
       },
     ],
@@ -88,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
     ],
   };
-  
+
   // Track the current language
   const [currentLang, setCurrentLang] = React.useState(i18n.language || "en");
 
