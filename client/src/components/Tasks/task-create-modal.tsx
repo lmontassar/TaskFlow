@@ -1,0 +1,177 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range"
+import type { DateRange } from "react-day-picker"
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import type { Task } from "./tasks-interface"
+import DurationInput from "../ui/divided-duration-input"
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
+
+interface TaskCreateModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onCreateTask: (task: Task) => boolean
+  existingTasks: Task[],
+  addTaskError: "",
+  setAddTaskError: (error: String) => void
+}
+
+export function TaskCreateModal({ isOpen, onClose, onCreateTask, existingTasks, addTaskError, setAddTaskError }: TaskCreateModalProps) {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [taskName, setTaskName] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
+  const [budget, setBudget] = useState("");
+  const [taskDifficulty, setTaskDifficulty] = useState<string>("normal");
+  const [duration, setDuration] = useState("")
+  const [marge, setMarge] = useState("")
+
+  // Get all unique projects from existing tasks
+
+  const handleCreateTask = async () => {
+    if (!taskName.trim()) return
+
+    const newTask: Task = {
+      nomTache: taskName,
+      description: taskDescription,
+      budgetEstime: budget,
+      difficulte: taskDifficulty as any,
+      dateDebut: dateRange?.from ?? null,
+      dateFinEstime: dateRange?.to ?? null,
+      duree: duration,
+      marge: marge
+    }
+    const ok: any = await onCreateTask(newTask);
+    console.log()
+    if (ok == true) {
+      handleClose()
+    }
+  }
+
+  const resetForm = () => {
+    setTaskName("")
+    setTaskDescription("")
+    setTaskDifficulty("normal"),
+      setAddTaskError("");
+    setDateRange(undefined);
+    setBudget("");
+    setDuration("")
+    setMarge("")
+
+  }
+
+  const handleClose = () => {
+    resetForm()
+    onClose()
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Create New Task</DialogTitle>
+          <DialogDescription>Add a new task to your project.</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+
+          {addTaskError !== "" && (
+            <Alert
+              variant="destructive"
+              className="mb-4 border border-destructive-foreground"
+            >
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription> {addTaskError} </AlertDescription>
+            </Alert>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="name">Task Name</Label>
+            <Input
+              id="name"
+              value={taskName}
+              onChange={(e: any) => setTaskName(e.target.value)}
+              placeholder="Enter task name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={taskDescription}
+              onChange={(e: any) => setTaskDescription(e.target.value)}
+              placeholder="Enter task description"
+              rows={3}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="budget">Budget Estimé</Label>
+            <Input
+              min="0"
+              type="number"
+              id="budget"
+              value={budget}
+              onChange={(e: any) => setBudget(e.target.value)}
+              placeholder="Enter budget Estimé"
+            />
+          </div>
+          <div className="flex gap-2 w-full">
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="status">Date Debut - Date Estimé</Label>
+              <DatePickerWithRange onChange={setDateRange} className="w-full" />
+            </div>
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="Difficulty">Difficulty</Label>
+              <Select value={taskDifficulty} onValueChange={setTaskDifficulty} className="w-full">
+                <SelectTrigger id="Difficulty" className="w-full">
+                  <SelectValue placeholder="Select Difficulty" />
+                </SelectTrigger>
+                <SelectContent className="w-full">
+                  <SelectItem value="hard">Hard</SelectItem>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="easy">Easy</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex gap-2 w-full">
+            <div className="space-y-2">
+              <Label htmlFor="status">Durée Estimé</Label>
+              <DurationInput value={duration} onChange={setDuration} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="status">Marges</Label>
+              <DurationInput value={marge} onChange={setMarge} />
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleCreateTask} disabled={!taskName.trim()}>
+            Create Task
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
