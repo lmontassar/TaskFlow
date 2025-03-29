@@ -15,7 +15,8 @@ import { createContext, useEffect, useState } from "react";
 import { Dispatch, SetStateAction } from "react";
 import Page from "./pages/Main/page";
 import Profile from "./pages/profile";
-import ProjectPage from "./pages/Main/Project";
+import { TasksInterface } from "./components/Tasks/tasks-interface";
+import TasksPage from "./pages/Main/Tasks";
 
 export type UserType = {
   id: string;
@@ -59,14 +60,13 @@ function App() {
         <Routes>
           {/* Protected Routes */}
           <Route element={<ProtectedRoutes />}>
-            <Route path="*" element={<Page />} />
             <Route path="/" element={<Page />}>
-              <Route path="" element={<Home />} />
               <Route path="home" element={<Home />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
               <Route path="project" element={<ProjectPage />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="tasks" element={<TasksPage />} />
             </Route>
           </Route>
           {/* Public Routes */}

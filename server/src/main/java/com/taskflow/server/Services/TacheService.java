@@ -1,0 +1,42 @@
+package com.taskflow.server.Services;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.taskflow.server.Entities.Tache;
+import com.taskflow.server.Repositories.TacheRepository;
+
+@Service
+public class TacheService {
+    @Autowired
+    private TacheRepository tacheRep;
+    
+    public Tache addTache(Tache t) {
+        return tacheRep.save(t);
+    }
+
+    public List<Tache> findTaches(){
+        return tacheRep.findAll() ;
+    }
+    public Tache findTacheById(String id){
+        return tacheRep.findById(id).orElse(null);
+    }
+
+    public Tache update(Tache t ){
+        return tacheRep.save(t);
+    }
+
+    public Tache updateStatus(Tache t, Tache.Statut statut) {
+        if( t.getStatut() == statut ) return null ;
+        if( statut == Tache.Statut.DONE ) t.setDateFin(LocalDateTime.now());
+        if( t.getStatut() == Tache.Statut.DONE ) t.setDateFin(null);
+        t.setStatut(statut);
+        return tacheRep.save(t);
+    }
+    public void delete(Tache t) {
+        tacheRep.delete(t);
+    }
+}
