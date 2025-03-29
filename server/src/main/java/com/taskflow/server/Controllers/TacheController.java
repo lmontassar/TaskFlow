@@ -90,8 +90,7 @@ public class TacheController {
                 task.setAttachment(new ArrayList<>());
                 task.setPrecedentes(new ArrayList<>());
                 task.setPrecedentes(new ArrayList<>());
-
-                Project p = projectSer.getProjectById("67e475a5cee47c1b0b21c73f");
+                Project p = projectSer.getMyProject(u.getId());
 
                 task.setProject(p);
                 task.setDateCreation( LocalDateTime.now() );

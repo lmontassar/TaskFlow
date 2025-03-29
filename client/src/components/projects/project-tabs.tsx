@@ -7,6 +7,7 @@ import { ProjectTimeline } from "@/components/projects/project-tabs/project-time
 import { ProjectFiles } from "@/components/projects/project-tabs/project-files";
 import { ProjectActivity } from "@/components/projects/project-tabs/project-activity";
 import { ProjectDiscussions } from "@/components/projects/project-tabs/project-discussions";
+import useGetProject from "../../hooks/useGetProjects";
 
 interface ProjectTabsProps {
   projectId: string;
@@ -14,6 +15,7 @@ interface ProjectTabsProps {
 
 export function ProjectTabs({ projectId }: ProjectTabsProps) {
   const [activeTab, setActiveTab] = useState("tasks");
+  const { projects, isLoading, error, setProjects } = useGetProject();
 
   return (
     <Tabs defaultValue="tasks" className="mt-6" onValueChange={setActiveTab}>
@@ -25,7 +27,7 @@ export function ProjectTabs({ projectId }: ProjectTabsProps) {
         <TabsTrigger value="activity">Activity</TabsTrigger>
       </TabsList>
       <TabsContent value="tasks" className="mt-6">
-        <ProjectTasks projectId={projectId} />
+        <ProjectTasks projectId={projects?.id} />
       </TabsContent>
       <TabsContent value="timeline" className="mt-6">
         <ProjectTimeline projectId={projectId} />

@@ -17,6 +17,7 @@ import Page from "./pages/Main/page";
 import Profile from "./pages/profile";
 import { TasksInterface } from "./components/Tasks/tasks-interface";
 import TasksPage from "./pages/Main/Tasks";
+import ProjectPage from "./pages/Main/Project";
 
 export type UserType = {
   id: string;

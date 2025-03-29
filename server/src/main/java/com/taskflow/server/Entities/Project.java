@@ -1,8 +1,5 @@
 package com.taskflow.server.Entities;
-<<<<<<< HEAD
-=======
 
->>>>>>> 0080424d3b1c4f968b9720b0f9f638345da19325
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;

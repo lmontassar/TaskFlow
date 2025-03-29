@@ -52,12 +52,19 @@ export function ProjectOverview() {
             </h3>
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                {projects?.listeCollaborateur.map((member, i) => (
+                {projects?.listeCollaborateur?.map((member, i) => (
                   <Avatar
                     key={i}
                     className="border-2 border-background h-8 w-8"
                   >
-                    <AvatarImage src={member.avatar} alt={member.name} />
+                    <AvatarImage
+                      src={
+                        member?.user.avatar?.startsWith("avatar")
+                          ? `/api/user/avatar/${member?.user.avatar}`
+                          : member?.user.avatar
+                      }
+                      alt={member?.user.nom}
+                    />
                     <AvatarFallback>{member.initials}</AvatarFallback>
                   </Avatar>
                 ))}
