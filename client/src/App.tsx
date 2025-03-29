@@ -68,7 +68,6 @@ function App() {
           <Route path="/reset" element={<ResetPassword />} />
           <Route element={<ProtectedRoutes />}>
             <Route path="/" element={<Page />}>
-              <Route path="" element={<Home />} />
               <Route path="home" element={<Home />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
