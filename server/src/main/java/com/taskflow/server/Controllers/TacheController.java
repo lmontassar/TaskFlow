@@ -2,12 +2,11 @@ package com.taskflow.server.Controllers;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,19 +48,23 @@ public class TacheController {
     @Autowired
     private JWT myJWT;
 
+
     @PostMapping("/add")
     public ResponseEntity<?> addTache(
             @RequestBody Tache task,
             @RequestHeader("Authorization") String token
         ) {
             try{
-
-                if ( myJWT.isTokenExpired(token) == true  ) return ResponseEntity.status(401).build();
+                
                 String s = myJWT.extractUserId(token);
                 User u = userService.findById(s);
                 if (u == null) {
                     return ResponseEntity.notFound().build(); // 404 Not Found
                 }
+                Project p = projectSer.getProjectById(task.getProject().getId());
+                if(p == null) return ResponseEntity.notFound().build();
+                if( p.getCreateur().getId().equals(u.getId()) == false ) return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
                 if (             
                 (   
                     task.getNomTache() == null ||
@@ -90,8 +93,7 @@ public class TacheController {
                 task.setAttachment(new ArrayList<>());
                 task.setPrecedentes(new ArrayList<>());
                 task.setPrecedentes(new ArrayList<>());
-                Project p = projectSer.getMyProject(u.getId());
-
+                
                 task.setProject(p);
                 task.setDateCreation( LocalDateTime.now() );
                 task.setRapporteur(u);
@@ -99,6 +101,7 @@ public class TacheController {
                 tacheSer.addTache(task);
                 return ResponseEntity.ok().build();
             } catch(Exception e) {
+                System.out.println(e.getMessage());
                 return ResponseEntity.badRequest().build();
             }
     }
@@ -152,6 +155,19 @@ public class TacheController {
             @RequestHeader("Authorization") String token
         ) {
             try{
+                String s = myJWT.extractUserId(token);
+                User u = userService.findById(s);
+                if (u == null) {
+                    return ResponseEntity.notFound().build(); // 404 Not Found
+                }
+                Tache task = tacheSer.findTacheById(taskID);
+                if(task == null) return ResponseEntity.notFound().build();
+
+                if( tacheSer.IsUserExistInAsignee(u,task) && tacheSer.isCreateur(u, task) ) // IF not Assignee and not creator return 403  
+                    return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+                //if( p.getCreateur().getId().equals(u.getId()) == false ) return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
 
                 Tache OldTask = tacheSer.findTacheById(taskID);
                 if(OldTask == null ) ResponseEntity.notFound().build();
@@ -163,23 +179,8 @@ public class TacheController {
                 return ResponseEntity.badRequest().build();
             }
     }
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(
-        @RequestParam("taskID") String taskID,
-        @RequestHeader("Authorization") String token
-    ){
-        try{
-
-            Tache OldTask = tacheSer.findTacheById(taskID);
-            if(OldTask == null ) ResponseEntity.notFound().build();
-            tacheSer.delete(OldTask);
-            return ResponseEntity.ok().build(); 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
+    
+    
     @PutMapping("/update")
     public ResponseEntity<?> update(
         @RequestBody Tache task,
@@ -188,13 +189,17 @@ public class TacheController {
         try{
             // TODO
             // CHECK IF THIS USER HAVE ACCESS TO UPDATE THIS TASK
-
-
-
-            //
-
+            String s = myJWT.extractUserId(token);
+            User u = userService.findById(s);
+            if (u == null) {
+                return ResponseEntity.notFound().build(); // 404 Not Found
+            }
             Tache oldTask = tacheSer.findTacheById(task.getId());
             if(oldTask == null) return  ResponseEntity.notFound().build();
+
+            if( tacheSer.isCreateur(u, oldTask) ) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+            //
 
             if (             
                 (   
@@ -241,6 +246,25 @@ public class TacheController {
                 return ResponseEntity.ok().body(newTask);
 
         }catch(Exception error){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(
+        @RequestParam("taskID") String taskID,
+        @RequestHeader("Authorization") String token
+    ){
+        try{
+
+
+
+            Tache OldTask = tacheSer.findTacheById(taskID);
+            if(OldTask == null ) ResponseEntity.notFound().build();
+            tacheSer.delete(OldTask);
+            return ResponseEntity.ok().build(); 
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

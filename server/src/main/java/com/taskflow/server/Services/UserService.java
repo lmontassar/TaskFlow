@@ -91,7 +91,7 @@ public class UserService {
     public User findById(String id)
     {
         User u = userRepository.getUserById(id);
-        if (StringUtils.isNotEmpty(u.getPassword())) {
+        if (u!= null && StringUtils.isNotEmpty(u.getPassword())) {
             u.setPassword(null);
         }
         return u;
@@ -103,5 +103,6 @@ public class UserService {
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
+    
     
 }

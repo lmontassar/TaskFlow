@@ -13,10 +13,11 @@ import { CheckCircle2, StarIcon, Stars, StarsIcon } from "lucide-react"
 
 interface TasksListProps {
   tasks: Task[]
-  onTaskClick: (task: Task) => void
+  onTaskClick: (task: Task) => void,
+  project :any 
 }
 
-export function TasksList({ tasks, onTaskClick }: TasksListProps) {
+export function TasksList({ project, tasks, onTaskClick }: TasksListProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "TODO":
@@ -93,31 +94,34 @@ export function TasksList({ tasks, onTaskClick }: TasksListProps) {
         <Table>
           <TableHeader className="sticky top-0 bg-background">
             <TableRow>
-              <TableHead className="w-12"></TableHead>
-              <TableHead>Task</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Difficulty</TableHead>
-              <TableHead>Quality</TableHead>
-              <TableHead>Due Date</TableHead>
-              <TableHead>Project</TableHead>
-              <TableHead>Assignees</TableHead>
-              <TableHead>Rapporteur</TableHead>
+              {/* <TableHead className="w-12"></TableHead> */}
+              <TableHead className="w-full">Task</TableHead>
+              <TableHead className="whitespace-nowrap">Status</TableHead>
+              <TableHead className="whitespace-nowrap"> Difficulty</TableHead>
+              {/* <TableHead>Quality</TableHead> */}
+              <TableHead className="whitespace-nowrap">Due Date</TableHead>
+              { (project == null) && (
+                <TableHead className="whitespace-nowrap" >Project</TableHead>
+              )}
+              
+              <TableHead className="whitespace-nowrap">Assignees</TableHead>
+              <TableHead className="whitespace-nowrap">Rapporteur</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {tasks.map((task) => (
               <TableRow key={task.id} className="cursor-pointer hover:bg-muted/50" onClick={() => onTaskClick(task)}>
-                <TableCell className="p-2">
+                {/* <TableCell className="p-2">
                   <Checkbox checked={task.statut === "DONE"} onClick={(e) => e.stopPropagation()} />
-                </TableCell>
-                <TableCell className="font-medium">
+                </TableCell> */}
+                <TableCell className="w-full flex-1 font-medium">
                   <div className="flex flex-col">
                     <span>{task.nomTache}</span>
                   </div>
                 </TableCell>
-                <TableCell>{getStatusBadge(task.statut)}</TableCell>
-                <TableCell>{getDifficulteBadge(task.difficulte)}</TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">{getStatusBadge(task.statut)}</TableCell>
+                <TableCell className="whitespace-nowrap">{getDifficulteBadge(task.difficulte)}</TableCell>
+                {/* <TableCell>
                 { task.qualite != 0 && (
                 <div className="flex items-center">
                   
@@ -133,15 +137,16 @@ export function TasksList({ tasks, onTaskClick }: TasksListProps) {
                   <>Not Rated</>
                 )} 
                     
-
-                </TableCell>
-                <TableCell>{formatDate(task.dateFinEstime)}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">
-                    {task.project.nom}
-                  </Badge>
-                </TableCell>
-                <TableCell>
+                </TableCell> */}
+                <TableCell className="whitespace-nowrap">{formatDate(task.dateFinEstime)}</TableCell>
+                { (project == null) && (
+                  <TableCell className="whitespace-nowrap">
+                    <Badge variant="outline">
+                      {task.project.nom}
+                    </Badge>
+                  </TableCell>
+                )}
+                <TableCell className="whitespace-nowrap"> 
                   <div className="flex -space-x-2">
                     {task.assignee.map((assignee:any ) => (
                       <Avatar key={assignee.id} className="h-7 w-7 border-2 border-background">
@@ -155,7 +160,7 @@ export function TasksList({ tasks, onTaskClick }: TasksListProps) {
                     ))}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-9 w-9 border-2 border-gray-200 overflow-hidden">
                     <AvatarImage 

@@ -2,11 +2,12 @@
 
 import { TasksInterface } from "../../Tasks/tasks-interface";
 import useTasks from "../../../hooks/useTasks";
+import { useEffect } from "react";
 
 interface ProjectTasksProps {
-  projectId: string;
+  project: any;
 }
 
-export function ProjectTasks({ projectId }: ProjectTasksProps) {
-  return <TasksInterface projectId={projectId} />;
+export function ProjectTasks({ project }: ProjectTasksProps) {
+  return <TasksInterface project={project} />;
 }
