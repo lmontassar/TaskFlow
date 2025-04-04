@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react"
-import useGetUserForProfile from "./useGetUserForProfile"
+import { useState, useEffect } from "react";
+import useGetUserForProfile from "./useGetUserForProfile";
 import { PhoneNumber } from "react-phone-number-input";
 
 const useProfile = () => {
   const { user, setUser, loading, error, refreshUser } = useGetUserForProfile();
-  const [activeTab, setActiveTab] = useState("overview")
-  const [editProfileOpen, setEditProfileOpen] = useState(false)
-  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState("overview");
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isImageChanged, setIsImageChanged] = useState(false);
   // Create a userData object that combines the user data with default values
@@ -31,7 +31,7 @@ const useProfile = () => {
     activeProjects: [],
     teams: [],
     recentActivity: [],
-  }
+  };
 
   // Form state for edit profile
   const [profileForm, setProfileForm] = useState({
@@ -43,15 +43,15 @@ const useProfile = () => {
     location: userData.region || "",
     bio: userData.bio || "",
     avatar: userData.avatar || "",
-  })
+  });
 
   // Update form when user data changes
   useEffect(() => {
     prepareFormData();
-    prepareSettingsData()
+    prepareSettingsData();
     setIsImageChanged(false);
-    console.log(settingsForm)
-  }, [user, editProfileOpen, settingsOpen])
+    console.log(settingsForm);
+  }, [user, editProfileOpen, settingsOpen]);
 
   const prepareFormData = () => {
     if (user) {
@@ -64,9 +64,9 @@ const useProfile = () => {
         location: user.region || "",
         bio: user.bio || "",
         avatar: user.avatar || "",
-      })
+      });
     }
-  }
+  };
 
   // Form state for settings
   const [settingsForm, setSettingsForm] = useState({
@@ -75,22 +75,19 @@ const useProfile = () => {
     twoFactorAuth: userData.twoFactorAuth,
     emailNotifications: true,
     darkMode: false,
-  })
+  });
 
   const prepareSettingsData = () => {
     if (user) {
-      setSettingsForm(
-        {
-          language: "english",
-          timeFormat: "24h",
-          twoFactorAuth: user.twoFactorAuth,
-          emailNotifications: true,
-          darkMode: false,
-        }
-      )
-
+      setSettingsForm({
+        language: "english",
+        timeFormat: "24h",
+        twoFactorAuth: user.twoFactorAuth,
+        emailNotifications: true,
+        darkMode: false,
+      });
     }
-  }
+  };
 
   // Handle profile image change
   const handleImageChange = (e) => {
@@ -100,10 +97,9 @@ const useProfile = () => {
       setProfileForm({
         ...profileForm,
         avatar: files[0],
-      })
+      });
     }
-  }
-
+  };
 
   // Handle profile form changes
   const handleProfileChange = (
@@ -127,51 +123,47 @@ const useProfile = () => {
     }
   };
 
-
-
   // Handle settings form changes
   const handleSettingsChange = (name, value) => {
-    console.log(name, value)
+    console.log(name, value);
     setSettingsForm({
       ...settingsForm,
       [name]: value,
-    })
-  }
+    });
+  };
 
   // Save profile changes
   const saveProfileChanges = async () => {
     setIsLoading(true);
 
     const updatedUserData = new FormData();
-    updatedUserData.append("nom", profileForm.lastName)
-    updatedUserData.append("prenom", profileForm.firstName)
-    updatedUserData.append("title", profileForm.title)
-    updatedUserData.append("phoneNumber", profileForm.phoneNumber)
-    updatedUserData.append("avatar", profileForm.avatar)
-    console.log(updatedUserData.get("avatar"))
-    updatedUserData.append("bio", profileForm.bio)
+    updatedUserData.append("nom", profileForm.lastName);
+    updatedUserData.append("prenom", profileForm.firstName);
+    updatedUserData.append("title", profileForm.title);
+    updatedUserData.append("phoneNumber", profileForm.phoneNumber);
+    updatedUserData.append("avatar", profileForm.avatar);
+    console.log(updatedUserData.get("avatar"));
+    updatedUserData.append("bio", profileForm.bio);
 
-    const token: any = localStorage.getItem("authToken")
+    const token: any = localStorage.getItem("authToken");
     try {
-      const res = await fetch('/api/user/update', {
-        method: 'PUT',
+      const res = await fetch("/api/user/update", {
+        method: "PUT",
         headers: {
-          "Authorization": token,
+          Authorization: `Bearer ${token}`,
         },
         body: updatedUserData,
-      })
+      });
 
       if (res.ok) {
         await refreshUser();
       }
     } catch (error) {
-      console.error('Error updating profile:', error)
+      console.error("Error updating profile:", error);
     }
     setEditProfileOpen(false);
     setIsLoading(false);
-  }
-
-
+  };
 
   // Save settings changes
   const saveSettingsChanges = async () => {
@@ -179,32 +171,30 @@ const useProfile = () => {
     if (user?.twoFactorAuth == null) {
       setSettingsOpen(false);
       setIsLoading(false);
-      return
+      return;
     } else {
-      const updatedSettings: any = new FormData(
-      );
+      const updatedSettings: any = new FormData();
       updatedSettings.append("twoFactorAuth", settingsForm.twoFactorAuth);
-      const token: any = localStorage.getItem("authToken")
+      const token: any = localStorage.getItem("authToken");
       try {
-        const res = await fetch('/api/user/update/settings', {
-          method: 'PUT',
+        const res = await fetch("/api/user/update/settings", {
+          method: "PUT",
           headers: {
-            "Authorization": token,
+            Authorization: token,
           },
           body: updatedSettings,
-        })
+        });
 
         if (res.ok) {
           await refreshUser();
-
         }
       } catch (error) {
-        console.error('Error updating profile:', error)
+        console.error("Error updating profile:", error);
       }
     }
     setSettingsOpen(false);
     setIsLoading(false);
-  }
+  };
 
   return {
     userData,
@@ -223,9 +213,8 @@ const useProfile = () => {
     loading,
     error,
     isLoading,
-    isImageChanged
-  }
-}
+    isImageChanged,
+  };
+};
 
-export default useProfile
-
+export default useProfile;
