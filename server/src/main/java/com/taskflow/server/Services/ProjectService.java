@@ -43,6 +43,7 @@ public class ProjectService {
         if(user != null)
         {
             Set<Collaborator> collab = p.getListeCollaborateur();
+            c.setRole("Member");
             collab.add(c);
             p.setListeCollaborateur(collab);
             return projectRepository.save(p);
