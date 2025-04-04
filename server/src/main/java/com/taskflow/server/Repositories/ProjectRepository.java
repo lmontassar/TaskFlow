@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface ProjectRepository extends MongoRepository<Project, String> {
     public Project getProjectById(String id);
     public Project getProjectByCreateur(User id);
+
 }

@@ -4,12 +4,23 @@ import { Badge } from "@/components/ui/badge";
 import { Edit, Plus, Share } from "lucide-react";
 import useGetProject from "../../hooks/useGetProjects";
 import SearchForm from "../comp-333";
+import hasPermission from "../../utils/authz";
+import useGetUser from "../../hooks/useGetUser";
 
 export function ProjectHeader() {
   // In a real app, you would fetch the project data based on the ID
   const { projects, isLoading, error, setProjects } = useGetProject();
+  const { user } = useGetUser();
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+  let isAllowedToAddCollaborator = false;
+  let role = "memeber";
+  if (projects?.createur?.id === user?.id) {
+    role = "creator";
+  }
+  if (hasPermission(role, "addCollaborator", "project")) {
+    isAllowedToAddCollaborator = true;
   }
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -30,17 +41,20 @@ export function ProjectHeader() {
           <Badge variant="default">{projects?.status}</Badge>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <SearchForm project={projects} setProject={setProjects}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Members
-        </SearchForm>
 
-        <Button variant="outline" size="sm">
-          <Edit className="mr-2 h-4 w-4" />
-          Edit
-        </Button>
-      </div>
+      {isAllowedToAddCollaborator && (
+        <div className="flex items-center gap-2">
+          <SearchForm project={projects} setProject={setProjects}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Members
+          </SearchForm>
+
+          <Button variant="outline" size="sm">
+            <Edit className="mr-2 h-4 w-4" />
+            Edit
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 package com.taskflow.server.Controllers;
 
 import com.taskflow.server.Config.JWT;
+import com.taskflow.server.Entities.Notification;
 import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Services.NotificationService;
@@ -18,49 +19,20 @@ import java.util.Objects;
 @RequestMapping("/notifications")
 public class NotificationController {
     @Autowired
-    public NotificationService invitationService;
+    public NotificationService notificationService;
     @Autowired
     public UserService userService;
     @Autowired
     public ProjectService projectService;
     @Autowired
     private JWT myJWT;
-    @PostMapping("/create")
-    public ResponseEntity<?> CreateInvitation(@RequestHeader("Authorization") String token,
-                                              @RequestBody Map<String, String> requestBody){
-        String senderEmail = requestBody.get("sender");
-        String receiverEmail = requestBody.get("receiver");
-        String projectId = requestBody.get("project");
-        try{
-            Project project = projectService.getProjectById(projectId);
-            if(project==null){
-                return ResponseEntity.status(400).build();
-            }
-            User sender = userService.findByEmail(senderEmail).orElse(null);
-            if(sender ==null){
-                return ResponseEntity.status(400).build();
-            }
-            if(!Objects.equals(project.getCreateur().getId(), sender.getId())){
-                return ResponseEntity.status(403).build();
-            }
-            User receiver = userService.findByEmail(receiverEmail).orElse(null);
-            if(receiver==null){
-                return ResponseEntity.status(403).build();
-            }
-            if(invitationService.CreateInvite(sender,receiver,project)!=null){
-                return ResponseEntity.status(200).build();
-            }
-            return ResponseEntity.status(404).build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    @PutMapping("/accept")
+
+    @PutMapping("/accept-invitation")
     public ResponseEntity<?> AcceptInvitation(@RequestHeader("Authorization") String token,
                                               @RequestBody Map<String, String> requestBody){
         String invitationId = requestBody.get("invitationId");
         try {
-            Invitation invitation = invitationService.getInvitationById(invitationId);
+            Notification invitation = notificationService.getNotificationById(invitationId);
             User user = userService.findById(myJWT.extractUserId(token));
             if(user==null){
                 return ResponseEntity.status(403).build();
@@ -68,7 +40,8 @@ public class NotificationController {
             if(!Objects.equals(user.getId(), invitation.getReceiver().getId())){
                 return ResponseEntity.status(403).build();
             }
-            if(invitationService.AcceptInvitation(invitation)){
+            if(notificationService.AcceptInvitation(invitation)){
+                notificationService.CreateNotification(invitation.getReceiver(),invitation.getSender(),invitation.getProject(), Notification.Type.JOINED,"");
                 return ResponseEntity.status(200).build();
             }
             return ResponseEntity.status(404).build();
@@ -76,12 +49,12 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @PutMapping("/decline")
+    @PutMapping("/decline-invitation")
     public ResponseEntity<?> DeclineInvitation(@RequestHeader("Authorization") String token,
                                               @RequestBody Map<String, String> requestBody){
         String invitationId = requestBody.get("invitationId");
         try {
-            Invitation invitation = invitationService.getInvitationById(invitationId);
+            Notification invitation = notificationService.getNotificationById(invitationId);
             User user = userService.findById(myJWT.extractUserId(token));
             if(user==null){
                 return ResponseEntity.status(403).build();
@@ -89,7 +62,7 @@ public class NotificationController {
             if(!Objects.equals(user.getId(), invitation.getReceiver().getId())){
                 return ResponseEntity.status(403).build();
             }
-            if(invitationService.DeclineInvitation(invitation)){
+            if(notificationService.DeclineInvitation(invitation)){
                 return ResponseEntity.status(200).build();
             }
             return ResponseEntity.status(404).build();
@@ -97,14 +70,14 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/getInvitations")
+    @GetMapping("/get-notifications")
     public ResponseEntity<?> GetMyInvitations(@RequestHeader("Authorization") String token){
         try {
             User user = userService.findById(myJWT.extractUserId(token));
             if(user==null){
                 return ResponseEntity.status(403).build();
             }
-            List<Invitation> myInvitations = invitationService.getMyInvitations(user);
+            List<Notification> myInvitations = notificationService.getMyNotifications(user);
             return ResponseEntity.ok(myInvitations);
         }catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

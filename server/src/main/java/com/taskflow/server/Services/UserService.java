@@ -1,6 +1,8 @@
 package com.taskflow.server.Services;
 
 import com.taskflow.server.Entities.Collaborator;
+import com.taskflow.server.Entities.Project;
+import com.taskflow.server.Entities.UserSearchResponce;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -97,8 +99,9 @@ public class UserService {
         return u;
     }
 
-    public List<User> search(String query){
-        return userRepository.findByNomContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
+    public List<User> search(String query ){
+        List<User> userList = userRepository.findByNomContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
+        return userList;
     }
     public void deleteUser(String id) {
         userRepository.deleteById(id);

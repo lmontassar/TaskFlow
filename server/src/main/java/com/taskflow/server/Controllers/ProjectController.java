@@ -1,10 +1,8 @@
 package com.taskflow.server.Controllers;
 
 import com.taskflow.server.Config.JWT;
-import com.taskflow.server.Entities.Collaborator;
-import com.taskflow.server.Entities.Project;
-import com.taskflow.server.Entities.ProjectRequest;
-import com.taskflow.server.Entities.User;
+import com.taskflow.server.Entities.*;
+import com.taskflow.server.Services.NotificationService;
 import com.taskflow.server.Services.ProjectService;
 import com.taskflow.server.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,8 @@ public class ProjectController {
     private UserService userService;
     @Autowired
     private JWT myJWT;
+    @Autowired
+    public NotificationService notificationService;
     @PostMapping("/create")
     public ResponseEntity<?> addProject(
             @RequestHeader("Authorization") String token,
@@ -78,14 +78,17 @@ public class ProjectController {
             }
             Project pr = projectService.getMyProject(user.getId());
             User userC = userService.findByEmail(email).orElse(null);
+            if (userC ==null)
+                return ResponseEntity.badRequest().body("user not found");
+
             if(pr.getListeCollaborateur().contains(userC)){
                 return ResponseEntity.badRequest().body("user already in the project");
             }
-            Collaborator collaborator = new Collaborator();
-            collaborator.setUser(userC);
-            collaborator.setRole(role);
-            Project updatedProject = projectService.addCollaborator(pr, collaborator);
-            return ResponseEntity.ok(updatedProject);
+
+            Notification notification = notificationService.CreateNotification(user,userC,pr, Notification.Type.INVITATION,"");
+            if(notification!=null)
+                return ResponseEntity.ok(pr);
+            return ResponseEntity.badRequest().body("try again later");
 
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

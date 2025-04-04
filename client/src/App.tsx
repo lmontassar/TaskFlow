@@ -18,6 +18,7 @@ import Profile from "./pages/profile";
 import { TasksInterface } from "./components/Tasks/tasks-interface";
 import TasksPage from "./pages/Main/Tasks";
 import ProjectPage from "./pages/Main/Project";
+import Notifications from "./pages/Main/Notifications";
 
 export type UserType = {
   id: string;
@@ -65,6 +66,7 @@ function App() {
               <Route path="home" element={<Home />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
+              <Route path="notifications" element={<Notifications />} />
               <Route path="project" element={<ProjectPage />} />
               <Route path="profile" element={<Profile />} />
               <Route path="tasks" element={<TasksPage />} />

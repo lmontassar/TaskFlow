@@ -51,14 +51,24 @@ public class ProjectService {
         return null;
     }
     public Project getMyProject(String userId) {
-        // Fetch all projects from the repository
-        User user = userService.findById(userId);
-        Project project = projectRepository.getProjectByCreateur(user);
-        project.getCreateur().setPassword(null);
-        project.getCreateur().setTwoFactorAuth(null);
-        // Filter projects where the user is in the collaborators set
-        return project;
+        return projectRepository.findAll().stream()
+                .filter(project -> {
+                    boolean isCollaborator = project.getListeCollaborateur().stream()
+                            .anyMatch(collaborator ->
+                                    collaborator.getUser() != null &&
+                                            userId.equals(collaborator.getUser().getId())
+                            );
+
+                    boolean isCreator = project.getCreateur() != null &&
+                            project.getCreateur().getId() != null &&
+                            userId.equals(project.getCreateur().getId());
+
+                    return isCollaborator || isCreator;
+                })
+                .findFirst()
+                .orElse(null);
     }
+
 
     public Project getProjectById(String id){
         Project project = projectRepository.getProjectById(id);

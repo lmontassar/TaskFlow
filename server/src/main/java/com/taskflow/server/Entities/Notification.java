@@ -10,20 +10,26 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document(collection = "invitations")
+@Document(collection = "notifications")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class Notification {
+    public enum Type{
+        COMMENT,INVITATION,MENTION,TASK,SYSTEM,JOINED
+    }
     @Id
     private String id;
-    @DBRef
-    private User Sender;
+    private String title;
+    private String description;
+    private Type type;
     @DBRef
     private Project project;
     @DBRef
-    private User Receiver;
-    private Boolean status = false;
+    private User sender;
+    @DBRef
+    private User receiver;
+    private Boolean read = false;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    private Date CreationDate;
+    private Date creationDate;
 }

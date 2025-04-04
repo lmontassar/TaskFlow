@@ -44,6 +44,7 @@ import { NavProjects } from "../nav-projects";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import useGetProject from "../../hooks/useGetProjects";
+import { NotificationsDropdown } from "../notifications/notifications-dropdown";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -162,6 +163,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
           <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
             <SidebarTrigger />
             <div className="ml-auto flex items-center gap-4">
+              <NotificationsDropdown />
               <Avatar>
                 <AvatarImage
                   src="/placeholder.svg?height=32&width=32"
