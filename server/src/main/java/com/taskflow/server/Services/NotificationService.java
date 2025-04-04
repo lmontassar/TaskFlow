@@ -20,20 +20,25 @@ public class InvitationService {
     public ProjectRepository projectRepository;
     @Autowired
     public ProjectService projectService;
-    public void AcceptInvitation(Invitation invitation){
+    public Boolean AcceptInvitation(Invitation invitation){
         if(invitation.getReceiver()!=null){
             Collaborator c = new Collaborator();
             c.setUser(invitation.getReceiver());
             if(projectService.addCollaborator(invitation.getProject(),c)!=null){
                 invitationRepository.delete(invitation);
-
+                return true;
             }
+            return false;
         }
+        return false;
+
     }
-    public void DeclineInvitation(Invitation invitation){
+    public Boolean DeclineInvitation(Invitation invitation){
         if(invitation.getReceiver()!=null){
             invitationRepository.delete(invitation);
+            return true;
         }
+        return false;
     }
 
     public Invitation changeStatus(Invitation invitation){
@@ -55,6 +60,10 @@ public class InvitationService {
     }
     public List<Invitation> getMyInvitations(User receiver){
         return invitationRepository.findAllByReceiver(receiver);
+    }
+
+    public Invitation getInvitationById(String id){
+        return invitationRepository.findById(id).orElse(null);
     }
 
 }

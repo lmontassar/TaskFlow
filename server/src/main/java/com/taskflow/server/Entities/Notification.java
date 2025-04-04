@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Invitation {
+public class Notification {
     @Id
     private String id;
     @DBRef
