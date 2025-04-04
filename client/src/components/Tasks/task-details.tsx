@@ -83,7 +83,6 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
   }
 
   const saveChanges = () => {
-    console.log(editedTask)
     onUpdate( {
       ...editedTask, ["duree"]:duration,["marge"]:Number(marge)
     } )
@@ -310,7 +309,7 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
                   <Label htmlFor="task-difficulte">Difficulty : {editedTask.difficulte.toString().trim()}</Label>
                   <Select
                     value={editedTask.difficulte.toString().trim()}
-                    onValueChange={(value:any) => { console.log(value); handleTaskUpdate("difficulte", value )} }
+                    onValueChange={(value:any) => { handleTaskUpdate("difficulte", value )} }
                   >
                     <SelectTrigger id="task-difficulte">
                       <SelectValue placeholder="Select difficulty" />
@@ -636,7 +635,7 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
                             </Avatar>
 
                             <span className="text-sm font-medium text-gray-800">
-                              {_.startCase(assignee.nom)} {_.startCase(assignee.prenom)}
+                              {_.startCase(assignee.nom) } {_.startCase(assignee.prenom)}
                             </span>
                           </div>
                         ))

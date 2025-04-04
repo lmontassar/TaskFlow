@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.taskflow.server.Entities.Tache;
+import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.TacheRepository;
 
 @Service
@@ -42,4 +43,18 @@ public class TacheService {
     public void delete(Tache t) {
         tacheRep.delete(t);
     }
+
+    public boolean IsUserExistInAsignee(User u,Tache task) {
+        if(u == null || task == null) return false;
+        for (User Asignee : task.getAssignee()) {
+            if(Asignee.getId().equals(u.getId())) return true;            
+        }
+        return false;
+    }
+
+    public boolean isCreateur(User u, Tache task) {
+        if( u == null || task == null ) return false ;
+        return u.getId().equals(task.getProject().getCreateur().getId());
+    }
+
 }

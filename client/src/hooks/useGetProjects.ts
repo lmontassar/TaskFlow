@@ -4,21 +4,21 @@ export enum Status {
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
 }
-export type Project = {
-  id: string;
-  nom: string;
-  description: string;
-  budgetEstime: number;
-  dateDebut: string; // ISO 8601 format (e.g., "2025-03-26T15:55:31.549Z")
-  dateFinEstime: string; // Same format
-  listeCollaborateur: any[];
-  status: Status;
-  createur: any;
-  dateCreation: string; // Same format
-  tags: string[];
-};
+// export type Project = {
+//   id: string;
+//   nom: string;
+//   description: string;
+//   budgetEstime: number;
+//   dateDebut: string; // ISO 8601 format (e.g., "2025-03-26T15:55:31.549Z")
+//   dateFinEstime: string; // Same format
+//   listeCollaborateur: any[];
+//   status: Status;
+//   createur: any;
+//   dateCreation: string; // Same format
+//   tags: string[];
+// };
 const useGetProject = () => {
-  const [projects, setProjects] = useState<Project | null>(null);
+  const [projects, setProjects] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = localStorage.getItem("authToken");
@@ -46,7 +46,7 @@ const useGetProject = () => {
         setIsLoading(false);
       }
     };
-
+    
     fetchProjects();
   }, [token]);
 

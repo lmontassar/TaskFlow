@@ -65,10 +65,10 @@ export interface Task {
   parent?: string;
 }
 type taskProps = {
-  projectId: string;
+  project: any;
 };
 
-export function TasksInterface({ projectId }: taskProps) {
+export function TasksInterface({ project }: taskProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [groupBy, setGroupBy] = useState<GroupBy>("status");
@@ -102,10 +102,14 @@ export function TasksInterface({ projectId }: taskProps) {
 
   useEffect(() => {
     // handleFindAllTasks();
-    getTasksByProjectID(projectId);
-  }, []);
+    if(project)
+    getTasksByProjectID(project?.id);
+  }, [project]);
 
   // Filter tasks based on search query and filter options
+
+ 
+
 
   const getFilteredTasks = () => {
     let filtered = [...tasks];
@@ -281,27 +285,35 @@ export function TasksInterface({ projectId }: taskProps) {
   useEffect(() => {
     // If filteredTasks or groupBy changes, update groupedTasks
     const newGroupedTasks = groupTasks();
-    console.log("New Grouped Tasks:", newGroupedTasks);
 
     // Only set state if the grouped tasks have changed
     setGroupedTasks(newGroupedTasks);
   }, [tasks]);
-
+  
+  const addTask = async (task :any) =>{
+    const res = await handleTaskCreate(task);
+    if (project) await getTasksByProjectID(project?.id);
+    return res;
+  }
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
     setShowTaskDetails(true);
   };
 
-  const handleTaskUpdate = (updated: Task) => {
-    handleUpdateTask(updated);
-    handleUpdateStatutTask(updated.id, updated.statut);
-    setTasks(tasks.map((task) => (task.id === updated.id ? updated : task)));
+  const handleTaskUpdate = async (updated: Task) => {
+    await handleUpdateTask(updated);
+    if(updated.id != updated.statut)
+      await handleUpdateStatutTask(updated.id, updated.statut);
+    if (project) await getTasksByProjectID(project?.id);
+    
+    // setTasks(tasks.map((task) => (task.id === updated.id ? updated : task)));
     setSelectedTask(updated);
   };
 
-  const handleTaskDelete = (taskId: string) => {
+  const handleTaskDelete = async (taskId: string) => {
     setTasks(tasks.filter((task) => task.id !== taskId));
-    handleDeleteTask(taskId);
+    await handleDeleteTask(taskId);
+    if (project) getTasksByProjectID(project?.id);
     setSelectedTask(null);
     setShowTaskDetails(false);
   };
@@ -341,7 +353,6 @@ export function TasksInterface({ projectId }: taskProps) {
     const task = Object.values(groupedTasks)
       .flat()
       .find((t) => t.id === draggableId);
-    console.log(task);
 
     const updatedSourceTasks = groupedTasks[source.droppableId].filter(
       (t) => t.id !== draggableId
@@ -386,7 +397,7 @@ export function TasksInterface({ projectId }: taskProps) {
               onDragEnd={handleDragEnd}
             />
           ) : (
-            <TasksList tasks={filteredTasks} onTaskClick={handleTaskClick} />
+            <TasksList project={project} tasks={filteredTasks} onTaskClick={handleTaskClick} />
           )}
 
           {showTaskDetails && selectedTask && (
@@ -404,10 +415,11 @@ export function TasksInterface({ projectId }: taskProps) {
       <TaskCreateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onCreateTask={handleTaskCreate}
+        onCreateTask={addTask}
         existingTasks={tasks}
         addTaskError={addTaskError}
         setAddTaskError={setAddTaskError}
+        project={project}
       />
     </div>
   );

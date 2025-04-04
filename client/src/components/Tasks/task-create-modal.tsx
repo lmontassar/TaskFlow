@@ -32,10 +32,11 @@ interface TaskCreateModalProps {
   onCreateTask: (task: Task) => boolean
   existingTasks: Task[],
   addTaskError: "",
-  setAddTaskError: (error: String) => void
+  setAddTaskError: (error: String) => void,
+  project :any
 }
 
-export function TaskCreateModal({ isOpen, onClose, onCreateTask, existingTasks, addTaskError, setAddTaskError }: TaskCreateModalProps) {
+export function TaskCreateModal({ project,isOpen, onClose, onCreateTask, existingTasks, addTaskError, setAddTaskError }: TaskCreateModalProps) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
@@ -53,14 +54,16 @@ export function TaskCreateModal({ isOpen, onClose, onCreateTask, existingTasks, 
       nomTache: taskName,
       description: taskDescription,
       budgetEstime: budget,
+      project: project,
       difficulte: taskDifficulty as any,
       dateDebut: dateRange?.from ?? null,
       dateFinEstime: dateRange?.to ?? null,
       duree: duration,
       marge: marge
     }
+
     const ok: any = await onCreateTask(newTask);
-    console.log()
+
     if (ok == true) {
       handleClose()
     }
@@ -70,7 +73,7 @@ export function TaskCreateModal({ isOpen, onClose, onCreateTask, existingTasks, 
     setTaskName("")
     setTaskDescription("")
     setTaskDifficulty("normal"),
-      setAddTaskError("");
+    setAddTaskError("");
     setDateRange(undefined);
     setBudget("");
     setDuration("")

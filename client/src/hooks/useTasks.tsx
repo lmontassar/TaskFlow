@@ -29,7 +29,6 @@ const useTasks = () => {
       ...task,
       difficulte: correctedDifficulty(task.difficulte),
     };
-    console.log(fixedTask);
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -41,16 +40,19 @@ const useTasks = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(fixedTask),
       });
 
       if (res.ok) {
-        handleFindAllTasks();
         return true;
       } else {
         switch (res.status) {
+          case 403: {
+            setAddTaskError("error 403");
+            break;
+          }
           case 416: {
             setAddTaskError("error 416");
             break;
@@ -85,7 +87,6 @@ const useTasks = () => {
 
       if (res.ok) {
         const result = await res.json();
-        console.log(result);
         return setTasks(result);
       } else {
         console.log("error");
@@ -107,7 +108,6 @@ const useTasks = () => {
       const data = new FormData();
       data.append("taskID", taskID);
       data.append("statut", fixedStatut);
-      console.log(JSON.stringify(data));
       const res = await fetch("/api/tache/update/statut", {
         method: "PUT",
         headers: {
@@ -137,7 +137,6 @@ const useTasks = () => {
       }
       const data = new FormData();
       data.append("taskID", taskID);
-      console.log(JSON.stringify(data));
       const res = await fetch("/api/tache/delete", {
         method: "DELETE",
         headers: {
@@ -176,7 +175,6 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        handleFindAllTasks();
         return true;
       } else {
         switch (res.status) {
@@ -201,7 +199,7 @@ const useTasks = () => {
       if (!token) {
         return;
       }
-      console.log(projectID);
+      
 
       const res = await fetch(`/api/tache/get/project/${projectID}`, {
         method: "GET",
@@ -213,7 +211,6 @@ const useTasks = () => {
 
       if (res.ok) {
         const result = await res.json();
-        console.log(result);
         return setTasks(result);
       } else {
         console.log("error");
