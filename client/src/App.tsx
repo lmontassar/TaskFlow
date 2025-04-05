@@ -37,7 +37,7 @@ export const Context = createContext<{
   isSignedIn: boolean;
   setIsSignedIn: Dispatch<SetStateAction<boolean>>;
   user: UserType | null;
-  setUser: Dispatch<SetStateAction<UserType | null>>;
+  setUser: Dispatch<SetStateAction<UserType | null>> | any;
 }>({
   isSignedIn: false,
   setIsSignedIn: () => {},

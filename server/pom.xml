@@ -99,6 +99,10 @@
 			<artifactId>google-http-client-jackson2</artifactId>
 			<version>1.41.8</version> <!-- Use the latest stable version if available -->
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
 
 	</dependencies>
 

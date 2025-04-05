@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
-export default function useGetUser() {  // Sends the token to the endpoint, which determines whether the token has expired, and returns the user.
+export default function useGetUser() {
+  // Sends the token to the endpoint, which determines whether the token has expired, and returns the user.
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -10,7 +11,7 @@ export default function useGetUser() {  // Sends the token to the endpoint, whic
   useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
-  
+
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("authToken");
@@ -18,7 +19,7 @@ export default function useGetUser() {  // Sends the token to the endpoint, whic
           setLoading(false);
           return;
         }
-  
+
         const response = await fetch("/api/user/get", {
           method: "GET",
           headers: {
@@ -26,18 +27,18 @@ export default function useGetUser() {  // Sends the token to the endpoint, whic
           },
           signal,
         });
-  
+
         if (response.status === 403) {
           console.log("Token has expired");
           localStorage.removeItem("authToken"); // Clear the token
           setUser(null); // Log the user out
           return;
         }
-  
+
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
-  
+
         const userData = await response.json();
         setUser(userData);
       } catch (err: any) {
@@ -49,9 +50,9 @@ export default function useGetUser() {  // Sends the token to the endpoint, whic
         setLoading(false);
       }
     };
-  
+
     fetchUser();
-  
+
     return () => {
       abortController.abort();
     };

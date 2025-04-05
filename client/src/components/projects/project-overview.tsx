@@ -59,11 +59,11 @@ export function ProjectOverview() {
                   >
                     <AvatarImage
                       src={
-                        member?.user.avatar?.startsWith("avatar")
-                          ? `/api/user/avatar/${member?.user.avatar}`
-                          : member?.user.avatar
+                        member?.user?.avatar?.startsWith("avatar")
+                          ? `/api/user/avatar/${member?.user?.avatar}`
+                          : member?.user?.avatar
                       }
-                      alt={member?.user.nom}
+                      alt={member?.user?.nom}
                     />
                     <AvatarFallback>{member.initials}</AvatarFallback>
                   </Avatar>
