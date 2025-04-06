@@ -64,6 +64,7 @@ function App() {
           <Route element={<ProtectedRoutes />}>
             <Route path="/" element={<Page />}>
               <Route path="home" element={<Home />} />
+              <Route path="/" element={<Home />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
               <Route path="notifications" element={<Notifications />} />
