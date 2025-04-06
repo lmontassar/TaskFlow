@@ -19,6 +19,7 @@ import { TasksInterface } from "./components/Tasks/tasks-interface";
 import TasksPage from "./pages/Main/Tasks";
 import ProjectPage from "./pages/Main/Project";
 import Notifications from "./pages/Main/Notifications";
+import ProtectedLoginRoutes from "./utils/protectedloginroutes";
 
 export type UserType = {
   id: string;
@@ -74,10 +75,12 @@ function App() {
             </Route>
           </Route>
           {/* Public Routes */}
-          <Route path="/signup" element={<Signup />} />
+          <Route element={<ProtectedLoginRoutes />}>
+            <Route path="/signup" element={<Signup />} />
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/emailverification" element={<EmailVerification />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/emailverification" element={<EmailVerification />} />
+          </Route>
           <Route path="/reset" element={<ResetPassword />} />
         </Routes>
       </Router>
