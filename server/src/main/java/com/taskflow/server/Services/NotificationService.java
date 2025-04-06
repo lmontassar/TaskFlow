@@ -6,6 +6,7 @@ import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.NotificationRepository;
 import com.taskflow.server.Repositories.ProjectRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -24,6 +25,8 @@ public class NotificationService {
     public ProjectService projectService;
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    public EmailService emailService;
     public Boolean AcceptInvitation(Notification invitation){
         if(invitation.getReceiver()!=null){
             if(invitation.getType()== Notification.Type.INVITATION){
@@ -68,54 +71,72 @@ public class NotificationService {
                 notification
         );
     }
+    public Boolean isGITHUB(String email){
+        return email.contains("@github.com");
+    }
     public Notification CreateNotification(User sender,User receiver,Project project,Notification.Type type,String description){
-        if(sender==null || receiver==null || project == null)
-            return null;
-
+        Notification notification = new Notification();
+        String subject="";
+        String body="";
         switch (type) {
             case INVITATION -> {
+                if(sender==null || receiver==null || project == null)
+                    return null;
                 if(notificationRepository.findAllByReceiverAndProjectAndType(receiver, project, Notification.Type.INVITATION).isEmpty()){
-                    Notification invitation = new Notification();
-                    invitation.setSender(sender);
-                    invitation.setType(Notification.Type.INVITATION);
-                    invitation.setTitle("Project Invitation");
-                    invitation.setDescription(description);
-                    invitation.setProject(project);
-                    invitation.setReceiver(receiver);
-                    invitation.setCreationDate(new Date());
-                    Notification notification = notificationRepository.save(invitation);
-                    sendSocket(receiver,notification);
-                    return notification;
+                    notification.setSender(sender);
+                    notification.setType(Notification.Type.INVITATION);
+                    notification.setTitle("Project Invitation");
+                    subject = "TaskFlow - Project Invitation";
+                    body = String.format("%s invited you to %d project", sender.getNom()+" "+sender.getPrenom(), project.getNom());
+                    notification.setDescription(description);
+                    notification.setProject(project);
+                    notification.setReceiver(receiver);
+                    notification.setCreationDate(new Date());
+                    break;
+                }else{
+                    return null;
                 }
-                return null;
+
 
             }
             case SYSTEM -> {
-                Notification notification = new Notification();
+                if(description==null || description=="")
+                    return null;
                 notification.setTitle("System Notification");
                 notification.setReceiver(receiver);
                 notification.setType(Notification.Type.SYSTEM);
                 notification.setCreationDate(new Date());
-                Notification send_notification = notificationRepository.save(notification);
-                sendSocket(receiver,send_notification);
-                return send_notification;
+                subject = "TaskFlow - System Notification";
+                body = description;
+                break;
             }
             case JOINED -> {
-                Notification invitation = new Notification();
-                invitation.setSender(sender);
-                invitation.setTitle("Project Join");
-                invitation.setProject(project);
-                invitation.setReceiver(receiver);
-                invitation.setType(Notification.Type.JOINED);
-                invitation.setCreationDate(new Date());
-                Notification send_notification = notificationRepository.save(invitation);
-                sendSocket(receiver,send_notification);
-                return send_notification;
+                if(sender==null || receiver==null || project == null)
+                    return null;
+                notification.setSender(sender);
+                notification.setTitle("Project Join");
+                notification.setProject(project);
+                notification.setReceiver(receiver);
+                notification.setType(Notification.Type.JOINED);
+                notification.setCreationDate(new Date());
+                subject = "TaskFlow - Project Join";
+                body = String.format("%s joined your project : %d ", sender.getNom()+" "+sender.getPrenom(), project.getNom());
+
+                break;
             }
 
             default -> throw new IllegalArgumentException("Unknown notification type: " + type);
         }
-
+        Notification notification_send = notificationRepository.save(notification);
+        sendSocket(receiver,notification_send);
+        try {
+            if(!isGITHUB(receiver.getEmail())){
+                emailService.sendEmail(receiver.getEmail(),subject,body);
+            }
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        return notification_send;
     }
     public List<Notification> getMyNotifications(User receiver){
         return notificationRepository.findAllByReceiver(receiver);

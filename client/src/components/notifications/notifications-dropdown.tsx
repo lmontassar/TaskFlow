@@ -62,7 +62,28 @@ export function NotificationsDropdown() {
 
   const formatDate = (dateString: string) => {
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+      return formatDistanceToNow(new Date(dateString), {
+        addSuffix: true,
+        locale: {
+          formatDistance: (token, count, options) => {
+            const formats: any = {
+              lessThanXSeconds: "just now",
+              xSeconds: `${count} seconds`,
+              halfAMinute: "half a minute",
+              lessThanXMinutes: `${count} minutes`,
+              xMinutes: `${count} minutes`,
+              aboutXHours: `about ${count} hours`,
+              xHours: `${count} hours`,
+              xDays: `${count} days`,
+              aboutXMonths: `about ${count} months`,
+              xMonths: `${count} months`,
+              aboutXYears: `about ${count} years`,
+              xYears: `${count} years`,
+            };
+            return formats[token] || token;
+          },
+        },
+      });
     } catch (error) {
       return dateString;
     }
@@ -231,7 +252,12 @@ export function NotificationsDropdown() {
                               </Button>
                             </div>
                           )}
-
+                          {notification?.type === "JOINED" && (
+                            <span className="">
+                              {notification?.sender?.nom} Joined your project{" "}
+                              {notification?.project?.nom}
+                            </span>
+                          )}
                           {notification.sender?.nom && (
                             <div className="mt-2 flex items-center gap-2">
                               <Avatar className="h-5 w-5">
