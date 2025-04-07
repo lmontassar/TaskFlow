@@ -33,6 +33,10 @@ public class NotificationService {
                 Collaborator c = new Collaborator();
                 c.setUser(invitation.getReceiver());
                 if(projectService.addCollaborator(invitation.getProject(),c)!=null){
+                    messagingTemplate.convertAndSend(
+                            "/topic/projects/" + invitation.getProject().getId(),
+                            invitation.getProject()
+                    );
                     notificationRepository.delete(invitation);
                     return true;
                 }

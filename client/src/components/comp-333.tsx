@@ -36,6 +36,7 @@ export default function SearchForm({
       },
       body: JSON.stringify({
         email: collaborate.email,
+        projectId: project.id,
         role: "",
       }),
     });

@@ -5,6 +5,7 @@ import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -18,6 +19,8 @@ public class ProjectService {
     private ProjectRepository projectRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    public SimpMessagingTemplate messagingTemplate;
     public Project createProject(Project p, User u) {
         // Ensure user is valid
         if (u == null) {
@@ -47,6 +50,27 @@ public class ProjectService {
             collab.add(c);
             p.setListeCollaborateur(collab);
             return projectRepository.save(p);
+        }
+        return null;
+    }
+    public Project removeCollaborator(Project p, User user) {
+        if (user != null) {
+            Set<Collaborator> collab = p.getListeCollaborateur();
+
+            Collaborator c = collab.stream()
+                    .filter(collaborator -> collaborator.getUser().getId().equals(user.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (c != null) {
+                collab.remove(c);
+                p.setListeCollaborateur(collab);
+                messagingTemplate.convertAndSend(
+                        "/topic/projects/" + p.getId(),
+                        p
+                );
+                return projectRepository.save(p);
+            }
         }
         return null;
     }
@@ -90,6 +114,7 @@ public class ProjectService {
 
     public Project getProjectById(String id){
         Project project = projectRepository.getProjectById(id);
+        System.out.println(project);
         if (project == null) {
             throw new RuntimeException("Project not found with ID: " + id);
         }

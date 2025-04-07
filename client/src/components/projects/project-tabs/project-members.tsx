@@ -2,9 +2,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DataTable from "../../DataTable";
 import useGetProject from "../../../hooks/useGetProjects";
+import useProject from "../../../hooks/useProject";
 
 export function ProjectMembers() {
-  const { projects, isLoading, error, setProjects } = useGetProject();
+  const { project, isLoading, error, setProject } = useProject();
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -15,7 +16,7 @@ export function ProjectMembers() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <DataTable data={projects.listeCollaborateur} />
+          <DataTable project={project} setProject={setProject} />
         </div>
       </CardContent>
     </Card>

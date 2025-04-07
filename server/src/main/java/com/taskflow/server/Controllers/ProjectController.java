@@ -8,6 +8,7 @@ import com.taskflow.server.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -25,6 +26,8 @@ public class ProjectController {
     private JWT myJWT;
     @Autowired
     public NotificationService notificationService;
+    @Autowired
+    public SimpMessagingTemplate messagingTemplate;
     @PostMapping("/create")
     public ResponseEntity<?> addProject(
             @RequestHeader("Authorization") String token,
@@ -74,11 +77,8 @@ public class ProjectController {
         String role = requestBody.get("role");
         try {
             User user = userService.findById(myJWT.extractUserId(token));
-
             if (user == null) {
-
                 return ResponseEntity.badRequest().body("User not found.");
-
             }
             Project pr = projectService.getMyProject(user.getId(),projectId);
             User userC = userService.findByEmail(email).orElse(null);
@@ -91,9 +91,10 @@ public class ProjectController {
             }
 
             Notification notification = notificationService.CreateNotification(user,userC,pr, Notification.Type.INVITATION,"");
-            if(notification!=null)
-                return ResponseEntity.ok(pr);
+            if(notification!=null){
 
+                return ResponseEntity.ok(pr);
+            }
             return ResponseEntity.badRequest().body("try again later");
 
         } catch (RuntimeException e) {
@@ -122,4 +123,38 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/remove/{projectId}/{userId}")
+    public ResponseEntity<?> removeUser(@RequestHeader("Authorization") String token,
+                                        @PathVariable String projectId,
+                                        @PathVariable String userId) {
+        try {
+
+            User user = userService.findById(userId);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+
+            Project project = projectService.getProjectById(projectId);
+            if (project == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found");
+            }
+
+            System.out.println("Before removing collaborator...");
+
+            Project updatedProject = projectService.removeCollaborator(project, user);
+
+            if (updatedProject == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to remove collaborator.");
+            }
+
+            System.out.println("Collaborator removed successfully");
+
+            return ResponseEntity.ok(updatedProject);
+        } catch (Exception e) {
+            e.printStackTrace(); // for console debugging
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
 }
