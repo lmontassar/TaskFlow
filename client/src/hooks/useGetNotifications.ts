@@ -90,9 +90,6 @@ export function useNotifications() {
       if (!response.ok) {
         throw new Error("Failed to accept invitation");
       }
-      setNotifications((prevNotifications) =>
-        prevNotifications.filter((notification) => notification.id !== id)
-      );
     } catch (error: any) {
       setError(error.message);
     }

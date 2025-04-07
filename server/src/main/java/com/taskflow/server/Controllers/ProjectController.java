@@ -70,24 +70,30 @@ public class ProjectController {
             @RequestBody Map<String, String> requestBody
     ) {
         String email = requestBody.get("email");
+        String projectId =requestBody.get("projectId");
         String role = requestBody.get("role");
         try {
             User user = userService.findById(myJWT.extractUserId(token));
+
             if (user == null) {
+
                 return ResponseEntity.badRequest().body("User not found.");
+
             }
-            Project pr = projectService.getMyProject(user.getId());
+            Project pr = projectService.getMyProject(user.getId(),projectId);
             User userC = userService.findByEmail(email).orElse(null);
             if (userC ==null)
                 return ResponseEntity.badRequest().body("user not found");
 
             if(pr.getListeCollaborateur().contains(userC)){
+
                 return ResponseEntity.badRequest().body("user already in the project");
             }
 
             Notification notification = notificationService.CreateNotification(user,userC,pr, Notification.Type.INVITATION,"");
             if(notification!=null)
                 return ResponseEntity.ok(pr);
+
             return ResponseEntity.badRequest().body("try again later");
 
         } catch (RuntimeException e) {
@@ -95,11 +101,22 @@ public class ProjectController {
         }
     }
 
-    @GetMapping("/getProject")
-    public ResponseEntity<?> getProject(@RequestHeader("Authorization") String token) {
+    @GetMapping("/getProject/{id}")
+    public ResponseEntity<?> getProject(@RequestHeader("Authorization") String token, @PathVariable String id) {
         try {
-            String userId = myJWT.extractUserId(token);
-            Project myProjects = projectService.getMyProject(userId);
+            User user = userService.findById(myJWT.extractUserId(token));
+            Project myProjects = projectService.getMyProject(user.getId(),id);
+            return ResponseEntity.ok(myProjects);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getProjects")
+    public ResponseEntity<?> getProjects(@RequestHeader("Authorization") String token) {
+        try {
+            User user = userService.findById(myJWT.extractUserId(token));
+            Project myProjects = projectService.getMyProjects(user.getId());
             return ResponseEntity.ok(myProjects);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

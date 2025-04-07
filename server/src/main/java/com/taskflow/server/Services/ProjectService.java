@@ -50,7 +50,26 @@ public class ProjectService {
         }
         return null;
     }
-    public Project getMyProject(String userId) {
+    public Project getMyProject(String userId,String projectId) {
+        return projectRepository.findAll().stream()
+                .filter(project -> {
+                    boolean isProject = project.getId() !=null && project.getId().equals(projectId);
+                    boolean isCollaborator = project.getListeCollaborateur().stream()
+                            .anyMatch(collaborator ->
+                                    collaborator.getUser() != null &&
+                                            userId.equals(collaborator.getUser().getId())
+                            );
+
+                    boolean isCreator = project.getCreateur() != null &&
+                            project.getCreateur().getId() != null &&
+                            userId.equals(project.getCreateur().getId());
+
+                    return isProject && (isCollaborator || isCreator);
+                })
+                .findFirst()
+                .orElse(null);
+    }
+    public Project getMyProjects(String userId) {
         return projectRepository.findAll().stream()
                 .filter(project -> {
                     boolean isCollaborator = project.getListeCollaborateur().stream()
@@ -63,12 +82,11 @@ public class ProjectService {
                             project.getCreateur().getId() != null &&
                             userId.equals(project.getCreateur().getId());
 
-                    return isCollaborator || isCreator;
+                    return (isCollaborator || isCreator);
                 })
                 .findFirst()
                 .orElse(null);
     }
-
 
     public Project getProjectById(String id){
         Project project = projectRepository.getProjectById(id);

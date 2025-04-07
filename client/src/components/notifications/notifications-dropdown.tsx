@@ -108,8 +108,6 @@ export function NotificationsDropdown() {
 
   const handleAcceptInvite = (notificationId: string) => {
     AcceptInvitation(notificationId);
-
-    // Mark notification as read
     markAsRead(notificationId);
   };
 

@@ -78,16 +78,18 @@ public class NotificationService {
         Notification notification = new Notification();
         String subject="";
         String body="";
+
         switch (type) {
             case INVITATION -> {
                 if(sender==null || receiver==null || project == null)
                     return null;
+
                 if(notificationRepository.findAllByReceiverAndProjectAndType(receiver, project, Notification.Type.INVITATION).isEmpty()){
                     notification.setSender(sender);
                     notification.setType(Notification.Type.INVITATION);
                     notification.setTitle("Project Invitation");
                     subject = "TaskFlow - Project Invitation";
-                    body = String.format("%s invited you to %d project", sender.getNom()+" "+sender.getPrenom(), project.getNom());
+                    body = String.format("%s invited you to %s project", sender.getNom()+" "+sender.getPrenom(), project.getNom());
                     notification.setDescription(description);
                     notification.setProject(project);
                     notification.setReceiver(receiver);
@@ -120,7 +122,7 @@ public class NotificationService {
                 notification.setType(Notification.Type.JOINED);
                 notification.setCreationDate(new Date());
                 subject = "TaskFlow - Project Join";
-                body = String.format("%s joined your project : %d ", sender.getNom()+" "+sender.getPrenom(), project.getNom());
+                body = String.format("%s joined your project : %s ", sender.getNom()+" "+sender.getPrenom(), project.getNom());
 
                 break;
             }
@@ -130,7 +132,9 @@ public class NotificationService {
         Notification notification_send = notificationRepository.save(notification);
         sendSocket(receiver,notification_send);
         try {
+
             if(!isGITHUB(receiver.getEmail())){
+
                 emailService.sendEmail(receiver.getEmail(),subject,body);
             }
         } catch (MessagingException e) {

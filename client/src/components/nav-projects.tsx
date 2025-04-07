@@ -125,7 +125,7 @@ export function NavProjects({
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={userProject.nom}>
                   <Folder />
-                  <Link to={`/project`}>
+                  <Link to={`/projects/${userProject.id}`}>
                     <span>{userProject.nom}</span>
                   </Link>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />

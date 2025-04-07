@@ -7,13 +7,10 @@ import SearchForm from "../comp-333";
 import hasPermission from "../../utils/authz";
 import useGetUser from "../../hooks/useGetUser";
 
-export function ProjectHeader() {
+export function ProjectHeader({ projects, setProjects }: any) {
   // In a real app, you would fetch the project data based on the ID
-  const { projects, isLoading, error, setProjects } = useGetProject();
+
   const { user } = useGetUser();
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
   let isAllowedToAddCollaborator = false;
   let role = "memeber";
   if (projects?.createur?.id === user?.id) {

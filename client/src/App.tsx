@@ -69,7 +69,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
               <Route path="notifications" element={<Notifications />} />
-              <Route path="project" element={<ProjectPage />} />
+              <Route path="projects/:id" element={<ProjectPage />} />
               <Route path="profile" element={<Profile />} />
               <Route path="tasks" element={<TasksPage />} />
             </Route>
