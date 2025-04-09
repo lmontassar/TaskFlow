@@ -112,6 +112,23 @@ public class ProjectService {
                 .orElse(null);
     }
 
+
+    public List<Project> getAllMyProjects(String userId) {
+        return  projectRepository.findAll().stream()
+                .filter(project -> {
+                    boolean isCollaborator = project.getListeCollaborateur().stream()
+                            .anyMatch(collaborator ->
+                                    collaborator.getUser() != null &&
+                                            userId.equals(collaborator.getUser().getId())
+                            );
+
+                    boolean isCreator = project.getCreateur() != null &&
+                            project.getCreateur().getId() != null &&
+                            userId.equals(project.getCreateur().getId());
+
+                    return (isCollaborator || isCreator);
+                }).collect(Collectors.toList());
+    }
     public Project getProjectById(String id){
         Project project = projectRepository.getProjectById(id);
         System.out.println(project);

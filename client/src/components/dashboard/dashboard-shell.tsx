@@ -52,6 +52,7 @@ interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   const { t, i18n } = useTranslation();
   const { projects, isLoading, error, setProjects } = useGetProject();
+  console.log("projects", projects);
 
   const data = {
     user: {
@@ -132,7 +133,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <SidebarContent>
           <NavMain items={data.navMain} />
           <hr />
-          <NavProjects userProject={projects} projectLoading={isLoading} />
+          <NavProjects userProjects={projects} projectLoading={isLoading} />
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>

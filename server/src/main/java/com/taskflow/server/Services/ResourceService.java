@@ -1,2 +1,7 @@
-package com.taskflow.server.Services;public class ResourceService {
+package com.taskflow.server.Services;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ResourceService {
 }

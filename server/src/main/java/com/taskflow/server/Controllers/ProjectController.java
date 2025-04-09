@@ -123,6 +123,16 @@ public class ProjectController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/getAllMyProjects")
+    public ResponseEntity<?> getAllProjects(@RequestHeader("Authorization") String token) {
+        try {
+            User user = userService.findById(myJWT.extractUserId(token));
+            List<Project> myProjects = projectService.getAllMyProjects(user.getId());
+            return ResponseEntity.ok(myProjects);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @DeleteMapping("/remove/{projectId}/{userId}")
     public ResponseEntity<?> removeUser(@RequestHeader("Authorization") String token,

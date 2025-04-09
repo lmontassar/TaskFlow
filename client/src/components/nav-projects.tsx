@@ -62,10 +62,10 @@ type Project = {
   dateCreation: string;
 };
 export function NavProjects({
-  userProject,
+  userProjects,
   projectLoading,
 }: {
-  userProject: Project | null;
+  userProjects: Project[] | null;
   projectLoading: boolean;
 }) {
   const navigate = useNavigate();
@@ -114,36 +114,38 @@ export function NavProjects({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
-        {userProject ? (
-          <Collapsible
-            key={userProject.id}
-            asChild
-            defaultOpen={true}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem key={userProject.nom}>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={userProject.nom}>
-                  <Folder />
-                  <Link to={`/projects/${userProject.id}`}>
-                    <span>{userProject.nom}</span>
-                  </Link>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  <SidebarMenuSubItem key={userProject.nom}>
-                    <SidebarMenuSubButton asChild>
-                      <a href={userProject.nom}>
-                        <span>{userProject.nom}</span>
-                      </a>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
+        {userProjects && userProjects.length > 0 ? (
+          userProjects.map((userProject: Project) => (
+            <Collapsible
+              key={userProject.id}
+              asChild
+              defaultOpen={true}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={userProject.nom}>
+                    <Folder />
+                    <Link to={`/projects/${userProject.id}`}>
+                      <span>{userProject.nom}</span>
+                    </Link>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem key={`sub-${userProject.id}`}>
+                      <SidebarMenuSubButton>
+                        <Link to={`/projects/${userProject.id}`}>
+                          <span>{userProject.nom}</span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          ))
         ) : (
           <EditDialog
             trigger={
@@ -159,7 +161,7 @@ export function NavProjects({
                 : t("project.creation_form.submit")
             }
             disabled={isLoading || created}
-            onClick={handleSubmit} // Disable the button while loading
+            onClick={handleSubmit}
             description=""
           >
             <div className="flex flex-col gap-4">
@@ -174,6 +176,7 @@ export function NavProjects({
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
+
               <div className="flex flex-col gap-2">
                 <InputNumber
                   label={t("project.creation_form.estimated_budget")}
@@ -181,6 +184,7 @@ export function NavProjects({
                   setBudget={setBudgetEstimate}
                 />
               </div>
+
               <div className="flex flex-col gap-2">
                 <Label htmlFor="input-03">
                   {t("project.creation_form.tags")}
@@ -191,6 +195,7 @@ export function NavProjects({
                   placeholder={t("project.creation_form.tags_placeholder")}
                 />
               </div>
+
               <Textarea03
                 label={t("project.creation_form.description")}
                 helperText={t("project.creation_form.description_helper_text")}
@@ -198,12 +203,14 @@ export function NavProjects({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+
               <Input42
-                className={"w-full"}
+                className="w-full"
                 label={t("project.creation_form.estimated_time")}
-                type={"button"}
+                type="button"
                 onChange={handleDateChange}
               />
+
               {created && (
                 <SuccessAlert>
                   {t("project.creation_form.success")}
