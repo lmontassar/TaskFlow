@@ -8,15 +8,17 @@ import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-p
 import { Clock, AlertCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import type { Task, GroupBy } from "./tasks-interface"
+import useTasks from "../../hooks/useTasks"
 
 interface TasksBoardProps {
-  groupedTasks: Record<string, Task[]>
+  groupedTasks: Record<string, any[]>
   groupBy: GroupBy
   onTaskClick: (task: Task) => void
   onDragEnd: (result: DropResult) => void
 }
 
 export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: TasksBoardProps) {
+  const {checkIfAssigneeTask , checkIfCreatorOfProject} = useTasks();
   const getColumnTitle = (key: string): string => {
     if (groupBy === "status") {
       switch (key) {
@@ -185,16 +187,17 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
                   <ScrollArea className="h-[calc(100vh-12rem)]">
                     <div className="space-y-2 p-3">
                       {tasks.map((task, index) => (
-                        <Draggable key={task.id} draggableId={task.id} index={index}>
+                        <Draggable key={task.id} draggableId={task.id} index={index} isDragDisabled={checkIfAssigneeTask(task)===false && checkIfCreatorOfProject(task?.project) === false }>
                           {(provided) => (
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className="w-full"
+                              className={`w-full select-none  ${ checkIfAssigneeTask(task)===false && checkIfCreatorOfProject(task?.project) === false ? "cursor-not-allowed" :  "cursor-crosshair"}`}
                             >
                               <Card
-                                className="overflow-hidden transition-shadow hover:shadow-md w-full"
+                                className={`overflow-hidden transition-shadow hover:shadow-md w-full ${checkIfAssigneeTask(task)===false && checkIfCreatorOfProject(task?.project) === false ? "bg-gray-300" :""} `} 
+                                
                                 onClick={() => onTaskClick(task)}
                               >
                                 <CardContent className="p-3">
@@ -204,7 +207,7 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
                                         className="flex-1 font-medium truncate max-w-full overflow-hidden text-ellipsis"
                                         title={task.nomTache}
                                       >
-                                        {/* {task.nomTache} */} bla bla bla bla bla  bla
+                                        {task.nomTache}
                                       </h4>
                                       {getDifficulteIcon(task.difficulte)}
                                     </div>
@@ -215,9 +218,7 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
                                           <Avatar key={assignee.id} className="h-6 w-6 border-2 border-background">
                                             <AvatarImage
                                               src={
-                                                assignee.avatar.startsWith("avatar")
-                                                  ? `/api/user/avatar/${assignee.avatar}`
-                                                  : assignee.avatar
+                                                assignee.avatar
                                               }
                                               alt={assignee.nom}
                                             />

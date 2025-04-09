@@ -6,6 +6,7 @@ import {
   Gauge,
   House,
   Inbox,
+  ListTodo,
   MessageCircle,
   type LucideIcon,
 } from "lucide-react";
@@ -57,6 +58,11 @@ export function NavMain() {
       title: t("sidebar.dashboard"),
       url: "/dashboard",
       icon: Gauge,
+    },
+    {
+      title: t("sidebar.myTasks"),
+      url: "/my-tasks",
+      icon: ListTodo,
     },
   ];
   return (

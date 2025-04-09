@@ -23,11 +23,18 @@ function AvatarImage({
   className,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+  let EditsProp = props;
+  const firstLetter = props?.alt?.substring(0,1).toUpperCase();
+  EditsProp.src =  props.src == "" ? `https://placehold.co/200x200/6049e7/ffffff?text=${firstLetter}&font=bold` :
+                  ( props?.src?.startsWith("avatar")
+                    ? `/api/user/avatar/${props.src}`
+                    : props.src )
+  
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn("aspect-square size-full", className)}
-      {...props}
+      {...EditsProp}
     />
   )
 }

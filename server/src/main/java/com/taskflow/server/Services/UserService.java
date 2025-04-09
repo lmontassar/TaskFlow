@@ -93,7 +93,7 @@ public class UserService {
     public User findById(String id)
     {
         User u = userRepository.getUserById(id);
-        if (u!= null && StringUtils.isNotEmpty(u.getPassword())) {
+        if (u!= null ) {
             u.setPassword(null);
         }
         return u;

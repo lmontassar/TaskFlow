@@ -3,6 +3,7 @@ package com.taskflow.server.Controllers;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,67 @@ public class TacheController {
     
     @Autowired
     private JWT myJWT;
+
+    @PostMapping("/add/assignee")
+    public ResponseEntity<?> addAssignee(
+        @RequestParam("taskID") String taskID,
+        @RequestParam("userID") String userID,
+        @RequestHeader("Authorization") String token
+
+    ) {
+        try{
+            String s = myJWT.extractUserId(token);
+            User u = userService.findById(s);
+            User AssigneeUser = userService.findById(userID);
+            if (u == null || AssigneeUser  == null) {
+                return ResponseEntity.status(404).body("utilisateur : not found"); // 404 Not Found
+            }
+            Tache task = tacheSer.findTacheById(taskID);
+            if(task == null) return ResponseEntity.status(404).body("tache: not found");
+            Project p = projectSer.getProjectById(task.getProject().getId());
+            if(p == null) return ResponseEntity.status(404).body("projet: not found");
+            if( p.getCreateur().getId().equals(u.getId()) == false ) return  ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not able to add an asignee to this task");
+            if( tacheSer.isMember(AssigneeUser, task) == false ) return ResponseEntity.status(404).body("This user isn't a member of this project"); 
+            if( tacheSer.IsUserExistInAsignee(AssigneeUser, task)  ) return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("this user is already added!!!");
+            tacheSer.addAssignee(AssigneeUser,task);
+            return ResponseEntity.ok().build();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
+
+    
+    @DeleteMapping("/delete/assignee")
+    public ResponseEntity<?> deleteAssignee(
+        @RequestParam("taskID") String taskID,
+        @RequestParam("userID") String userID,
+        @RequestHeader("Authorization") String token
+
+    ) {
+        try{
+            String s = myJWT.extractUserId(token);
+            User u = userService.findById(s);
+            User AssigneeUser = userService.findById(userID);
+            if (u == null || AssigneeUser  == null) {
+                return ResponseEntity.status(404).body("utilisateur : not found"); // 404 Not Found
+            }
+            Tache task = tacheSer.findTacheById(taskID);
+            if(task == null) return ResponseEntity.status(404).body("tache: not found");
+            Project p = projectSer.getProjectById(task.getProject().getId());
+            if(p == null) return ResponseEntity.status(404).body("projet: not found");
+            if( p.getCreateur().getId().equals(u.getId()) == false ) return  ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not able to delete an asignee to this task");
+            if( tacheSer.isMember(AssigneeUser, task) == false ) return ResponseEntity.status(404).body("This user isn't a member of this project"); 
+            if( tacheSer.IsUserExistInAsignee(AssigneeUser, task) == false  ) return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("this user isn't exist!!!");
+            tacheSer.removeAssignee(AssigneeUser,task);
+            return ResponseEntity.ok().build();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
 
     @PostMapping("/add")
@@ -132,6 +194,7 @@ public class TacheController {
             return ResponseEntity.badRequest().build();
         }
     }
+    
     @GetMapping("/get/project/{id}")
     public ResponseEntity<?> getByProject(
         @RequestHeader("Authorization") String token,
@@ -140,6 +203,22 @@ public class TacheController {
         try{
             Project p = projectSer.getProjectById(id);
             List<Tache> tasks = tacheSer.findTacheByProjectId(p);
+            if (tasks == null ) return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().body(tasks);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/get/user/{id}")
+    public ResponseEntity<?> getByUser(
+        @RequestHeader("Authorization") String token,
+        @PathVariable("id") String id
+    ) {
+        try{
+            User u = userService.findById(id);
+            List<Tache> tasks = tacheSer.findTachesByUser(u);
             if (tasks == null ) return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(tasks);
         } catch(Exception e) {
@@ -163,7 +242,7 @@ public class TacheController {
                 Tache task = tacheSer.findTacheById(taskID);
                 if(task == null) return ResponseEntity.notFound().build();
 
-                if( tacheSer.IsUserExistInAsignee(u,task) && tacheSer.isCreateur(u, task) ) // IF not Assignee and not creator return 403  
+                if( tacheSer.IsUserExistInAsignee(u,task) == false && tacheSer.isCreateur(u, task) == false ) // IF not Assignee and not creator return 403  
                     return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
                 //if( p.getCreateur().getId().equals(u.getId()) == false ) return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -196,8 +275,8 @@ public class TacheController {
             }
             Tache oldTask = tacheSer.findTacheById(task.getId());
             if(oldTask == null) return  ResponseEntity.notFound().build();
-
-            if( tacheSer.isCreateur(u, oldTask) ) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            
+            if( tacheSer.isCreateur(u, oldTask) == false ) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
             //
 
@@ -250,6 +329,9 @@ public class TacheController {
         }
     }
 
+    
+    
+
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(
         @RequestParam("taskID") String taskID,
@@ -257,9 +339,17 @@ public class TacheController {
     ){
         try{
 
-
-
+            String s = myJWT.extractUserId(token);
+            User u = userService.findById(s);
+            if (u == null) {
+                return ResponseEntity.notFound().build(); // 404 Not Found
+            }
             Tache OldTask = tacheSer.findTacheById(taskID);
+            Project p = projectSer.getProjectById(OldTask.getProject().getId());
+            if(p == null) return ResponseEntity.notFound().build();
+            if( p.getCreateur().getId().equals(u.getId()) == false ) return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+
             if(OldTask == null ) ResponseEntity.notFound().build();
             tacheSer.delete(OldTask);
             return ResponseEntity.ok().build(); 

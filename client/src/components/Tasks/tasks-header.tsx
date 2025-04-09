@@ -32,7 +32,8 @@ interface TasksHeaderProps {
     label: string[]
     dateFinEstime: string | null
   }
-  tasks: Task[]
+  tasks: Task[],
+  thisUserIsACreator: () => boolean
 }
 
 export function TasksHeader({
@@ -48,6 +49,7 @@ export function TasksHeader({
   onCreateTask,
   filterOptions,
   tasks,
+  thisUserIsACreator
 }: TasksHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [isSearching, setIsSearching] = useState(false)
@@ -71,9 +73,7 @@ export function TasksHeader({
         assignees.add(assignee.id)
         assigneeMap.set(assignee.id, {
           name: _.startCase(assignee.nom) +" "+_.startCase(assignee.prenom),
-          avatar: assignee.avatar.startsWith("avatar") ? 
-                  `/api/user/avatar/${assignee.avatar}` : 
-                  assignee.avatar,
+          avatar: assignee.avatar
         })
       })
     })
@@ -125,9 +125,9 @@ export function TasksHeader({
   const handleFilterDifficulty = (difficulty: string, checked: boolean) => {
     // Map difficulty to priority for backward compatibility
     const difficultyToPriority: Record<string, string> = {
-      easy: "low",
-      normal: "medium",
-      hard: "high",
+      easy: "easy",
+      normal: "normal",
+      hard: "hard",
     }
 
     const priority = difficultyToPriority[difficulty] || difficulty
@@ -329,7 +329,7 @@ export function TasksHeader({
                     <div className="flex items-center gap-2">
                       <Checkbox
                         id="difficulty-hard"
-                        checked={filterOptions.priority.includes("high")}
+                        checked={filterOptions.priority.includes("hard")}
                         onCheckedChange={(checked) => handleFilterDifficulty("hard", checked as boolean)}
                       />
                       <label htmlFor="difficulty-hard" className="text-sm">
@@ -339,7 +339,7 @@ export function TasksHeader({
                     <div className="flex items-center gap-2">
                       <Checkbox
                         id="difficulty-normal"
-                        checked={filterOptions.priority.includes("medium")}
+                        checked={filterOptions.priority.includes("normal")}
                         onCheckedChange={(checked) => handleFilterDifficulty("normal", checked as boolean)}
                       />
                       <label htmlFor="difficulty-normal" className="text-sm">
@@ -349,7 +349,7 @@ export function TasksHeader({
                     <div className="flex items-center gap-2">
                       <Checkbox
                         id="difficulty-easy"
-                        checked={filterOptions.priority.includes("low")}
+                        checked={filterOptions.priority.includes("easy")}
                         onCheckedChange={(checked) => handleFilterDifficulty("easy", checked as boolean)}
                       />
                       <label htmlFor="difficulty-easy" className="text-sm">
@@ -421,19 +421,19 @@ export function TasksHeader({
           <div className="hidden items-center rounded-md border md:flex">
             <Button
               variant="ghost"
-              size="icon"
-              className={`rounded-none rounded-l-md ${viewMode === "board" ? "bg-accent" : ""}`}
+              className={`rounded-none rounded-l-md px-3 py-2 flex items-center gap-2 ${viewMode === "board" ? "bg-accent" : ""}`}
               onClick={() => onViewModeChange("board")}
             >
               <LayoutGrid className="h-4 w-4" />
+              <span>Board</span>
             </Button>
             <Button
               variant="ghost"
-              size="icon"
-              className={`rounded-none rounded-r-md ${viewMode === "list" ? "bg-accent" : ""}`}
+              className={`rounded-none rounded-r-md px-3 py-2 flex items-center gap-2 ${viewMode === "list" ? "bg-accent" : ""}`}
               onClick={() => onViewModeChange("list")}
             >
               <List className="h-4 w-4" />
+              <span>List</span>
             </Button>
           </div>
 
@@ -482,10 +482,16 @@ export function TasksHeader({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button onClick={onCreateTask}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Task
-          </Button>
+            {
+              thisUserIsACreator() && (
+                <Button onClick={onCreateTask}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Task
+                </Button>
+              )
+            }
+          
+
         </div>
       </div>
     </div>

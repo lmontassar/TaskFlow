@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -33,6 +33,9 @@ import _ from "lodash"
 import { Input } from "../ui/input"
 
 import DurationInput from "../ui/divided-duration-input"
+import { UserSearch } from "../ui/assigneeSearch"
+import useTasks from "../../hooks/useTasks"
+import { Link } from "react-router-dom"
 
 function formatDurationReact(duration: number): string {
   const units = [
@@ -59,21 +62,33 @@ function formatDurationReact(duration: number): string {
 }
 
 interface TaskDetailsProps {
-  task: any
+  taskToEdit: any
   onClose: () => void
   onUpdate: (task: Task) => void
   onDelete: (taskId: string) => void
-  allTasks: Task[]
+  allTasks: Task[],
+  thisUserIsACreator: () => boolean,
+  handleDeleteAssignee:any,
+
 }
 
-export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: TaskDetailsProps) {
+export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks ,handleDeleteAssignee}: TaskDetailsProps) {
   const [isEditing, setIsEditing] = useState(false)
-  const [editedTask, setEditedTask] = useState<Task>({ ...task })
+  const [editedTask, setEditedTask] = useState<Task>({ ...taskToEdit })
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [assigneeToDelete,setAssigneeToDelete] = useState<any>(null);
   const [commentText, setCommentText] = useState("")
   const commentInputRef = useRef<HTMLTextAreaElement>(null)
   const [marge, setMarge] = useState(editedTask.marge)
   const [duration, setDuration] = useState(editedTask.duree)
+  const [assigneeToAdd,setAssigneeToAdd] = useState<any>(null)
+  const {checkIfCreatorOfProject} = useTasks();
+  const [task , setTask] = useState(taskToEdit);
+  useEffect(()=>{
+    setTask(
+      allTasks.filter((t)=> t.id == taskToEdit.id )[0]
+    )
+  },[allTasks,taskToEdit])
 
   const handleTaskUpdate = (field: string, value: any) => {
     setEditedTask({
@@ -81,6 +96,11 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
       [field]: value,
     })
   }
+
+  const DeleteAssignee = (taskID:any,userID:any) =>{
+    handleDeleteAssignee(taskID,userID);
+    task.assignee = task.assignee.filter( assignee  => assignee.id != userID)
+  } 
 
   const saveChanges = () => {
     onUpdate( {
@@ -204,6 +224,9 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
     }
   })
 
+
+  
+
   return (
     <div className="border-l w-[400px] flex flex-col">
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
@@ -222,6 +245,7 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
               variant="destructive"
               onClick={() => {
                 onDelete(task.id)
+                
                 setConfirmDelete(false)
               }}
             >
@@ -229,6 +253,35 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
             </Button>
           </DialogFooter>
         </DialogContent>
+      </Dialog>
+
+      <Dialog open={assigneeToDelete != null} onOpenChange={setAssigneeToDelete}>
+        { assigneeToDelete && (
+
+          <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure you want to remove this Assigne?</DialogTitle>
+            <DialogDescription>
+                {assigneeToDelete.prenom} {assigneeToDelete.nom} won't be able to change the status of this task anymore, but you can add him again
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssigneeToDelete(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                DeleteAssignee(task.id,assigneeToDelete.id)
+                setAssigneeToDelete(null)
+              }}
+              >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      
+            )}
       </Dialog>
 
       <div className="flex h-14 items-center justify-between border-b px-4">
@@ -247,14 +300,15 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setIsEditing(true)}>
+              <DropdownMenuItem disabled={ !checkIfCreatorOfProject(task.project) } onClick={() => setIsEditing(checkIfCreatorOfProject(task.project))}>
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Task
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
+                disabled={ !checkIfCreatorOfProject(task.project) }
                 className="text-destructive focus:text-destructive"
-                onClick={() => setConfirmDelete(true)}
+                onClick={() => setConfirmDelete(checkIfCreatorOfProject(task.project))}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
@@ -442,7 +496,9 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
             <>
               <div className="mb-6 space-y-4">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-semibold">{task.nomTache}</h2>
+                  <h2 className="text-xl font-semibold underline">
+                  <Link to={`/task/${task.id}`}>{task.nomTache}</Link>
+                  </h2>
                 </div>
 
                 <div className="flex flex-wrap justify-between gap-2">
@@ -619,16 +675,25 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
                 <TabsContent value="assignees" className="pt-2">
                   <div className="text-center text-sm text-muted-foreground">
                     <div className="grid gap-3 pl-3">
+                      { checkIfCreatorOfProject(task.project) && (
+                        <UserSearch
+                        key={task.id}
+                        onUserSelect={setAssigneeToAdd}
+                        alreadyincluded={task.assignee}
+                        selectedUsers={task.project.listeCollaborateur}
+                        task={task}
+                      />
+                      )}
+                      
+                      
                       {task.assignee.length > 0 ? (
                         task.assignee.map((assignee) => (
                           <div key={assignee.id} className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
                               <AvatarImage
-                                src={
-                                  assignee.avatar.startsWith("avatar")
-                                    ? `/api/user/avatar/${assignee.avatar}`
-                                    : assignee.avatar
-                                }
+                                src= {
+                                  assignee.avatar
+                                  }
                                 alt={assignee.nom}
                               />
                               <AvatarFallback>{assignee.initials}</AvatarFallback>
@@ -637,6 +702,15 @@ export function TaskDetails({ task, onClose, onUpdate, onDelete, allTasks }: Tas
                             <span className="text-sm font-medium text-gray-800">
                               {_.startCase(assignee.nom) } {_.startCase(assignee.prenom)}
                             </span>
+
+                            {
+                              checkIfCreatorOfProject(task.project) && (
+                                <Trash2
+                                  onClick={() => setAssigneeToDelete(assignee)}
+                                className="cursor-pointer mr-2 h-4 w-4 ml-auto" />
+                              )
+                            }
+                          
                           </div>
                         ))
                       ) : (

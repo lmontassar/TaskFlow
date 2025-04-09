@@ -13,7 +13,7 @@ export type ViewMode = "board" | "list";
 export type GroupBy = "status" | "priority" | "assignee" | "project";
 export type SortBy = "dueDate" | "priority" | "createdAt" | "name";
 export type SortOrder = "asc" | "desc";
-export type Priority = "low" | "medium" | "high" | "urgent";
+export type Priority = "easy" | "normal" | "hard";
 export type Status = "TODO" | "PROGRESS" | "REVIEW" | "DONE";
 
 export interface TaskAssignee {
@@ -65,15 +65,15 @@ export interface Task {
   parent?: string;
 }
 type taskProps = {
-  project: any;
+  project?: any;
 };
 
 export function TasksInterface({ project }: taskProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [groupBy, setGroupBy] = useState<GroupBy>("status");
-  const [sortBy, setSortBy] = useState<SortBy>("dueDate");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [sortBy, setSortBy] = useState<SortBy>("createdAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showTaskDetails, setShowTaskDetails] = useState(false);
@@ -88,6 +88,7 @@ export function TasksInterface({ project }: taskProps) {
   });
 
   let {
+    handleDeleteAssignee,
     handleUpdateTask,
     handleDeleteTask,
     handleUpdateStatutTask,
@@ -98,19 +99,24 @@ export function TasksInterface({ project }: taskProps) {
     setAddTaskError,
     handleFindAllTasks,
     getTasksByProjectID,
+    checkIfCreatorOfProject,
+    getMyTasks
   } = useTasks();
 
   useEffect(() => {
     // handleFindAllTasks();
     if(project)
-    getTasksByProjectID(project?.id);
+      getTasksByProjectID(project?.id);
+    else 
+      getMyTasks()
   }, [project]);
 
+  const thisUserIsACreator = ()=>{
+    if( project == null ) return false
+    return  checkIfCreatorOfProject(project) ; 
+  } 
+
   // Filter tasks based on search query and filter options
-
- 
-
-
   const getFilteredTasks = () => {
     let filtered = [...tasks];
 
@@ -135,9 +141,9 @@ export function TasksInterface({ project }: taskProps) {
       // Note: priority is not in the new Task interface, so this filter might need to be removed
       // or adapted to use a different field like difficulte
       const difficulteMap: Record<string, Priority> = {
-        easy: "low",
-        normal: "medium",
-        hard: "high",
+        easy: "easy",
+        normal: "normal",
+        hard: "hard",
       };
 
       filtered = filtered.filter((task) => {
@@ -368,12 +374,21 @@ export function TasksInterface({ project }: taskProps) {
       [source.droppableId]: updatedSourceTasks,
       [destination.droppableId]: updatedDestinationTasks,
     }));
+
+    const updatedTasks = tasks.map((task:any) =>
+      task.id === draggableId ? { ...task, statut: destination.droppableId } : task
+    );
+    setTasks(updatedTasks);
+
+
+
   };
 
   return (
     <div className="flex h-[calc(100vh-7rem)] overflow-hidden rounded-lg border bg-background shadow-sm">
       <div className="flex flex-1 flex-col">
         <TasksHeader
+          thisUserIsACreator={thisUserIsACreator}
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
           groupBy={groupBy}
@@ -397,22 +412,26 @@ export function TasksInterface({ project }: taskProps) {
               onDragEnd={handleDragEnd}
             />
           ) : (
-            <TasksList project={project} tasks={filteredTasks} onTaskClick={handleTaskClick} />
+            <TasksList project={project}  tasks={filteredTasks} setTasks={setTasks} onTaskClick={handleTaskClick} handleUpdateStatutTask={handleUpdateStatutTask} />
           )}
 
           {showTaskDetails && selectedTask && (
             <TaskDetails
-              task={selectedTask}
+              taskToEdit={selectedTask}
               onClose={() => setShowTaskDetails(false)}
               onUpdate={handleTaskUpdate}
               onDelete={handleTaskDelete}
               allTasks={tasks}
+              thisUserIsACreator={thisUserIsACreator}
+              handleDeleteAssignee={handleDeleteAssignee}
+              project={project}
             />
           )}
         </div>
       </div>
 
-      <TaskCreateModal
+      
+        <TaskCreateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreateTask={addTask}
@@ -421,6 +440,8 @@ export function TasksInterface({ project }: taskProps) {
         setAddTaskError={setAddTaskError}
         project={project}
       />
+      
+      
     </div>
   );
 }

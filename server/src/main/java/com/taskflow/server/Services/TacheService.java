@@ -1,8 +1,12 @@
 package com.taskflow.server.Services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.taskflow.server.Entities.Collaborator;
 import com.taskflow.server.Entities.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,11 @@ public class TacheService {
     public List<Tache> findTacheByProjectId(Project project){
         return tacheRep.getAllByProject(project);
     }
+
+    public List<Tache> findTachesByUser(User u) {
+        return tacheRep.findByAssigneeContainingOrRapporteur(u,u);
+    }
+
     public Tache update(Tache t ){
         return tacheRep.save(t);
     }
@@ -46,7 +55,7 @@ public class TacheService {
 
     public boolean IsUserExistInAsignee(User u,Tache task) {
         if(u == null || task == null) return false;
-        for (User Asignee : task.getAssignee()) {
+        for (User Asignee : task.getAssignee() ) {
             if(Asignee.getId().equals(u.getId())) return true;            
         }
         return false;
@@ -55,6 +64,25 @@ public class TacheService {
     public boolean isCreateur(User u, Tache task) {
         if( u == null || task == null ) return false ;
         return u.getId().equals(task.getProject().getCreateur().getId());
+    }
+    public boolean isMember(User AssigneeUser,Tache  task){
+        for (Collaborator members: task.getProject().getListeCollaborateur()) {
+            if( AssigneeUser.equals( members.getUser() ) ) {
+                return true;
+            }
+        } return false;
+    }
+    public Tache addAssignee(User AssigneeUser,Tache  task) {
+        List<User> assignees = task.getAssignee() ;
+        assignees.add(AssigneeUser);
+        task.setAssignee(  assignees );
+        return tacheRep.save(task);
+    }
+    public Tache removeAssignee(User AssigneeUser,Tache  task) {
+        List<User> assignees = task.getAssignee() ;
+        assignees.remove(AssigneeUser);
+        task.setAssignee(  assignees );
+        return tacheRep.save(task);
     }
 
 }

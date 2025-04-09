@@ -5,6 +5,32 @@ const useTasks = () => {
 
   const [addTaskError, setAddTaskError] = useState<string | null>("");
 
+  const checkIfCreatorOfProject = (project:any) => {
+    if( project && project.createur ) {
+        const token:String  = localStorage.getItem("authToken") || "";
+        if(token != ""){
+          const id = JSON.parse(atob(token.split('.')[1])).id;
+          if( id!="" && id == project.createur.id ) return true ;
+        }
+
+    }
+    return false;
+  }
+  // const checkIfMemberProject(user:any,project:any) {
+
+  //   return false;
+  // }
+  const checkIfAssigneeTask = ( task:any, user :any = null )=> {
+    if (user == null){
+      const token:String  = localStorage.getItem("authToken") || "";
+      if(token != ""){
+        const id = JSON.parse(atob(token.split('.')[1])).id;
+        user = { 'id': id}
+      }else return false;
+    }
+     return task.assignee.some( (u:any) => u.id === user.id);
+   }
+
   const correctedDifficulty = (difficulty: string) => {
     const mapping: Record<string, string> = {
       normal: "normal", // Fix typo if backend expects this
@@ -220,7 +246,124 @@ const useTasks = () => {
     }
     return [];
   };
+  const getMyTasks = async () =>{
+    const token:String  = localStorage.getItem("authToken") || "";
+    if (!token) return;
+    const id = JSON.parse(atob(token.split('.')[1])).id;
+
+    try {
+      const res = await fetch(`/api/tache/get/user/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        return setTasks(result);
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.log("error");
+    }
+    return [];
+  }
+  const handleDeleteAssignee = async (taskID:any,userID:any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const data = new FormData();
+      data.append("taskID", taskID);
+      data.append("userID",userID);
+      const res = await fetch("/api/tache/delete/assignee", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: data,
+      });
+
+      if (res.ok) {
+        console.log("changed");
+        return true;
+      } else {
+        console.log("noo way");
+      }
+    } catch (error) {
+      console.log("noo way");
+    }
+    return false;
+  }
+
+  const handleAddAssignee = async (taskID: any,userID:any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const data = new FormData();
+      data.append("taskID",taskID);
+      data.append("userID",userID);
+      const res = await fetch("/api/tache/add/assignee", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: data,
+      });
+
+      if (res.ok) {
+        return true;
+      } else {
+        
+      }
+    } catch (error) {
+      
+    }
+    return false;
+  };
+
+  const GetTask = async (taskID: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        return;
+      }
+      
+
+      const res = await fetch(`/api/tache/get/${taskID}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        console.log(result)
+        return result;
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.log("error");
+    }
+    return [];
+  };
+  
+
   return {
+    GetTask,
+    getMyTasks,
+    handleDeleteAssignee,
     handleUpdateTask,
     handleDeleteTask,
     handleUpdateStatutTask,
@@ -231,6 +374,9 @@ const useTasks = () => {
     tasks,
     setTasks,
     getTasksByProjectID,
+    checkIfCreatorOfProject,
+    handleAddAssignee,
+    checkIfAssigneeTask,
   };
 };
 export default useTasks;

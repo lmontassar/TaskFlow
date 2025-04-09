@@ -26,7 +26,7 @@ export default function UserProfileLogo(userdata: any) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
           <Avatar>
-            <AvatarImage src={user.avatar} alt="Profile image" />
+            <AvatarImage src={user.avatar} alt={user.nom} />
             <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <ChevronDownIcon

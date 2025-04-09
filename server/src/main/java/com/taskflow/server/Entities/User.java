@@ -25,4 +25,13 @@ public class User {
     private String bio;
     private Boolean activation;
     private Boolean twoFactorAuth;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return this.id.equals(user.getId());
+    }
+
 }

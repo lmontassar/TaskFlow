@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/command";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface SearchFormProps {
   children: React.ReactNode;
@@ -120,14 +121,17 @@ export default function SearchForm({
                     className="data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground relative flex cursor-default items-center gap-3 rounded-md px-2 py-1.5 text-sm outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground hover:cursor-pointer"
                     key={result.id}
                   >
-                    <img
-                      src={
-                        result.avatar.startsWith("avatar")
-                          ? `/api/user/avatar/${result.avatar}`
-                          : result.avatar
-                      }
-                      className="h-8 w-8 rounded-full"
-                    />
+
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={
+                          result?.avatar
+                        }
+                        alt={result.nom}
+                      />
+                      <AvatarFallback>{result.initials}</AvatarFallback>
+                    </Avatar>
+
                     <span>{result.nom || "Unknown"}</span>
                     <span className="ml-2 text-muted-foreground">
                       {result.email || "No Email"}

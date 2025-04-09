@@ -7,7 +7,8 @@
     "inbox": "Inbox",
     "chat": "Chat",
     "documentations": "Documentations",
-    "dashboard": "Tableau de bord"
+    "dashboard": "Tableau de bord",
+    "myTasks": "Mes tâches"
   },
   "OTP": {
     "errors": {

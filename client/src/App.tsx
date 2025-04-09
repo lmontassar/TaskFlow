@@ -19,6 +19,8 @@ import { TasksInterface } from "./components/Tasks/tasks-interface";
 import TasksPage from "./pages/Main/Tasks";
 import ProjectPage from "./pages/Main/Project";
 import Notifications from "./pages/Main/Notifications";
+import MyTasksPage from "./pages/Main/MyTasks";
+import SpecificTaskPage from "./components/Tasks/specific-task-page";
 
 export type UserType = {
   id: string;
@@ -70,6 +72,8 @@ function App() {
               <Route path="project" element={<ProjectPage />} />
               <Route path="profile" element={<Profile />} />
               <Route path="tasks" element={<TasksPage />} />
+              <Route path="my-tasks" element={<MyTasksPage/>} />
+              <Route path="task/:taskId" element={<SpecificTaskPage />} />
             </Route>
           </Route>
           {/* Public Routes */}
