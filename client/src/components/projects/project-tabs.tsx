@@ -7,6 +7,7 @@ import { ProjectTimeline } from "@/components/projects/project-tabs/project-time
 import { ProjectActivity } from "@/components/projects/project-tabs/project-activity";
 import { ProjectDiscussions } from "@/components/projects/project-tabs/project-discussions";
 import { ProjectMembers } from "./project-tabs/project-members";
+import { ProjectResources } from "./project-tabs/project-resources";
 
 export function ProjectTabs({ projects }: any) {
   const [activeTab, setActiveTab] = useState("tasks");
@@ -17,6 +18,7 @@ export function ProjectTabs({ projects }: any) {
         <TabsTrigger value="tasks">Tasks</TabsTrigger>
         <TabsTrigger value="timeline">Timeline</TabsTrigger>
         <TabsTrigger value="members">Members</TabsTrigger>
+        <TabsTrigger value="resources">Resources</TabsTrigger>
         <TabsTrigger value="discussions">Discussions</TabsTrigger>
         <TabsTrigger value="activity">Activity</TabsTrigger>
       </TabsList>
@@ -28,6 +30,9 @@ export function ProjectTabs({ projects }: any) {
       </TabsContent>
       <TabsContent value="members" className="mt-6">
         <ProjectMembers />
+      </TabsContent>
+      <TabsContent value="resources" className="mt-6">
+        <ProjectResources />
       </TabsContent>
       <TabsContent value="discussions" className="mt-6">
         <ProjectDiscussions />

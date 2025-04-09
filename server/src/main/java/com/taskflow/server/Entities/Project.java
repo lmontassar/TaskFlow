@@ -32,6 +32,7 @@ public class Project {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date dateFinEstime;
     private Set<Collaborator> listeCollaborateur;
+    private Set<Resource> listeRessource;
     private Status status;
     @DBRef
     private User createur;

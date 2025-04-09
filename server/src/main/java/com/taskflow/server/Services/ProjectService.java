@@ -2,6 +2,7 @@ package com.taskflow.server.Services;
 
 import com.taskflow.server.Entities.Collaborator;
 import com.taskflow.server.Entities.Project;
+import com.taskflow.server.Entities.Resource;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,18 @@ public class ProjectService {
             c.setRole("Member");
             collab.add(c);
             p.setListeCollaborateur(collab);
+            return projectRepository.save(p);
+        }
+        return null;
+    }
+    public Project addResource(Project p, Resource resource)
+    {
+
+        if(p != null)
+        {
+            Set<Resource> resources = p.getListeRessource();
+            resources.add(resource);
+            p.setListeRessource(resources);
             return projectRepository.save(p);
         }
         return null;
@@ -112,6 +125,9 @@ public class ProjectService {
                 .orElse(null);
     }
 
+    public Boolean isCreator(String user,Project project){
+        return project.getCreateur().getId().equals(user);
+    }
 
     public List<Project> getAllMyProjects(String userId) {
         return  projectRepository.findAll().stream()

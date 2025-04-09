@@ -11,10 +11,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Resource {
+    public enum Status{
+        AVAILABLE,ALLOCATED,PENDING,UNAVAILABLE
+    }
+
     @Id
     private String id;
     private String nom;
     private String type;
     private float coutUnitaire;
+    private String notes;
+    private Status status;
+
 
 }
