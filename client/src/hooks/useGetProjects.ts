@@ -18,7 +18,7 @@ export enum Status {
 //   tags: string[];
 // };
 const useGetProject = () => {
-  const [projects, setProjects] = useState(null);
+  const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = localStorage.getItem("authToken");
@@ -28,7 +28,7 @@ const useGetProject = () => {
       setError(null);
 
       try {
-        const response = await fetch(`/api/project/getProjects`, {
+        const response = await fetch(`/api/project/getAllMyProjects`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`, // Ensure Bearer prefix is used
