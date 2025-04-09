@@ -17,7 +17,7 @@ const useTasks = () => {
     return false;
   }
   // const checkIfMemberProject(user:any,project:any) {
-
+  
   //   return false;
   // }
   const checkIfAssigneeTask = ( task:any, user :any = null )=> {

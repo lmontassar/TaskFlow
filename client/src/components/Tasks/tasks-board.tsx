@@ -184,7 +184,7 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
             <Droppable droppableId={columnId} isDropDisabled={false}>
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps} className="flex-1 overflow-hidden">
-                  <ScrollArea className="h-[calc(100vh-12rem)]">
+                  <ScrollArea className="h-[calc(100vh-16rem)]">
                     <div className="space-y-2 p-3">
                       {tasks.map((task, index) => (
                         <Draggable key={task.id} draggableId={task.id} index={index} isDragDisabled={checkIfAssigneeTask(task)===false && checkIfCreatorOfProject(task?.project) === false }>
