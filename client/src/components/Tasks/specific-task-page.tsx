@@ -315,6 +315,8 @@ export default function SpecificTaskPage() {
 
   const canEdit = checkIfCreatorOfProject(task.project)
   const canEditStatut = checkIfAssigneeTask(task) || checkIfCreatorOfProject(task.project)
+
+  
   return (
     <div className="container mx-auto py-6">
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>

@@ -385,7 +385,7 @@ export function TasksInterface({ project }: taskProps) {
   };
 
   return (
-    <div className="flex h-[calc(100vh-7rem)] overflow-hidden rounded-lg border bg-background shadow-sm">
+    <div className="flex h-[calc(100vh-7rem)] overflow-x-hidden rounded-lg border bg-background shadow-sm">
       <div className="flex flex-1 flex-col">
         <TasksHeader
           thisUserIsACreator={thisUserIsACreator}
@@ -403,7 +403,7 @@ export function TasksInterface({ project }: taskProps) {
           tasks={tasks}
         />
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-x-hidden overflow-y-scroll">
           {viewMode === "board" ? (
             <TasksBoard
               groupedTasks={groupedTasks}
