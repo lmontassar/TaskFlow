@@ -31,17 +31,23 @@ public class NotificationController {
     public ResponseEntity<?> AcceptInvitation(@RequestHeader("Authorization") String token,
                                               @RequestBody Map<String, String> requestBody){
         String invitationId = requestBody.get("invitationId");
+
         try {
             Notification invitation = notificationService.getNotificationById(invitationId);
             User user = userService.findById(myJWT.extractUserId(token));
             if(user==null){
                 return ResponseEntity.status(403).build();
             }
+
             if(!Objects.equals(user.getId(), invitation.getReceiver().getId())){
                 return ResponseEntity.status(403).build();
             }
+
+
             if(notificationService.AcceptInvitation(invitation)){
+
                 notificationService.CreateNotification(invitation.getReceiver(),invitation.getSender(),invitation.getProject(), Notification.Type.JOINED,"");
+
                 return ResponseEntity.status(200).build();
             }
             return ResponseEntity.status(404).build();

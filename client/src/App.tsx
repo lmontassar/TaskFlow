@@ -21,6 +21,7 @@ import ProjectPage from "./pages/Main/Project";
 import Notifications from "./pages/Main/Notifications";
 import MyTasksPage from "./pages/Main/MyTasks";
 import SpecificTaskPage from "./components/Tasks/specific-task-page";
+import ProtectedLoginRoutes from "./utils/protectedloginroutes";
 
 export type UserType = {
   id: string;
@@ -39,7 +40,7 @@ export const Context = createContext<{
   isSignedIn: boolean;
   setIsSignedIn: Dispatch<SetStateAction<boolean>>;
   user: UserType | null;
-  setUser: Dispatch<SetStateAction<UserType | null>>;
+  setUser: Dispatch<SetStateAction<UserType | null>> | any;
 }>({
   isSignedIn: false,
   setIsSignedIn: () => {},
@@ -66,10 +67,11 @@ function App() {
           <Route element={<ProtectedRoutes />}>
             <Route path="/" element={<Page />}>
               <Route path="home" element={<Home />} />
+              <Route path="/" element={<Home />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="inbox" element={<Inbox />} />
               <Route path="notifications" element={<Notifications />} />
-              <Route path="project" element={<ProjectPage />} />
+              <Route path="projects/:id" element={<ProjectPage />} />
               <Route path="profile" element={<Profile />} />
               <Route path="tasks" element={<TasksPage />} />
               <Route path="my-tasks" element={<MyTasksPage/>} />
@@ -77,10 +79,12 @@ function App() {
             </Route>
           </Route>
           {/* Public Routes */}
-          <Route path="/signup" element={<Signup />} />
+          <Route element={<ProtectedLoginRoutes />}>
+            <Route path="/signup" element={<Signup />} />
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/emailverification" element={<EmailVerification />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/emailverification" element={<EmailVerification />} />
+          </Route>
           <Route path="/reset" element={<ResetPassword />} />
         </Routes>
       </Router>

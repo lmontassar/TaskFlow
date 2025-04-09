@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react";
+import { use, useContext, useEffect, useRef, useState } from "react";
 import { Notification } from "../components/notifications/notifications-dropdown";
+import { Context } from "../App";
+import { Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useContext(Context);
+  const token = localStorage.getItem("authToken") || "";
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -33,6 +38,45 @@ export function useNotifications() {
 
     fetchNotifications();
   }, []);
+
+  const clientRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!user?.id || clientRef.current) return; // prevent duplicate connections
+
+    const socket = new SockJS("/api/ws");
+    const client = Stomp.over(socket);
+
+    client.connect(
+      { Authorization: `Bearer ${token}` },
+      () => {
+        console.log("WebSocket connected");
+        client.subscribe(`/topic/notifications/${user.id}`, (message) => {
+          const newNotification = JSON.parse(message.body);
+          setNotifications((prev) => {
+            // prevent adding duplicates (by ID)
+            if (prev.some((n) => n.id === newNotification.id)) return prev;
+            return [newNotification, ...prev];
+          });
+          setUnreadCount((prev) => prev + 1);
+        });
+      },
+      (error) => {
+        console.error("WebSocket error:", error);
+      }
+    );
+
+    clientRef.current = client;
+
+    return () => {
+      if (clientRef.current) {
+        clientRef.current.disconnect(() => {
+          console.log("WebSocket disconnected");
+        });
+        clientRef.current = null;
+      }
+    };
+  }, [user?.id, token]);
   const AcceptInvitation = async (id: string) => {
     try {
       const response = await fetch(`/api/notifications/accept-invitation`, {
@@ -46,9 +90,6 @@ export function useNotifications() {
       if (!response.ok) {
         throw new Error("Failed to accept invitation");
       }
-      setNotifications((prevNotifications) =>
-        prevNotifications.filter((notification) => notification.id !== id)
-      );
     } catch (error: any) {
       setError(error.message);
     }

@@ -17,7 +17,7 @@ export enum Status {
 //   dateCreation: string; // Same format
 //   tags: string[];
 // };
-const useGetProject = () => {
+const useGetProjectById = (id: string) => {
   const [projects, setProjects] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,7 +28,7 @@ const useGetProject = () => {
       setError(null);
 
       try {
-        const response = await fetch(`/api/project/getProjects`, {
+        const response = await fetch(`/api/project/getProject/${id}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`, // Ensure Bearer prefix is used
@@ -53,4 +53,4 @@ const useGetProject = () => {
   return { projects, isLoading, error, setProjects };
 };
 
-export default useGetProject;
+export default useGetProjectById;

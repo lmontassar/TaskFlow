@@ -39,17 +39,6 @@ export default function Component() {
         activeTagIndex={activeTagIndex}
         setActiveTagIndex={setActiveTagIndex}
       />
-      <p className="text-muted-foreground mt-2 text-xs" role="region" aria-live="polite">
-        Built with{" "}
-        <a
-          className="hover:text-foreground underline"
-          href="https://github.com/JaleelB/emblor"
-          target="_blank"
-          rel="noopener nofollow"
-        >
-          emblor
-        </a>
-      </p>
     </div>
   );
 }

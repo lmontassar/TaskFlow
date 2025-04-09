@@ -10,6 +10,9 @@ export default defineConfig({
       "/api": "http://localhost:8089/",
     },
   },
+  define: {
+    global: "window",
+  },
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

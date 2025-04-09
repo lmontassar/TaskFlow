@@ -2,14 +2,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CalendarDays, Clock } from "lucide-react";
-import useGetProject from "../../hooks/useGetProjects";
 
-export function ProjectOverview() {
+export function ProjectOverview({ projects, setProjects }: any) {
   // In a real app, you would fetch the project data based on the ID
-  const { projects, isLoading, error, setProjects } = useGetProject();
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <Card className="mt-6">
@@ -59,9 +54,9 @@ export function ProjectOverview() {
                   >
                     <AvatarImage
                       src={
-                        member?.user.avatar
+                        member?.user?.avatar
                       }
-                      alt={member?.user.nom}
+                      alt={member?.user?.nom}
                     />
                     <AvatarFallback>{member.initials}</AvatarFallback>
                   </Avatar>

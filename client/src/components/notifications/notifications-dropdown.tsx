@@ -51,6 +51,7 @@ export function NotificationsDropdown() {
   const [activeTab, setActiveTab] = useState<"all" | "INVITATION">("all");
   const {
     AcceptInvitation,
+    RefuserInvitation,
     notifications,
     setNotifications,
     unreadCount,
@@ -61,7 +62,28 @@ export function NotificationsDropdown() {
 
   const formatDate = (dateString: string) => {
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+      return formatDistanceToNow(new Date(dateString), {
+        addSuffix: true,
+        locale: {
+          formatDistance: (token, count, options) => {
+            const formats: any = {
+              lessThanXSeconds: "just now",
+              xSeconds: `${count} seconds`,
+              halfAMinute: "half a minute",
+              lessThanXMinutes: `${count} minutes`,
+              xMinutes: `${count} minutes`,
+              aboutXHours: `about ${count} hours`,
+              xHours: `${count} hours`,
+              xDays: `${count} days`,
+              aboutXMonths: `about ${count} months`,
+              xMonths: `${count} months`,
+              aboutXYears: `about ${count} years`,
+              xYears: `${count} years`,
+            };
+            return formats[token] || token;
+          },
+        },
+      });
     } catch (error) {
       return dateString;
     }
@@ -70,6 +92,8 @@ export function NotificationsDropdown() {
   const getNotificationIcon = (type: NotificationType) => {
     switch (type) {
       case "INVITATION":
+        return <UserPlus className="h-5 w-5 text-blue-500" />;
+      case "JOINED":
         return <UserPlus className="h-5 w-5 text-blue-500" />;
       case "MENTION":
         return <MessageSquare className="h-5 w-5 text-purple-500" />;
@@ -84,14 +108,12 @@ export function NotificationsDropdown() {
 
   const handleAcceptInvite = (notificationId: string) => {
     AcceptInvitation(notificationId);
-
-    // Mark notification as read
     markAsRead(notificationId);
   };
 
   const handleDeclineInvite = (notificationId: string) => {
     // In a real app, you would call an API to decline the invite
-    console.log(`Declining invite for notification ${notificationId}`);
+    RefuserInvitation(notificationId);
 
     // Mark notification as read
     markAsRead(notificationId);
@@ -175,7 +197,7 @@ export function NotificationsDropdown() {
                 filteredNotifications.map((notification) => (
                   <DropdownMenuItem
                     key={notification.id}
-                    className="flex flex-col items-start p-0 focus:bg-transparent"
+                    className="flex flex-col items-start p-0 focus:bg-transparent mt-2"
                   >
                     <div
                       className={`w-full rounded-md p-3 ${
@@ -195,7 +217,7 @@ export function NotificationsDropdown() {
                               {formatDate(notification.creationDate)}
                             </p>
                           </div>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground mt-1">
                             {notification.type === "INVITATION" && (
                               <span className="">
                                 {notification.sender.nom} invited you to join{" "}
@@ -228,13 +250,18 @@ export function NotificationsDropdown() {
                               </Button>
                             </div>
                           )}
-
+                          {notification?.type === "JOINED" && (
+                            <span className="">
+                              {notification?.sender?.nom} Joined your project{" "}
+                              {notification?.project?.nom}
+                            </span>
+                          )}
                           {notification.sender?.nom && (
                             <div className="mt-2 flex items-center gap-2">
                               <Avatar className="h-5 w-5">
                                 <AvatarImage
-                                  src={notification.sender.userAvatar}
-                                  alt={notification.sender.userName}
+                                  src={notification.sender?.avatar}
+                                  alt={`${notification.sender?.prenom} ${notification.sender?.nom}`}
                                 />
                                 <AvatarFallback>
                                   {notification.sender.userInitials}

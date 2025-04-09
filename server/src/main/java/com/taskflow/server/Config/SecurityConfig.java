@@ -32,14 +32,14 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .cors().and() // 👈 Enable CORS integration
+                .cors().and()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/user/login", "/user/register", "/user/avatar/**",
                                 "/user/get", "/user/google", "/user/github",
                                 "/user/resendcode", "/user/verifyEmail", "/user/sendcode",
                                 "/user/resetpasswordtoken", "/user/resetpassword",
-                                "/user/twofactoauth","/user/search", "/error" // Added /error
+                                "/user/twofactoauth","/user/search","/ws/**", "/error"// Added /error
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
