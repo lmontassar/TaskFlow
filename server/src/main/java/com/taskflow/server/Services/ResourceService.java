@@ -20,4 +20,7 @@ public class ResourceService {
     public MaterialResource createMaterialResource(MaterialResource materialResource){
         return resourceRepository.save(materialResource);
     }
+    public Resource getById(String id){
+        return resourceRepository.getById(id);
+    }
 }

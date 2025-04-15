@@ -22,6 +22,7 @@ public class Resource {
     private float coutUnitaire;
     private String notes;
     private Status status;
+    private String categorie;
 
 
 }
