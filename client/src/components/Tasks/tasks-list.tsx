@@ -1,56 +1,74 @@
-"use client"
+"use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Checkbox } from "@/components/ui/checkbox"
-import { format, isValid, parseISO } from "date-fns"
-import { cn } from "@/lib/utils"
-import type { Task } from "./tasks-interface"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui/checkbox";
+import { format, isValid, parseISO } from "date-fns";
+import { cn } from "@/lib/utils";
+import type { Task } from "./tasks-interface";
 import _ from "lodash";
-import { CheckCircle2, StarIcon, Stars, StarsIcon } from "lucide-react"
-import useTasks from "../../hooks/useTasks"
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
-import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { useTranslation } from "react-i18next"
-
+import { CheckCircle2, StarIcon, Stars, StarsIcon } from "lucide-react";
+import useTasks from "../../hooks/useTasks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface TasksListProps {
-  tasks: Task[]
-  onTaskClick: (task: Task) => void
-  project: any
-  handleUpdateStatutTask: any
-  setTasks: any
+  tasks: Task[];
+  onTaskClick: (task: Task) => void;
+  project: any;
+  handleUpdateStatutTask: any;
+  setTasks: any;
 }
-export function TasksList({ project, tasks, setTasks, onTaskClick, handleUpdateStatutTask }: TasksListProps) {
-  const { t } = useTranslation()
-  const p = "tasks.tasks-list"
-  const {    getStatusBadge,
-    getDifficulteBadge } = useTasks();
+export function TasksList({
+  project,
+  tasks,
+  setTasks,
+  onTaskClick,
+  handleUpdateStatutTask,
+}: TasksListProps) {
+  const { t } = useTranslation();
+  const p = "tasks.tasks-list";
+  const { getStatusBadge, getDifficulteBadge } = useTasks();
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "-"
+    if (!dateString) return "-";
     try {
-      const date = parseISO(dateString)
-      if (!isValid(date)) return "-"
+      const date = parseISO(dateString);
+      if (!isValid(date)) return "-";
 
-      return format(date, "MMM d, yyyy")
+      return format(date, "MMM d, yyyy");
     } catch (error) {
-      return "-"
+      return "-";
     }
-  }
+  };
 
   const handlechangeStatut = async (taskID: any, statut: any) => {
-    const res = await handleUpdateStatutTask(taskID, statut)
+    const res = await handleUpdateStatutTask(taskID, statut);
     if (res === true) {
-      const updatedTasks = tasks.map((task) => (task.id === taskID ? { ...task, statut } : task))
-      setTasks(updatedTasks)
+      const updatedTasks = tasks.map((task) =>
+        task.id === taskID ? { ...task, statut } : task
+      );
+      setTasks(updatedTasks);
     }
-  }
+  };
 
-  const { checkIfAssigneeTask, checkIfCreatorOfProject } = useTasks()
+  const { checkIfAssigneeTask, checkIfCreatorOfProject } = useTasks();
 
   return (
     <ScrollArea className="p-4 w-full overflow-y-auto">
@@ -58,13 +76,23 @@ export function TasksList({ project, tasks, setTasks, onTaskClick, handleUpdateS
         <TableHeader className="bg-background sticky:top-0 z-10">
           <TableRow>
             {/* <TableHead className="w-12"></TableHead> */}
-            <TableHead className="w-[40%] whitespace-nowrap">{t(`${p}.header.task`)}</TableHead>
-            <TableHead className="w-[10%] whitespace-nowrap">{t(`${p}.header.status`)}</TableHead>
-            <TableHead className="w-[10%] whitespace-nowrap">{t(`${p}.header.difficulty`)}</TableHead>
+            <TableHead className="w-[40%] whitespace-nowrap">
+              {t(`${p}.header.task`)}
+            </TableHead>
+            <TableHead className="w-[10%] whitespace-nowrap">
+              {t(`${p}.header.status`)}
+            </TableHead>
+            <TableHead className="w-[10%] whitespace-nowrap">
+              {t(`${p}.header.difficulty`)}
+            </TableHead>
             <TableHead className="w-[15%] whitespace-nowrap hidden lg:table-cell">
               {t(`${p}.header.due_date`)}
             </TableHead>
-            {project == null && <TableHead className="w-[10%] whitespace-nowrap">{t(`${p}.header.project`)}</TableHead>}
+            {project == null && (
+              <TableHead className="w-[10%] whitespace-nowrap">
+                {t(`${p}.header.project`)}
+              </TableHead>
+            )}
             <TableHead className="w-[10%] whitespace-nowrap hidden lg:table-cell">
               {t(`${p}.header.assignees`)}
             </TableHead>
@@ -77,9 +105,17 @@ export function TasksList({ project, tasks, setTasks, onTaskClick, handleUpdateS
           {tasks.map((task) => (
             <TableRow
               key={task.id}
-              className={`cursor-pointer  ${checkIfAssigneeTask(task) || checkIfCreatorOfProject(task?.project) ? "hover:bg-muted/50" : "bg-gray-200 hover:bg-gray-100"}`}
+              className={`cursor-pointer  ${
+                checkIfAssigneeTask(task) ||
+                checkIfCreatorOfProject(task?.project)
+                  ? "hover:bg-muted/50"
+                  : "bg-gray-200 hover:bg-gray-100"
+              }`}
             >
-              <TableCell className=" whitespace-nowrap font-medium" onClick={() => onTaskClick(task)}>
+              <TableCell
+                className=" whitespace-nowrap font-medium"
+                onClick={() => onTaskClick(task)}
+              >
                 <div className=" flex  flex-col">
                   <span className="truncate max-w-[calc(100%-1.5rem)]">
                     <Link to={`/task/${task.id}`}>{task.nomTache}</Link>
@@ -91,7 +127,9 @@ export function TasksList({ project, tasks, setTasks, onTaskClick, handleUpdateS
                   (checkIfCreatorOfProject(task?.project) && (
                     <>
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>{getStatusBadge(task.statut)}</DropdownMenuTrigger>
+                        <DropdownMenuTrigger asChild>
+                          {getStatusBadge(task.statut)}
+                        </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-24">
                           <DropdownMenuItem
                             className="cursor-pointer"
@@ -101,13 +139,17 @@ export function TasksList({ project, tasks, setTasks, onTaskClick, handleUpdateS
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="cursor-pointer"
-                            onClick={() => handlechangeStatut(task.id, "PROGRESS")}
+                            onClick={() =>
+                              handlechangeStatut(task.id, "PROGRESS")
+                            }
                           >
                             {getStatusBadge("PROGRESS")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="cursor-pointer"
-                            onClick={() => handlechangeStatut(task.id, "REVIEW")}
+                            onClick={() =>
+                              handlechangeStatut(task.id, "REVIEW")
+                            }
                           >
                             {getStatusBadge("REVIEW")}
                           </DropdownMenuItem>
@@ -122,19 +164,31 @@ export function TasksList({ project, tasks, setTasks, onTaskClick, handleUpdateS
                     </>
                   )) || <>{getStatusBadge(task.statut)}</>}
               </TableCell>
-              <TableCell className="whitespace-nowrap">{getDifficulteBadge(task.difficulte)}</TableCell>
-              <TableCell className="whitespace-nowrap hidden lg:table-cell">{formatDate(task.dateFinEstime)}</TableCell>
+              <TableCell className="whitespace-nowrap">
+                {getDifficulteBadge(task.difficulte)}
+              </TableCell>
+              <TableCell className="whitespace-nowrap hidden lg:table-cell">
+                {formatDate(task.dateFinEstime)}
+              </TableCell>
               {project == null && (
                 <TableCell className="whitespace-nowrap">
-                  <Badge variant="outline">{task.project.nom}</Badge>
+                  <Badge variant="outline">{task?.project?.nom}</Badge>
                 </TableCell>
-              )} 
+              )}
               <TableCell className="whitespace-nowrap hidden lg:table-cell">
                 <div className="flex -space-x-2">
                   {task.assignee.map((assignee: any) => (
-                    <Avatar key={assignee.id} className="h-7 w-7 border-2 border-background">
-                      <AvatarImage src={assignee.avatar || "/placeholder.svg"} alt={assignee.nom} />
-                      <AvatarFallback className="text-[10px]">{assignee.initials}</AvatarFallback>
+                    <Avatar
+                      key={assignee.id}
+                      className="h-7 w-7 border-2 border-background"
+                    >
+                      <AvatarImage
+                        src={assignee.avatar || "/placeholder.svg"}
+                        alt={assignee.nom}
+                      />
+                      <AvatarFallback className="text-[10px]">
+                        {assignee.initials}
+                      </AvatarFallback>
                     </Avatar>
                   ))}
                 </div>
@@ -151,7 +205,8 @@ export function TasksList({ project, tasks, setTasks, onTaskClick, handleUpdateS
                     </AvatarFallback>
                   </Avatar>
                   <span className="hidden sm:inline text-sm font-medium text-gray-800">
-                    {_.startCase(task.rapporteur.prenom)} {_.startCase(task.rapporteur.nom)}
+                    {_.startCase(task.rapporteur.prenom)}{" "}
+                    {_.startCase(task.rapporteur.nom)}
                   </span>
                 </div>
               </TableCell>
@@ -160,5 +215,5 @@ export function TasksList({ project, tasks, setTasks, onTaskClick, handleUpdateS
         </TableBody>
       </Table>
     </ScrollArea>
-  )
+  );
 }
