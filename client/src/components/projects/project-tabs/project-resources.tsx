@@ -53,6 +53,7 @@ import {
   PlusIcon,
 } from "lucide-react";
 import useResources from "../../../hooks/useResources";
+import { useTranslation } from "react-i18next";
 
 interface Resource {
   id: string;
@@ -89,6 +90,7 @@ const initialFormData = {
 };
 
 export function ProjectResources({ project }: { project: any }) {
+  const { t } = useTranslation();
   const [resources, setResources] = useState<Resource[]>(
     project.listeRessource || []
   );
@@ -270,19 +272,19 @@ export function ProjectResources({ project }: { project: any }) {
     const statusMap = {
       available: {
         className: "bg-green-50 text-green-700 border-green-200",
-        label: "Available",
+        label: t("resource.available"),
       },
       allocated: {
         className: "bg-blue-50 text-blue-700 border-blue-200",
-        label: "Allocated",
+        label: t("resource.allocated"),
       },
       pending: {
         className: "bg-yellow-50 text-yellow-700 border-yellow-200",
-        label: "Pending",
+        label: t("resource.pending"),
       },
       unavailable: {
         className: "bg-red-50 text-red-700 border-red-200",
-        label: "Unavailable",
+        label: t("resource.unavailable"),
       },
     };
 
@@ -336,10 +338,10 @@ export function ProjectResources({ project }: { project: any }) {
     <>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Project Resources</CardTitle>
+          <CardTitle>{t("resource.title")}</CardTitle>
           <Button onClick={openAddDialog}>
             <Plus className="mr-2 h-4 w-4" />
-            Add Resource
+            {t("resource.add_resource")}
           </Button>
         </CardHeader>
         <CardContent>
@@ -349,7 +351,7 @@ export function ProjectResources({ project }: { project: any }) {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search resources..."
+                  placeholder={t("resource.search")}
                   className="w-full pl-8 sm:w-64"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -363,23 +365,26 @@ export function ProjectResources({ project }: { project: any }) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => setFilterType(null)}>
-                    All Types {!filterType && "✓"}
+                    {t("resource.all_types")} {!filterType && "✓"}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => setFilterType("human")}>
-                    Temporal {filterType === "temporal" && "✓"}
+                    {t("resource.temporal")} {filterType === "temporal" && "✓"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterType("equipment")}>
-                    Energetic {filterType === "energetic" && "✓"}
+                    {t("resource.energetic")}{" "}
+                    {filterType === "energetic" && "✓"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterType("material")}>
-                    Materials {filterType === "material" && "✓"}
+                    {t("resource.material")} {filterType === "material" && "✓"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Total Cost:</span>
+              <span className="text-sm text-muted-foreground">
+                {t("resource.total_cost")}:
+              </span>
               <span className="font-medium">${totalCost.toLocaleString()}</span>
             </div>
           </div>
@@ -388,13 +393,13 @@ export function ProjectResources({ project }: { project: any }) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Resource</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Allocated Quantity</TableHead>
-                  <TableHead>Cost Per Unit</TableHead>
-                  <TableHead>Total Cost</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t("resource.resource")}</TableHead>
+                  <TableHead>{t("resource.type")}</TableHead>
+                  <TableHead>{t("resource.quantity")}</TableHead>
+                  <TableHead>{t("resource.allocated_quantity")}</TableHead>
+                  <TableHead>{t("resource.cost_per_unit")}</TableHead>
+                  <TableHead>{t("resource.total_cost")}</TableHead>
+                  <TableHead>{t("resource.status")}</TableHead>
                   <TableHead className="w-20"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -469,7 +474,7 @@ export function ProjectResources({ project }: { project: any }) {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={7} className="h-24 text-center">
-                      No resources found.
+                      {t("resource.no_resources")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -483,16 +488,16 @@ export function ProjectResources({ project }: { project: any }) {
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Resource</DialogTitle>
+            <DialogTitle>{t("resource.add_resource_form.title")}</DialogTitle>
             <DialogDescription>
-              Add a new resource to the project.
+              {t("resource.add_resource_form.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="mb-2" htmlFor="categorie">
-                  Resource Category
+                  {t("resource.add_resource_form.categorie")}
                 </Label>
                 <Select
                   value={formData.categorie}
@@ -512,7 +517,7 @@ export function ProjectResources({ project }: { project: any }) {
                     <SelectItem value="other">
                       <div className="flex items-center">
                         <PlusIcon className="mr-2 h-4 w-4" />
-                        Add new category
+                        {t("resource.add_resource_form.add_new_categorie")}
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -521,7 +526,7 @@ export function ProjectResources({ project }: { project: any }) {
               {formData.categorie === "other" && (
                 <div>
                   <Label className="mb-2" htmlFor="newcategorie">
-                    New Category
+                    {t("resource.add_resource_form.new_categorie")}
                   </Label>
                   <Input
                     id="newcategorie"
@@ -534,19 +539,19 @@ export function ProjectResources({ project }: { project: any }) {
               )}
               <div className="col-span-2">
                 <Label className="mb-2" htmlFor="nom">
-                  Resource Name
+                  {t("resource.name")}
                 </Label>
                 <Input
                   id="nom"
                   name="nom"
                   value={formData.nom}
                   onChange={handleInputChange}
-                  placeholder="Enter resource name"
+                  placeholder={t("resource.add_resource_form.name_placeholder")}
                 />
               </div>
               <div>
                 <Label className="mb-2" htmlFor="type">
-                  Type
+                  {t("resource.type")}
                 </Label>
                 <Select
                   value={formData.type}
@@ -556,18 +561,28 @@ export function ProjectResources({ project }: { project: any }) {
                   }
                 >
                   <SelectTrigger id="type">
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue
+                      placeholder={t(
+                        "resource.add_resource_form.type_placeholder"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Temporal">Temporal</SelectItem>
-                    <SelectItem value="Material">Material</SelectItem>
-                    <SelectItem value="Energetic">Energetic</SelectItem>
+                    <SelectItem value="Temporal">
+                      {t("resource.temporal")}
+                    </SelectItem>
+                    <SelectItem value="Material">
+                      {t("resource.material")}
+                    </SelectItem>
+                    <SelectItem value="Energetic">
+                      {t("resource.energetic")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="mb-2" htmlFor="status">
-                  Status
+                  {t("resource.status")}
                 </Label>
                 <Select
                   value={formData.status}
@@ -577,16 +592,24 @@ export function ProjectResources({ project }: { project: any }) {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="AVAILABLE">Available</SelectItem>
-                    <SelectItem value="ALLOCATED">Allocated</SelectItem>
-                    <SelectItem value="PENDING">Pending</SelectItem>
-                    <SelectItem value="UNAVAILABLE">Unavailable</SelectItem>
+                    <SelectItem value="AVAILABLE">
+                      {t("resource.available")}
+                    </SelectItem>
+                    <SelectItem value="ALLOCATED">
+                      {t("resource.allocated")}
+                    </SelectItem>
+                    <SelectItem value="PENDING">
+                      {t("resource.pending")}
+                    </SelectItem>
+                    <SelectItem value="UNAVAILABLE">
+                      {t("resource.unavailable")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="mb-2" htmlFor="qte">
-                  Quantity
+                  {t("resource.quantity")}
                 </Label>
                 <Input
                   id="qte"
@@ -603,7 +626,7 @@ export function ProjectResources({ project }: { project: any }) {
                 formData.type === "Energetic" ? (
                   <>
                     <Label className="mb-2" htmlFor="unitMeasure">
-                      Unit
+                      {t("resource.add_resource_form.unit")}
                     </Label>
                     <Input
                       id="unitMeasure"
@@ -616,7 +639,7 @@ export function ProjectResources({ project }: { project: any }) {
                 ) : (
                   <>
                     <Label className="mb-2" htmlFor="qteDisponibilite">
-                      Available Quantity
+                      {t("resource.add_resource_form.available_quantity")}
                     </Label>
                     <Input
                       id="qteDisponibilite"
@@ -633,7 +656,7 @@ export function ProjectResources({ project }: { project: any }) {
               {formData.type === "Material" && (
                 <div>
                   <Label className="mb-2" htmlFor="consommationMax">
-                    Maximum Consumption
+                    {t("resource.add_resource_form.maximum_consumption")}
                   </Label>
                   <Input
                     id="consommationMax"
@@ -652,7 +675,7 @@ export function ProjectResources({ project }: { project: any }) {
                 }
               >
                 <Label className="mb-2" htmlFor="coutUnitaire">
-                  Cost Per Unit ($)
+                  {t("resource.cost_per_unit")} ($)
                 </Label>
                 <div className="relative">
                   <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -670,14 +693,16 @@ export function ProjectResources({ project }: { project: any }) {
               </div>
               <div className="col-span-2">
                 <Label className="mb-2" htmlFor="notes">
-                  Notes (Optional)
+                  {t("resource.add_resource_form.notes_optional")}
                 </Label>
                 <Input
                   id="notes"
                   name="notes"
                   value={formData.notes}
                   onChange={handleInputChange}
-                  placeholder="Additional details about this resource"
+                  placeholder={t(
+                    "resource.add_resource_form.notes_placeholder"
+                  )}
                 />
               </div>
             </div>
@@ -695,14 +720,18 @@ export function ProjectResources({ project }: { project: any }) {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Resource</DialogTitle>
-            <DialogDescription>Update resource details.</DialogDescription>
+            <DialogTitle>
+              {t("resource.add_resource_form.edit_title")}
+            </DialogTitle>
+            <DialogDescription>
+              {t("resource.add_resource_form.edit_description")}
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="mb-2" htmlFor="edit-categorie">
-                  Resource Category
+                  {t("resource.add_resource_form.categorie")}
                 </Label>
                 <Select
                   value={formData.categorie}
@@ -722,7 +751,7 @@ export function ProjectResources({ project }: { project: any }) {
                     <SelectItem value="other">
                       <div className="flex items-center">
                         <PlusIcon className="mr-2 h-4 w-4" />
-                        Add new category
+                        {t("resource.add_resource_form.new_categorie")}
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -731,20 +760,22 @@ export function ProjectResources({ project }: { project: any }) {
               {formData.categorie === "other" && (
                 <div>
                   <Label className="mb-2" htmlFor="edit-newcategorie">
-                    New Category
+                    {t("resource.add_resource_form.new_categorie")}
                   </Label>
                   <Input
                     id="edit-newcategorie"
                     name="newcategorie"
                     value={formData.newcategorie}
                     onChange={handleInputChange}
-                    placeholder="Enter new category"
+                    placeholder={t(
+                      "resource.add_resource_form.new_categorie_placeholder"
+                    )}
                   />
                 </div>
               )}
               <div className="col-span-2">
                 <Label className="mb-2" htmlFor="edit-nom">
-                  Resource Name
+                  {t("resource.name")}
                 </Label>
                 <Input
                   id="edit-nom"
@@ -752,33 +783,43 @@ export function ProjectResources({ project }: { project: any }) {
                   className={formData.nom ? "" : "border-destructive"}
                   value={formData.nom}
                   onChange={handleInputChange}
-                  placeholder="Enter resource name"
+                  placeholder={t("resource.add_resource_form.name_placeholder")}
                 />
               </div>
               <div>
                 <Label className="mb-2" htmlFor="edit-type">
-                  Type
+                  {t("resource.type")}
                 </Label>
                 <Select
                   value={formData.type}
+                  onValueChange={(value) => handleSelectChange("type", value)}
                   disabled={
                     formData.categorie !== "other" && formData.categorie !== ""
                   }
-                  onValueChange={(value) => handleSelectChange("type", value)}
                 >
                   <SelectTrigger id="edit-type">
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue
+                      placeholder={t(
+                        "resource.add_resource_form.type_placeholder"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Temporal">Temporal</SelectItem>
-                    <SelectItem value="Material">Material</SelectItem>
-                    <SelectItem value="Energetic">Energetic</SelectItem>
+                    <SelectItem value="Temporal">
+                      {t("resource.temporal")}
+                    </SelectItem>
+                    <SelectItem value="Material">
+                      {t("resource.material")}
+                    </SelectItem>
+                    <SelectItem value="Energetic">
+                      {t("resource.energetic")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="mb-2" htmlFor="edit-status">
-                  Status
+                  {t("resource.status")}
                 </Label>
                 <Select
                   value={formData.status}
@@ -788,16 +829,24 @@ export function ProjectResources({ project }: { project: any }) {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="AVAILABLE">Available</SelectItem>
-                    <SelectItem value="ALLOCATED">Allocated</SelectItem>
-                    <SelectItem value="PENDING">Pending</SelectItem>
-                    <SelectItem value="UNAVAILABLE">Unavailable</SelectItem>
+                    <SelectItem value="AVAILABLE">
+                      {t("resource.available")}
+                    </SelectItem>
+                    <SelectItem value="ALLOCATED">
+                      {t("resource.allocated")}
+                    </SelectItem>
+                    <SelectItem value="PENDING">
+                      {t("resource.pending")}
+                    </SelectItem>
+                    <SelectItem value="UNAVAILABLE">
+                      {t("resource.unavailable")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label className="mb-2" htmlFor="edit-qte">
-                  Quantity
+                  {t("resource.quantity")}
                 </Label>
                 <Input
                   id="edit-qte"
@@ -816,7 +865,7 @@ export function ProjectResources({ project }: { project: any }) {
                 formData.type === "Energetic" ? (
                   <>
                     <Label className="mb-2" htmlFor="edit-unitMeasure">
-                      Unit
+                      {t("resource.add_resource_form.unit")}
                     </Label>
                     <Input
                       id="edit-unitMeasure"
@@ -832,7 +881,7 @@ export function ProjectResources({ project }: { project: any }) {
                 ) : (
                   <>
                     <Label className="mb-2" htmlFor="edit-qteDisponibilite">
-                      Available Quantity
+                      {t("resource.add_resource_form.available_quantity")}
                     </Label>
                     <Input
                       id="edit-qteDisponibilite"
@@ -852,7 +901,7 @@ export function ProjectResources({ project }: { project: any }) {
               {formData.type === "Material" && (
                 <div>
                   <Label className="mb-2" htmlFor="edit-consommationMax">
-                    Maximum Consumption
+                    {t("resource.add_resource_form.maximum_consumption")}
                   </Label>
                   <Input
                     id="edit-consommationMax"
@@ -874,7 +923,7 @@ export function ProjectResources({ project }: { project: any }) {
                 }
               >
                 <Label className="mb-2" htmlFor="edit-coutUnitaire">
-                  Cost Per Unit ($)
+                  {t("resource.cost_per_unit")} ($)
                 </Label>
                 <div className="relative">
                   <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -895,14 +944,16 @@ export function ProjectResources({ project }: { project: any }) {
               </div>
               <div className="col-span-2">
                 <Label className="mb-2" htmlFor="edit-notes">
-                  Notes (Optional)
+                  {t("resource.add_resource_form.notes_optional")}
                 </Label>
                 <Input
                   id="edit-notes"
                   name="notes"
                   value={formData.notes}
                   onChange={handleInputChange}
-                  placeholder="Additional details about this resource"
+                  placeholder={t(
+                    "resource.add_resource_form.notes_placeholder"
+                  )}
                 />
               </div>
             </div>

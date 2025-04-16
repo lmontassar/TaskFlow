@@ -146,5 +146,54 @@
       "server_error": "Oups! Un problème est survenu.",
       "success": "Projet créé avec succès."
     }
+  },
+  "resource": {
+    "title": "Ressources du projet",
+    "add_resource": "Ajouter une ressource",
+    "search": "Rechercher des ressources...",
+    "all_types": "Tous les types",
+    "temporal": "Temporelle",
+    "material": "Matérielle",
+    "energetic": "Énergétique",
+    "total_cost": "Coût total",
+    "resource": "Ressource",
+    "resources": "Ressources",
+    "type": "Type",
+    "name": "Nom de la ressource",
+    "note": "Note",
+    "quantity": "Quantité",
+    "allocated_quantity": "Quantité allouée",
+    "cost_per_unit": "Coût par unité",
+    "status": "Statut",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "delete_confirmation": {
+      "title": "Supprimer la ressource",
+      "message": "Êtes-vous sûr de vouloir supprimer cette ressource ?",
+      "cancel": "Annuler",
+      "confirm": "Supprimer"
+    },
+    "no_resources": "Aucune ressource disponible",
+    "available": "Disponible",
+    "allocated": "Allouée",
+    "pending": "En attente",
+    "unavailable": "Indisponible",
+    "add_resource_form": {
+      "title": "Ajouter une ressource",
+      "unit": "Unité",
+      "edit_title": "Modifier la ressource",
+      "edit_description": "Modifier les détails de la ressource",
+      "description": "Ajouter une nouvelle ressource au projet",
+      "new_categorie": "Nouvelle catégorie",
+      "add_new_categorie": "Ajouter une nouvelle catégorie",
+      "categorie": "Catégorie de la ressource",
+      "notes_optional": "Notes (optionnelles)",
+      "name_placeholder": "Entrer le nom de la ressource",
+      "type_placeholder": "Sélectionner le type",
+      "new_categorie_placeholder": "Entrer une nouvelle catégorie",
+      "available_quantity": "Quantité disponible",
+      "maximum_consumption": "Consommation maximale",
+      "notes_placeholder": "Détails supplémentaires sur cette ressource"
+    }
   }
 }
