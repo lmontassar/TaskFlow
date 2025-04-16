@@ -185,7 +185,7 @@
       "edit_description": "Modifier les détails de la ressource",
       "description": "Ajouter une nouvelle ressource au projet",
       "new_categorie": "Nouvelle catégorie",
-      "add_new_categorie": "Ajouter une nouvelle catégorie",
+      "add_new_categorie": "Ajouter catégorie",
       "categorie": "Catégorie de la ressource",
       "notes_optional": "Notes (optionnelles)",
       "name_placeholder": "Entrer le nom de la ressource",
