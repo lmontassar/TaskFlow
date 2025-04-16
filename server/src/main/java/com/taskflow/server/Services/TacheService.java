@@ -53,6 +53,10 @@ public class TacheService {
         tacheRep.delete(t);
     }
 
+
+    public boolean IsRapporteur(User u,Tache task){
+        return task.getRapporteur().equals(u);
+    }
     public boolean IsUserExistInAsignee(User u,Tache task) {
         if(u == null || task == null) return false;
         for (User Asignee : task.getAssignee() ) {
@@ -83,6 +87,46 @@ public class TacheService {
         assignees.remove(AssigneeUser);
         task.setAssignee(  assignees );
         return tacheRep.save(task);
+    }
+    
+    public Tache addPrecedente(Tache task, Tache PrecedenteTask){
+        task.addPrecedente(PrecedenteTask);
+        return tacheRep.save(task);
+    }
+
+    public Tache removePrecedente(Tache task,Tache precedenteTask){
+        if( task.deletePrecedente( precedenteTask) == false ) return null;
+        
+        return tacheRep.save(task);
+    }
+
+    public Tache addParallel(Tache task, Tache parallelTask) {
+        task.addParallele(parallelTask);
+        parallelTask.addParallele(task);
+        tacheRep.save(parallelTask);
+        return tacheRep.save(task);
+    }
+
+    public Tache removeParallel(Tache task,Tache parallelTask){
+        task.deleteParallele( parallelTask);
+        parallelTask.deleteParallele( task ) ;
+        tacheRep.save(parallelTask);
+        return tacheRep.save(task);
+    }
+
+    public Tache addSousTache(Tache task,Tache  subTask){
+        subTask.setParent(task);
+        return tacheRep.save(subTask);
+    }
+
+    public Tache removeSubTask(Tache task,Tache subTask){
+        if( subTask.getParent().equals(task) == false  ) return null;
+        subTask.setParent(null);
+        return tacheRep.save(subTask);
+    }
+
+    public List<Tache> getSubTasks(Tache task) {
+        return tacheRep.getAllByParent(task);
     }
 
 }

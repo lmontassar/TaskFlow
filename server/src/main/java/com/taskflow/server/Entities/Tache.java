@@ -5,12 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 
@@ -50,11 +53,45 @@ public class Tache {
     private List<String> attachment;
 
     @DBRef
+    @JsonIgnoreProperties({"parent", "precedentes", "paralleles","project"})
     private Tache parent;
+    
     @DBRef
+    @JsonIgnoreProperties({"parent", "precedentes", "paralleles","project"})
     private List<Tache> precedentes;
+    public boolean addPrecedente(Tache t){
+        for(Tache task : precedentes)
+            if ( task.equals(t) ) return false;
+        return precedentes.add(t);
+    }
+    public boolean deletePrecedente(Tache t){
+        return precedentes.remove(t);
+    }
+
+    @DBRef
+    @JsonIgnoreProperties({"parent", "precedentes", "paralleles","project"})
+    private List<Tache> paralleles = new ArrayList<>();
+    public boolean addParallele(Tache t){
+        for(Tache task : paralleles)
+            if ( task.equals(t) ) return false;
+        return paralleles.add(t);
+    }
+    public boolean deleteParallele(Tache t){
+        return paralleles.remove(t);
+    }
+
+
     @DBRef
     private List<User> assignee;
     @DBRef
     private User rapporteur;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tache tache = (Tache ) o;
+        return this.id.equals(tache.getId());
+    }
 }

@@ -39,4 +39,13 @@ public class Project {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Date dateCreation;
     private Set<String> tags;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project ) o;
+        return this.id.equals(project.getId());
+    }
 }

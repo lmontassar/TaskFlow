@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
     const [step, setStep] = useState(1);
     const [FirstStepMessage,setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const { t ,i18n } = useTranslation();
+    const { t  } = useTranslation();
 
     const [formData, setFormData] = useState({
       firstName: "",

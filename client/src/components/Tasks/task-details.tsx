@@ -36,59 +36,45 @@ import DurationInput from "../ui/divided-duration-input"
 import { UserSearch } from "../ui/assigneeSearch"
 import useTasks from "../../hooks/useTasks"
 import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
-function formatDurationReact(duration: number): string {
-  const units = [
-    { label: "year", seconds: 31536000 },
-    { label: "month", seconds: 2592000 },
-    { label: "week", seconds: 604800 },
-    { label: "day", seconds: 86400 },
-    { label: "hour", seconds: 3600 },
-    { label: "minute", seconds: 60 },
-  ]
 
-  let remaining = duration
-  const parts: string[] = []
-
-  for (const unit of units) {
-    const count = Math.floor(remaining / unit.seconds)
-    if (count > 0) {
-      parts.push(`${count} ${unit.label}${count > 1 ? "s" : ""}`)
-      remaining %= unit.seconds
-    }
-  }
-
-  return parts.slice(0, 2).join(" and ") || "0 minutes"
-}
 
 interface TaskDetailsProps {
   taskToEdit: any
   onClose: () => void
   onUpdate: (task: Task) => void
   onDelete: (taskId: string) => void
-  allTasks: Task[],
-  thisUserIsACreator: () => boolean,
-  handleDeleteAssignee:any,
-
+  allTasks: Task[]
+  thisUserIsACreator: () => boolean
+  handleDeleteAssignee: any
 }
 
-export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks ,handleDeleteAssignee}: TaskDetailsProps) {
+export function TaskDetails({
+  taskToEdit,
+  onClose,
+  onUpdate,
+  onDelete,
+  allTasks,
+  handleDeleteAssignee,
+}: TaskDetailsProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editedTask, setEditedTask] = useState<Task>({ ...taskToEdit })
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [assigneeToDelete,setAssigneeToDelete] = useState<any>(null);
+  const [assigneeToDelete, setAssigneeToDelete] = useState<any>(null)
   const [commentText, setCommentText] = useState("")
   const commentInputRef = useRef<HTMLTextAreaElement>(null)
   const [marge, setMarge] = useState(editedTask.marge)
   const [duration, setDuration] = useState(editedTask.duree)
-  const [assigneeToAdd,setAssigneeToAdd] = useState<any>(null)
-  const {checkIfCreatorOfProject} = useTasks();
-  const [task , setTask] = useState(taskToEdit);
-  useEffect(()=>{
-    setTask(
-      allTasks.filter((t)=> t.id == taskToEdit.id )[0]
-    )
-  },[allTasks,taskToEdit])
+  const [assigneeToAdd, setAssigneeToAdd] = useState<any>(null)
+  const { checkIfCreatorOfProject } = useTasks()
+  const [task, setTask] = useState(taskToEdit)
+  const { t } = useTranslation()
+
+
+  useEffect(() => {
+    setTask(allTasks.filter((t) => t.id == taskToEdit.id)[0])
+  }, [allTasks, taskToEdit])
 
   const handleTaskUpdate = (field: string, value: any) => {
     setEditedTask({
@@ -96,16 +82,20 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
       [field]: value,
     })
   }
+  const {    getStatusBadge, formatDurationReact ,
+    getDifficulteBadge} = useTasks();
 
-  const DeleteAssignee = (taskID:any,userID:any) =>{
-    handleDeleteAssignee(taskID,userID);
-    task.assignee = task.assignee.filter( assignee  => assignee.id != userID)
-  } 
+  const DeleteAssignee = (taskID: any, userID: any) => {
+    handleDeleteAssignee(taskID, userID)
+    task.assignee = task.assignee.filter((assignee) => assignee.id != userID)
+  }
 
   const saveChanges = () => {
-    onUpdate( {
-      ...editedTask, ["duree"]:duration,["marge"]:Number(marge)
-    } )
+    onUpdate({
+      ...editedTask,
+      ["duree"]: duration,
+      ["marge"]: Number(marge),
+    })
 
     setIsEditing(false)
   }
@@ -150,61 +140,7 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
     }
   }
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "TODO":
-        return (
-          <Badge variant="outline" className="bg-slate-50">
-            To Do
-          </Badge>
-        )
-      case "PROGRESS":
-        return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-            In Progress
-          </Badge>
-        )
-      case "REVIEW":
-        return (
-          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-            Review
-          </Badge>
-        )
-      case "DONE":
-        return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-            DONE
-          </Badge>
-        )
-      default:
-        return <Badge variant="outline">{status}</Badge>
-    }
-  }
 
-  const getDifficulteBadge = (difficulte: string) => {
-    switch (difficulte.toLowerCase()) {
-      case "hard":
-        return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-            Hard
-          </Badge>
-        )
-      case "normal":
-        return (
-          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-            Normal
-          </Badge>
-        )
-      case "easy":
-        return (
-          <Badge variant="outline" className="bg-slate-50">
-            Easy
-          </Badge>
-        )
-      default:
-        return <Badge variant="outline">{difficulte}</Badge>
-    }
-  }
 
   // Get all unique assignees from all tasks for the dropdown
   const allAssignees = new Map()
@@ -224,64 +160,70 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
     }
   })
 
-
-  
-
   return (
     <div className="border-l w-[400px] flex flex-col">
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure you want to delete this task?</DialogTitle>
+            <DialogTitle>
+              {t("tasks.details.delete_confirm.title", "Are you sure you want to delete this task?")}
+            </DialogTitle>
             <DialogDescription>
-              This action cannot be unDONE. This will permanently delete the task and all associated data.
+              {t(
+                "tasks.details.delete_confirm.description",
+                "This action cannot be undone. This will permanently delete the task and all associated data.",
+              )}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmDelete(false)}>
-              Cancel
+              {t("common.cancel", "Cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={() => {
                 onDelete(task.id)
-                
+
                 setConfirmDelete(false)
               }}
             >
-              Delete
+              {t("common.delete", "Delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={assigneeToDelete != null} onOpenChange={setAssigneeToDelete}>
-        { assigneeToDelete && (
-
+        {assigneeToDelete && (
           <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you sure you want to remove this Assigne?</DialogTitle>
-            <DialogDescription>
-                {assigneeToDelete.prenom} {assigneeToDelete.nom} won't be able to change the status of this task anymore, but you can add him again
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAssigneeToDelete(null)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                DeleteAssignee(task.id,assigneeToDelete.id)
-                setAssigneeToDelete(null)
-              }}
+            <DialogHeader>
+              <DialogTitle>
+                {t("tasks.details.remove_assignee.title", "Are you sure you want to remove this assignee?")}
+              </DialogTitle>
+              <DialogDescription>
+                {assigneeToDelete.prenom} {assigneeToDelete.nom}{" "}
+                {t(
+                  "tasks.details.remove_assignee.description",
+                  "won't be able to change the status of this task anymore, but you can add them again.",
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setAssigneeToDelete(null)}>
+                {t("common.cancel", "Cancel")}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  DeleteAssignee(task.id, assigneeToDelete.id)
+                  setAssigneeToDelete(null)
+                }}
               >
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      
-            )}
+                {t("common.delete", "Delete")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
       </Dialog>
 
       <div className="flex h-14 items-center justify-between border-b px-4">
@@ -289,7 +231,7 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-5 w-5" />
           </Button>
-          <h3 className="font-medium">Task Details</h3>
+          <h3 className="font-medium">{t("tasks.details.title", "Task Details")}</h3>
         </div>
 
         <div className="flex items-center gap-2">
@@ -300,30 +242,33 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem disabled={ !checkIfCreatorOfProject(task.project) } onClick={() => setIsEditing(checkIfCreatorOfProject(task.project))}>
+              <DropdownMenuItem
+                disabled={!checkIfCreatorOfProject(task.project)}
+                onClick={() => setIsEditing(checkIfCreatorOfProject(task.project))}
+              >
                 <Edit className="mr-2 h-4 w-4" />
-                Edit Task
+                {t("tasks.details.edit_task", "Edit Task")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                disabled={ !checkIfCreatorOfProject(task.project) }
+                disabled={!checkIfCreatorOfProject(task.project)}
                 className="text-destructive focus:text-destructive"
                 onClick={() => setConfirmDelete(checkIfCreatorOfProject(task.project))}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {t("common.delete", "Delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="overflow-auto flex-1">
         <div className="p-4">
           {isEditing ? (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="task-name">Task Name</Label>
+                <Label htmlFor="task-name">{t("tasks.details.form.task_name", "Task Name")}</Label>
                 <Textarea
                   id="task-name"
                   value={editedTask.nomTache}
@@ -333,7 +278,7 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="task-description">Description</Label>
+                <Label htmlFor="task-description">{t("tasks.details.form.description", "Description")}</Label>
                 <Textarea
                   id="task-description"
                   value={editedTask.description || ""}
@@ -345,43 +290,45 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="task-status">Status</Label>
-                  <Select value={editedTask.statut} onValueChange={(value:any) => handleTaskUpdate("statut", value)}>
+                  <Label htmlFor="task-status">{t("tasks.details.form.status", "Status")}</Label>
+                  <Select value={editedTask.statut} onValueChange={(value: any) => handleTaskUpdate("statut", value)}>
                     <SelectTrigger id="task-status">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="TODO">To Do</SelectItem>
-                      <SelectItem value="PROGRESS">In Progress</SelectItem>
-                      <SelectItem value="REVIEW">Review</SelectItem>
-                      <SelectItem value="DONE">DONE</SelectItem>
+                      <SelectItem value="TODO">{t(`tasks.tasks-list.status.todo`)}</SelectItem>
+                      <SelectItem value="PROGRESS">{t(`tasks.tasks-list.status.progress`)}</SelectItem>
+                      <SelectItem value="REVIEW">{t(`tasks.tasks-list.status.review`)}</SelectItem>
+                      <SelectItem value="DONE">{t(`tasks.tasks-list.status.done`)}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="task-difficulte">Difficulty : {editedTask.difficulte.toString().trim()}</Label>
+                  <Label htmlFor="task-difficulte">
+                    {t("tasks.details.form.difficulty", "Difficulty")}
+                  </Label>
                   <Select
                     value={editedTask.difficulte.toString().trim()}
-                    onValueChange={(value:any) => { handleTaskUpdate("difficulte", value )} }
+                    onValueChange={(value: any) => {
+                      handleTaskUpdate("difficulte", value)
+                    }}
                   >
                     <SelectTrigger id="task-difficulte">
                       <SelectValue placeholder="Select difficulty" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="easy">Easy</SelectItem>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="hard">Hard</SelectItem>
+                      <SelectItem value="easy">{t(`tasks.tasks-list.difficulty.easy`)}</SelectItem>
+                      <SelectItem value="normal">{t(`tasks.tasks-list.difficulty.normal`)}</SelectItem>
+                      <SelectItem value="hard">{t(`tasks.tasks-list.difficulty.hard`)}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="task-budget">Budget Estimé : </Label>
+                  <Label htmlFor="task-budget">{t("tasks.details.form.budget", "Budget Estimé")}</Label>
                   <Input
                     type="number"
                     id="task-budget"
@@ -391,7 +338,7 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="task-qualite">Quality (0-5)</Label>
+                  <Label htmlFor="task-qualite">{t("tasks.details.form.quality", "Quality")} (0-5)</Label>
                   <Select
                     value={(editedTask.qualite || 0).toString()}
                     onValueChange={(value) => handleTaskUpdate("qualite", Number.parseInt(value))}
@@ -400,104 +347,98 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
                       <SelectValue placeholder="Select quality" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">Not rated</SelectItem>
-                      <SelectItem value="1">1 - Poor</SelectItem>
-                      <SelectItem value="2">2 - Fair</SelectItem>
-                      <SelectItem value="3">3 - Good</SelectItem>
-                      <SelectItem value="4">4 - Very Good</SelectItem>
-                      <SelectItem value="5">5 - Excellent</SelectItem>
+                      <SelectItem value="0">0 - {t("tasks.details.qualit.zero", "Not rated")}</SelectItem>
+                      <SelectItem value="1">1 - {t("tasks.details.qualit.one", "Poor")}</SelectItem>
+                      <SelectItem value="2">2 - {t("tasks.details.qualit.two", "Fair")}</SelectItem>
+                      <SelectItem value="3">3 - {t("tasks.details.qualit.three", "Good")}</SelectItem>
+                      <SelectItem value="4">4 - {t("tasks.details.qualit.four", "Very Good")}</SelectItem>
+                      <SelectItem value="5">5 - {t("tasks.details.qualit.five", "Excellent")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              
-                <div className="space-y-2">
-                  <Label htmlFor="task-duree">Duration</Label>
-                  <DurationInput value={duration} onChange={setDuration} />
+              <div className="space-y-2">
+                <Label htmlFor="task-duree">{t("tasks.details.form.duration", "Duration")}</Label>
+                <DurationInput value={duration} onChange={setDuration} />
 
-                  {/* <Textarea
+                {/* <Textarea
                     id="task-duree"
                     value={editedTask.duree || ""}
                     onChange={(e) => handleTaskUpdate("duree", e.target.value)}
                     className="resize-none"
                   /> */}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="task-marge">Marge</Label>
-                  <DurationInput value={marge} onChange={setMarge} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="task-marge">{t("tasks.details.form.margin", "Marge")}</Label>
+                <DurationInput value={marge} onChange={setMarge} />
 
-                  {/* <Textarea
+                {/* <Textarea
                     id="task-marge"
                     value={editedTask.marge || ""}
                     onChange={(e) => handleTaskUpdate("marge", e.target.value)}
                     className="resize-none"
                   /> */}
-                </div>
-              
+              </div>
 
-              
-                <div className="space-y-2">
-                  <Label htmlFor="task-start-date">Start Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal"
-                        id="task-start-date"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {editedTask.dateDebut ? formatDate(editedTask.dateDebut) : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={editedTask.dateDebut ? parseISO(editedTask.dateDebut) : undefined}
-                        onSelect={(date) => handleTaskUpdate("dateDebut", date ? date.toISOString() : undefined)}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="task-due-date">Due Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal"
-                        id="task-due-date"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {editedTask.dateFinEstime ? formatDate(editedTask.dateFinEstime) : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={editedTask.dateFinEstime ? parseISO(editedTask.dateFinEstime) : undefined}
-                        onSelect={(date) => handleTaskUpdate("dateFinEstime", date ? date.toISOString() : undefined)}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              
+              <div className="space-y-2">
+                <Label htmlFor="task-start-date">{t("tasks.details.form.start_date", "Start Date")}</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                      id="task-start-date"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {editedTask.dateDebut ? formatDate(editedTask.dateDebut) : <span>{t("tasks.details.form.pick_date" ,"Pick a date")}</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={editedTask.dateDebut ? parseISO(editedTask.dateDebut) : undefined}
+                      onSelect={(date) => handleTaskUpdate("dateDebut", date ? date.toISOString() : undefined)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="task-due-date">{t("tasks.details.form.due_date", "Due Date")}</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start text-left font-normal" id="task-due-date">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {editedTask.dateFinEstime ? formatDate(editedTask.dateFinEstime) : <span>{t("tasks.details.form.pick_date" ,"error")}</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={editedTask.dateFinEstime ? parseISO(editedTask.dateFinEstime) : undefined}
+                      onSelect={(date) => handleTaskUpdate("dateFinEstime", date ? date.toISOString() : undefined)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
 
               <div className="flex w-full gap-1 space-y-4">
-                <Button className="flex-1 w-full"  onClick={saveChanges}>Save Changes</Button>
+                <Button className="flex-1 w-full" onClick={saveChanges}>
+                  {t("tasks.specific.buttons.save_changes" ,"error")}
+                </Button>
                 <Button variant="outline" onClick={cancelEditing}>
-                  Cancel
+                  {t("tasks.specific.buttons.cancel" ,"error")}
                 </Button>
               </div>
             </div>
           ) : (
-            <>
+            <div>
               <div className="mb-6 space-y-4">
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-semibold underline">
-                  <Link to={`/task/${task.id}`}>{task.nomTache}</Link>
+                    <Link to={`/task/${task.id}`}>{task.nomTache}</Link>
                   </h2>
                 </div>
 
@@ -521,34 +462,30 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
                 )}
 
                 <div>
-                  <h4 className="mb-2 text-sm font-medium">Project</h4>
+                  <h4 className="mb-2 text-sm font-medium">{t("tasks.details.form.project", "Project")}</h4>
                   <Badge variant="outline">{task.project.nom}</Badge>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h4 className="mb-1 text-sm font-medium">Quality</h4>
+                  <h4 className="mb-1 text-sm font-medium">{t("tasks.details.form.quality", "Quality")}</h4>
                   <div className="flex items-center">
-
-                    { task.qualite != 0 && (
-                    <>
+                    {(task.qualite != 0 && (
+                      <>
                         {Array.from({ length: 5 }).map((_, i) => (
-                            <StarIcon
-                              key={i}
-                              className={`h-4 w-4 ${i < (task.qualite || 0) ? "text-blue-500 fill-blue-500" : "text-muted-foreground"}`}
-                            />
-                          ))}
-                          </>
-                          
-                      ) || (
-                        <span className="text-sm">Not Rated</span>
-                      ) }
+                          <StarIcon
+                            key={i}
+                            className={`h-4 w-4 ${i < (task.qualite || 0) ? "text-blue-500 fill-blue-500" : "text-muted-foreground"}`}
+                          />
+                        ))}
+                      </>
+                    )) || <span className="text-sm">{t("tasks.details.qualit.zero", "Not Rated")}</span>}
                   </div>
                 </div>
-                {task.budgetEstime!=0 && (
+                {task.budgetEstime != 0 && (
                   <div>
-                    <h4 className="mb-1 text-sm font-medium">Budget</h4>
+                    <h4 className="mb-1 text-sm font-medium">{t("tasks.details.form.budget", "Budget")}</h4>
                     <span className="text-sm">{task.budgetEstime}</span>
                   </div>
                 )}
@@ -556,12 +493,12 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
 
               <div className="grid grid-cols-2 gap-4 mt-2">
                 <div>
-                  <h4 className="mb-1 text-sm font-medium">Created</h4>
+                  <h4 className="mb-1 text-sm font-medium">{t("tasks.details.createdat", "Created At")}</h4>
                   <span className="text-sm">{formatDate(task.dateCreation)}</span>
                 </div>
                 {task.dateFin && (
                   <div>
-                    <h4 className="mb-1 text-sm font-medium">Finished Date</h4>
+                    <h4 className="mb-1 text-sm font-medium">{t("tasks.details.finishedat", "Finished At")}</h4>
                     <span className="text-sm">{formatDate(task.dateFin)}</span>
                   </div>
                 )}
@@ -570,14 +507,14 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
               <div className="grid grid-cols-2 gap-4 mt-2">
                 {task.dateDebut && (
                   <div>
-                    <h4 className="mb-1 text-sm font-medium">Started</h4>
+                    <h4 className="mb-1 text-sm font-medium">{t("tasks.details.started", "Start Date")}</h4>
                     <span className="text-sm">{formatDate(task.dateDebut)}</span>
                   </div>
                 )}
 
                 {task.dateFinEstime && (
                   <div>
-                    <h4 className="mb-1 text-sm font-medium">Due Date</h4>
+                    <h4 className="mb-1 text-sm font-medium">{t("tasks.details.form.due_date", "Due Date")}</h4>
                     <span className="text-sm">{formatDate(task.dateFinEstime)}</span>
                   </div>
                 )}
@@ -586,13 +523,13 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
               <div className="grid grid-cols-2 gap-4 mt-2">
                 {task.duree != 0 && (
                   <div>
-                    <h4 className="mb-1 text-sm font-medium">Duration</h4>
+                    <h4 className="mb-1 text-sm font-medium">{t("tasks.details.form.duration", "Duration")}</h4>
                     <span className="text-sm">{formatDurationReact(task.duree)}</span>
                   </div>
                 )}
                 {task.marge != 0 && (
                   <div>
-                    <h4 className="mb-1 text-sm font-medium">Marge</h4>
+                    <h4 className="mb-1 text-sm font-medium">{t("tasks.details.form.margin", "Marge")}</h4>
                     <span className="text-sm">{formatDurationReact(task.marge)}</span>
                   </div>
                 )}
@@ -601,13 +538,13 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
               <Tabs className="mt-4" defaultValue="assignees">
                 <TabsList className="w-full">
                   <TabsTrigger value="assignees" className="flex-1">
-                    Assignees
+                    {t("tasks.details.tabs.assignees", "Assignees")}
                   </TabsTrigger>
                   <TabsTrigger value="comments" className="flex-1">
-                    Comments
+                    {t("tasks.details.tabs.comments", "Comments")}
                   </TabsTrigger>
                   <TabsTrigger value="attachments" className="flex-1">
-                    Attachments
+                    {t("tasks.details.tabs.attachments", "Attachments")}
                   </TabsTrigger>
                 </TabsList>
 
@@ -617,7 +554,7 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
                       {task.comments.map((comment:any) => (
                         <div key={comment.id} className="flex gap-3">
                           <Avatar className="h-8 w-8">
-                            <AvatarImage src={comment.user.avatar} alt={comment.user.name} />
+                            <AvatarImage src={comment.user.avatar || "/placeholder.svg"} alt={comment.user.name} />
                             <AvatarFallback>{comment.user.initials}</AvatarFallback>
                           </Avatar>
                           <div className="flex-1 space-y-1">
@@ -675,46 +612,38 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
                 <TabsContent value="assignees" className="pt-2">
                   <div className="text-center text-sm text-muted-foreground">
                     <div className="grid gap-3 pl-3">
-                      { checkIfCreatorOfProject(task.project) && (
+                      {checkIfCreatorOfProject(task.project) && (
                         <UserSearch
-                        key={task.id}
-                        onUserSelect={setAssigneeToAdd}
-                        alreadyincluded={task.assignee}
-                        selectedUsers={task.project.listeCollaborateur}
-                        task={task}
-                      />
+                          key={task.id}
+                          onUserSelect={setAssigneeToAdd}
+                          alreadyincluded={task.assignee}
+                          selectedUsers={task.project.listeCollaborateur}
+                          task={task}
+                        />
                       )}
-                      
-                      
+
                       {task.assignee.length > 0 ? (
                         task.assignee.map((assignee) => (
                           <div key={assignee.id} className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
-                              <AvatarImage
-                                src= {
-                                  assignee.avatar
-                                  }
-                                alt={assignee.nom}
-                              />
+                              <AvatarImage src={assignee.avatar} alt={assignee.nom} />
                               <AvatarFallback>{assignee.initials}</AvatarFallback>
                             </Avatar>
 
                             <span className="text-sm font-medium text-gray-800">
-                              {_.startCase(assignee.nom) } {_.startCase(assignee.prenom)}
+                              {_.startCase(assignee.nom)} {_.startCase(assignee.prenom)}
                             </span>
 
-                            {
-                              checkIfCreatorOfProject(task.project) && (
-                                <Trash2
-                                  onClick={() => setAssigneeToDelete(assignee)}
-                                className="cursor-pointer mr-2 h-4 w-4 ml-auto" />
-                              )
-                            }
-                          
+                            {checkIfCreatorOfProject(task.project) && (
+                              <Trash2
+                                onClick={() => setAssigneeToDelete(assignee)}
+                                className="cursor-pointer mr-2 h-4 w-4 ml-auto"
+                              />
+                            )}
                           </div>
                         ))
                       ) : (
-                        <span className="text-sm text-muted-foreground">No assignees</span>
+                        <span className="text-sm text-muted-foreground">{t("tasks.details.no_assignees", "No Assignees")}</span>
                       )}
                     </div>
                   </div>
@@ -748,11 +677,10 @@ export function TaskDetails({ taskToEdit, onClose, onUpdate, onDelete, allTasks 
                   )}
                 </TabsContent> */}
               </Tabs>
-            </>
+            </div>
           )}
         </div>
       </ScrollArea>
     </div>
   )
 }
-

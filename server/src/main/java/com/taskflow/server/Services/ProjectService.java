@@ -125,6 +125,14 @@ public class ProjectService {
                 .orElse(null);
     }
 
+    public Boolean isCollaborator(User u , Project p){
+        for (Collaborator members: p.getListeCollaborateur()) {
+            if( u.equals( members.getUser() ) ) {
+                return true;
+            }
+        } return false;
+    }
+
     public Boolean isCreator(String user,Project project){
         return project.getCreateur().getId().equals(user);
     }

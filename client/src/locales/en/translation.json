@@ -7,7 +7,7 @@
     "chat": "Chat",
     "documentations": "Documentations",
     "dashboard": "Dashboard",
-    "myTasks":"My Tasks"
+    "myTasks": "My Tasks"
   },
   "OTP": {
     "errors": {
@@ -145,5 +145,226 @@
       "success": "Project created successfully",
       "server_error": "An error occurred while creating the project"
     }
+  },
+  "tasks": {
+    "taskSearch": {
+      "selectPlaceholder": "Select a task...",
+      "inputPlaceholder": "Search tasks...",
+      "loading": "Searching...",
+      "empty": "No tasks found.",
+      "setParent": "Set Parent",
+      "noParent": "No Parent",
+      "searchAndAdd": "Search and Add Tasks"
+    },
+    "taskStatus": {
+      "TODO": "To Do",
+      "PROGRESS": "In Progress",
+      "REVIEW": "Review",
+      "DONE": "Done"
+    },
+    "taskDifficulty": {
+      "easy": "Easy",
+      "normal": "Normal",
+      "hard": "Hard"
+    },
+    "tasks-list": {
+      "status": {
+        "todo": "To Do",
+        "progress": "In Progress",
+        "review": "Review",
+        "done": "Done"
+      },
+      "difficulty": {
+        "easy": "Easy",
+        "normal": "Normal",
+        "hard": "Hard"
+      },
+      "header": {
+        "task": "Task",
+        "status": "Status",
+        "difficulty": "Difficulty",
+        "due_date": "Due Date",
+        "project": "Project",
+        "assignees": "Assignees",
+        "rapporteur": "Rapporteur"
+      }
+    },
+    "create_modal": {
+      "title": "Create New Task",
+      "subtitle": "Add a new task to your project.",
+      "error_title": "Error",
+      "task_name": "Task Name",
+      "description": "Description",
+      "budget": "Budget Estimé",
+      "date_range": "Date Debut - Date Estimé",
+      "difficulty": "Difficulty",
+      "duration": "Durée Estimé",
+      "margin": "Marges",
+      "cancel": "Cancel",
+      "create": "Create Task"
+    },
+    "header": {
+      "filter": {
+        "title": "Filter Tasks",
+        "clear_all": "Clear all",
+        "status": "Status",
+        "difficulty": "Difficulty",
+        "due_date": "Due Date",
+        "assignee": "Assignee",
+        "project": "Project"
+      },
+      "group_by": {
+        "status": "Status",
+        "difficulty": "Difficulty",
+        "assignee": "Assignee",
+        "project": "Project"
+      },
+      "sort_by": {
+        "due_date": "Due Date",
+        "difficulty": "Difficulty",
+        "created_date": "Created Date",
+        "name": "Name"
+      },
+      "view": {
+        "board": "Board",
+        "list": "List"
+      },
+      "add_task": "Add Task"
+    },
+    "details": {
+      "title": "Task Details",
+      "edit_task": "Edit Task",
+      "delete_confirm": {
+        "title": "Are you sure you want to delete this task?",
+        "description": "This action cannot be undone. This will permanently delete the task and all associated data."
+      },
+      "remove_assignee": {
+        "title": "Are you sure you want to remove this assignee?",
+        "description": "won't be able to change the status of this task anymore, but you can add them again."
+      },
+      "tabs": {
+        "assignees": "Assignees",
+        "comments": "Comments",
+        "attachments": "Attachments"
+      },
+      "form": {
+        "task_name": "Task Name",
+        "description": "Description",
+        "status": "Status",
+        "difficulty": "Difficulty",
+        "budget": "Budget Estimé",
+        "quality": "Quality",
+        "duration": "Duration",
+        "margin": "Marge",
+        "start_date": "Start Date",
+        "due_date": "Due Date",
+        "pick_date": "Pick a date"
+      },
+      "qualit": {
+        "zero": "Not rated",
+        "one": "Poor",
+        "two": "Fair",
+        "three": "Good",
+        "four": "Very Good",
+        "five": "Excellent"
+      },
+      "createdat": "Created At",
+      "finishedat": "Finished At",
+      "started": "Start Date",
+      "no_assignees": "No Assignees"
+    },
+    "specific": {
+      "title": "Task Details",
+      "delete_confirm": {
+        "title": "Are you sure you want to delete this task?",
+        "description": "This action cannot be undone. This will permanently delete the task and all associated data."
+      },
+      "remove_assignee": {
+        "title": "Are you sure you want to remove this assignee?",
+        "description": "won't be able to change the status of this task anymore, but you can add them again."
+      },
+      "remove_subtask": {
+        "title": "Are you sure you want to remove '{subTaskToDelete.nomTache}'' from sub-tasks?",
+        "description": "will be just removed from the '{task.nomTache}' sub-tasks section."
+      },
+      "remove_precaution": {
+        "title": "Are you sure you want to remove '{{taskName}}' from previous tasks?",
+        "description": "'{{precTaskName}}' will be just removed from the '{{taskName}}' previous tasks section."
+      },
+      "remove_parallel": {
+        "title": "Are you sure you want to remove '{{taskName}}' from parallel tasks?",
+        "description": "'{{parallelTaskName}}' will be just removed from the '{{taskName}}' parallel tasks section."
+      },
+      "tabs": {
+        "assignees": "Assignees",
+        "comments": "Comments",
+        "attachments": "Attachments"
+      },
+      "breadcrumb": {
+        "tasks": "Tasks"
+      },
+      "form": {
+        "task_name": "Task Name",
+        "description": "Description",
+        "status": "Status",
+        "difficulty": "Difficulty",
+        "budget": "Budget Estimé",
+        "quality": "Quality",
+        "duration": "Duration",
+        "margin": "Marge",
+        "start_date": "Start Date",
+        "due_date": "Due Date",
+        "project": "Project"
+      },
+      "subtasks": {
+        "title": "SubTasks",
+        "description": "tasks that make up this task"
+      },
+      "precedent": {
+        "title": "Precedent Tasks",
+        "description": "Tasks that must be completed before starting this task"
+      },
+      "parallel": {
+        "title": "Parallel Tasks",
+        "description": "Tasks that must be started with this task"
+      },
+      "project": "Project",
+      "reporter": "Reporter",
+      "quality": "Quality",
+      "not_rated": "Not Rated",
+      "budget": "Budget",
+      "created": "Created",
+      "finished_date": "Finished Date",
+      "started": "Started",
+      "due_date": "Due Date",
+      "duration": "Duration",
+      "margin": "Marge",
+      "no_assignees": "No assignees for this task",
+      "dependencies": "Task Dependencies",
+      "remove": "Remove",
+      "no_previous_tasks": "There are no precedentes tasks",
+      "no_subtasks": "There are no subTasks",
+      "no_parallel_tasks": "There is no parallel tasks",
+      "buttons": {
+        "save_changes": "Save Changes",
+        "cancel": "Cancel"
+      },
+      "menu": {
+        "edit": "Edit Task",
+        "delete": "Delete Task"
+      }
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "date": {
+    "year": "year",
+    "month": "month",
+    "week": "week",
+    "day": "day",
+    "hour": "hour",
+    "minute": "minute"
   }
 }

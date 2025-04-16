@@ -146,5 +146,226 @@
       "server_error": "Oups! Un problème est survenu.",
       "success": "Projet créé avec succès."
     }
+  },
+  "tasks": {
+    "taskSearch": {
+      "selectPlaceholder": "Sélectionnez une tâche...",
+      "inputPlaceholder": "Rechercher des tâches...",
+      "loading": "Recherche en cours...",
+      "empty": "Aucune tâche trouvée.",
+      "setParent": "Définir le parent",
+      "noParent": "Aucun parent",
+      "searchAndAdd": "Rechercher et ajouter des tâches"
+    },
+    "taskStatus": {
+      "TODO": "À faire",
+      "PROGRESS": "En cours",
+      "REVIEW": "En révision",
+      "DONE": "Terminée"
+    },
+    "taskDifficulty": {
+      "easy": "Facile",
+      "normal": "Normale",
+      "hard": "Difficile"
+    },
+    "tasks-list": {
+      "status": {
+        "todo": "À faire",
+        "progress": "En cours",
+        "review": "En révision",
+        "done": "Terminé"
+      },
+      "difficulty": {
+        "easy": "Facile",
+        "normal": "Normal",
+        "hard": "Difficile"
+      },
+      "header": {
+        "task": "Tâche",
+        "status": "Statut",
+        "difficulty": "Difficulté",
+        "due_date": "Date Fin Estimée",
+        "project": "Projet",
+        "assignees": "Assignés",
+        "rapporteur": "Rapporteur"
+      }
+    },
+    "create_modal": {
+      "title": "Créer une nouvelle tâche",
+      "subtitle": "Ajouter une nouvelle tâche à votre projet.",
+      "error_title": "Erreur",
+      "task_name": "Nom de la tâche",
+      "description": "Description",
+      "budget": "Budget Estimé",
+      "date_range": "Date Début - Date Estimée",
+      "difficulty": "Difficulté",
+      "duration": "Durée Estimée",
+      "margin": "Marges",
+      "cancel": "Annuler",
+      "create": "Créer la tâche"
+    },
+    "header": {
+      "filter": {
+        "title": "Filtrer les tâches",
+        "clear_all": "Tout effacer",
+        "status": "Statut",
+        "difficulty": "Difficulté",
+        "due_date": "Date Fin Estimée",
+        "assignee": "Assigné",
+        "project": "Projet"
+      },
+      "group_by": {
+        "status": "Statut",
+        "difficulty": "Difficulté",
+        "assignee": "Assigné",
+        "project": "Projet"
+      },
+      "sort_by": {
+        "due_date": "Date Fin Estimée",
+        "difficulty": "Difficulté",
+        "created_date": "Date de création",
+        "name": "Nom"
+      },
+      "view": {
+        "board": "Tableau",
+        "list": "Liste"
+      },
+      "add_task": "Ajouter une tâche"
+    },
+    "details": {
+      "title": "Détails de la tâche",
+      "edit_task": "Modifier la tâche",
+      "delete_confirm": {
+        "title": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
+        "description": "Cette action ne peut pas être annulée. Cela supprimera définitivement la tâche et toutes les données associées."
+      },
+      "remove_assignee": {
+        "title": "Êtes-vous sûr de vouloir supprimer cet assigné ?",
+        "description": "ne pourra plus changer le statut de cette tâche, mais vous pouvez l'ajouter à nouveau."
+      },
+      "tabs": {
+        "assignees": "Assignés",
+        "comments": "Commentaires",
+        "attachments": "Pièces jointes"
+      },
+      "form": {
+        "task_name": "Nom de la tâche",
+        "description": "Description",
+        "status": "Statut",
+        "difficulty": "Difficulté",
+        "budget": "Budget Estimé",
+        "quality": "Qualité",
+        "duration": "Durée",
+        "margin": "Marge",
+        "start_date": "Date de début",
+        "due_date": "Date Fin Estimée",
+        "pick_date": "Choisir une date"
+      },
+      "qualit": {
+        "zero": "Non noté",
+        "one": "Faible",
+        "two": "Passable",
+        "three": "Bon",
+        "four": "Très bon",
+        "five": "Excellent"
+      },
+      "createdat": "Créé le",
+      "finishedat": "Terminé le",
+      "started": "Commencé",
+      "no_assignees": "Aucun assigné"
+    },
+    "specific": {
+      "title": "Détails de la tâche",
+      "delete_confirm": {
+        "title": "Êtes-vous sûr de vouloir supprimer cette tâche ?",
+        "description": "Cette action ne peut pas être annulée. Cela supprimera définitivement la tâche et toutes les données associées."
+      },
+      "remove_assignee": {
+        "title": "Êtes-vous sûr de vouloir supprimer cet assigné ?",
+        "description": "ne pourra plus changer le statut de cette tâche, mais vous pouvez l'ajouter à nouveau."
+      },
+      "remove_subtask": {
+        "title": "Êtes-vous sûr de vouloir supprimer « {subTaskToDelete.nomTache} » des sous-tâches ?",
+        "description": "sera simplement supprimée de la section des sous-tâches de « {task.nomTache} »."
+      },
+      "remove_precaution": {
+        "title": "Êtes-vous sûr de vouloir supprimer « {{taskName}} » des tâches précédentes ?",
+        "description": "« {{precTaskName}} » sera simplement supprimée de la section des tâches précédentes de « {{taskName}} »."
+      },
+      "remove_parallel": {
+        "title": "Êtes-vous sûr de vouloir supprimer « {{taskName}} » des tâches parallèles ?",
+        "description": "« {{parallelTaskName}} » sera simplement supprimée de la section des tâches parallèles de « {{taskName}} »."
+      },
+      "tabs": {
+        "assignees": "Assignés",
+        "comments": "Commentaires",
+        "attachments": "Pièces jointes"
+      },
+      "breadcrumb": {
+        "tasks": "Tâches"
+      },
+      "form": {
+        "task_name": "Nom de la tâche",
+        "description": "Description",
+        "status": "Statut",
+        "difficulty": "Difficulté",
+        "budget": "Budget Estimé",
+        "quality": "Qualité",
+        "duration": "Durée",
+        "margin": "Marge",
+        "start_date": "Date de début",
+        "due_date": "Date Fin Estimée",
+        "project": "Projet"
+      },
+      "subtasks": {
+        "title": "Sous-tâches",
+        "description": "tâches qui composent cette tâche"
+      },
+      "precedent": {
+        "title": "Tâches précédentes",
+        "description": "Tâches qui doivent être terminées avant de commencer celle-ci"
+      },
+      "parallel": {
+        "title": "Tâches parallèles",
+        "description": "Tâches qui doivent être démarrées avec cette tâche"
+      },
+      "project": "Projet",
+      "reporter": "Rapporteur",
+      "quality": "Qualité",
+      "not_rated": "Non notée",
+      "budget": "Budget",
+      "created": "Créée",
+      "finished_date": "Date de fin",
+      "started": "Commencée",
+      "due_date": "Date d'échéance",
+      "duration": "Durée",
+      "margin": "Marge",
+      "no_assignees": "Aucun assigné pour cette tâche",
+      "dependencies": "Dépendances de la tâche",
+      "remove": "Supprimer",
+      "no_previous_tasks": "Il n'y a pas de tâches précédentes",
+      "no_subtasks": "Il n'y a pas de sous-tâches",
+      "no_parallel_tasks": "Il n'y a pas de tâches parallèles",
+      "buttons": {
+        "save_changes": "Enregistrer les modifications",
+        "cancel": "Annuler"
+      },
+      "menu": {
+        "edit": "Modifier la tâche",
+        "delete": "Supprimer la tâche"
+      }
+    }
+  },
+  "common": {
+    "cancel": "Annuler",
+    "delete": "Supprimer"
+  },
+  "date": {
+    "year": "année",
+    "month": "mois",
+    "week": "semaine",
+    "day": "jour",
+    "hour": "heure",
+    "minute": "minute"
   }
 }

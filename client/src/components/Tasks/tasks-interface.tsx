@@ -8,6 +8,7 @@ import { TaskDetails } from "@/components/tasks/task-details";
 import { useMediaQuery } from "@/hooks/use-mobile";
 import { TaskCreateModal } from "@/components/tasks/task-create-modal";
 import useTasks from "../../hooks/useTasks";
+import { useTranslation } from "react-i18next"
 
 export type ViewMode = "board" | "list";
 export type GroupBy = "status" | "priority" | "assignee" | "project";
@@ -16,66 +17,18 @@ export type SortOrder = "asc" | "desc";
 export type Priority = "easy" | "normal" | "hard";
 export type Status = "TODO" | "PROGRESS" | "REVIEW" | "DONE";
 
-export interface TaskAssignee {
-  id: string;
-  name: string;
-  avatar: string;
-  initials: string;
-}
-
-export interface TaskAttachment {
-  id: string;
-  name: string;
-  size: string;
-  type: string;
-  uploadedAt: string;
-  url: string;
-}
-
-export interface TaskComment {
-  id: string;
-  user: TaskAssignee;
-  content: string;
-  createdAt: string;
-  attachments?: TaskAttachment[];
-}
-
-export interface TaskProject {
-  id: string;
-  name: string;
-}
-
-export interface Task {
-  id: string;
-  nomTache: string;
-  description?: string;
-  statut: Status;
-  qualite?: number; // 1-5
-  difficulte: string; // easy normal hard
-  dateCreation: string;
-  dateDebut?: string;
-  dateFinEstime?: string;
-  dataFin?: string;
-  duree: number;
-  marge: 0;
-  assignee: TaskAssignee[];
-  attachments: TaskAttachment[];
-  comments: TaskComment[];
-  project: TaskProject;
-  parent?: string;
-}
 type taskProps = {
   project?: any;
 };
 
 export function TasksInterface({ project }: taskProps) {
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const { t  } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [groupBy, setGroupBy] = useState<GroupBy>("status");
   const [sortBy, setSortBy] = useState<SortBy>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<any | null>(null);
   const [showTaskDetails, setShowTaskDetails] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [filterOptions, setFilterOptions] = useState({
@@ -97,14 +50,12 @@ export function TasksInterface({ project }: taskProps) {
     handleTaskCreate,
     addTaskError,
     setAddTaskError,
-    handleFindAllTasks,
     getTasksByProjectID,
     checkIfCreatorOfProject,
     getMyTasks
   } = useTasks();
 
   useEffect(() => {
-    // handleFindAllTasks();
     if(project)
       getTasksByProjectID(project?.id);
     else 
@@ -116,11 +67,12 @@ export function TasksInterface({ project }: taskProps) {
     return  checkIfCreatorOfProject(project) ; 
   } 
 
-  // Filter tasks based on search query and filter options
+  const isValidDate = (date?: string) =>
+    !!date && !isNaN(new Date(date).getTime());
+
   const getFilteredTasks = () => {
     let filtered = [...tasks];
 
-    // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -138,8 +90,6 @@ export function TasksInterface({ project }: taskProps) {
     }
 
     if (filterOptions.priority.length > 0) {
-      // Note: priority is not in the new Task interface, so this filter might need to be removed
-      // or adapted to use a different field like difficulte
       const difficulteMap: Record<string, Priority> = {
         easy: "easy",
         normal: "normal",
@@ -173,6 +123,15 @@ export function TasksInterface({ project }: taskProps) {
         )
       );
     }
+    
+    if (filterOptions.dateFinEstime) {
+      const filterDate = new Date(filterOptions.dateFinEstime).toDateString();
+      filtered = filtered.filter((task) => {
+        if (!task.dateFinEstime) return false;
+        const taskDate = new Date(task.dateFinEstime).toDateString();
+        return taskDate === filterDate;
+      });
+    }
 
     // Sort tasks
     filtered.sort((a, b) => {
@@ -180,15 +139,14 @@ export function TasksInterface({ project }: taskProps) {
 
       switch (sortBy) {
         case "dueDate":
-          valueA = a.dateFinEstime
-            ? new Date(a.dateFinEstime).getTime()
-            : Number.POSITIVE_INFINITY;
-          valueB = b.dateFinEstime
-            ? new Date(b.dateFinEstime).getTime()
-            : Number.POSITIVE_INFINITY;
+          valueA = isValidDate(a.dateFinEstime)
+          ? new Date(a.dateFinEstime!).getTime()
+          : Number.POSITIVE_INFINITY;
+        valueB = isValidDate(b.dateFinEstime)
+          ? new Date(b.dateFinEstime!).getTime()
+          : Number.POSITIVE_INFINITY;
           break;
         case "priority":
-          // Map difficulte to priority values for sorting
           const priorityOrder = { hard: 3, normal: 2, easy: 1 };
           valueA = priorityOrder[a.difficulte.toLowerCase()];
           valueB = priorityOrder[b.difficulte.toLowerCase()];
@@ -214,13 +172,9 @@ export function TasksInterface({ project }: taskProps) {
 
     return filtered;
   };
-
   const filteredTasks = getFilteredTasks();
-
-  // Group tasks based on the groupBy option
-
   const groupTasks = () => {
-    const grouped: Record<string, Task[]> = {};
+    const grouped: Record<string, any[]> = {};
 
     if (groupBy === "status") {
       grouped["TODO"] = filteredTasks.filter((task) => task.statut === "TODO");
@@ -232,7 +186,6 @@ export function TasksInterface({ project }: taskProps) {
       );
       grouped["DONE"] = filteredTasks.filter((task) => task.statut === "DONE");
     } else if (groupBy === "priority") {
-      // Group by difficulte instead of priority
       grouped["easy"] = filteredTasks.filter(
         (task) => task.difficulte.toLowerCase() === "easy"
       );
@@ -243,26 +196,20 @@ export function TasksInterface({ project }: taskProps) {
         (task) => task.difficulte.toLowerCase() === "hard"
       );
     } else if (groupBy === "assignee") {
-      // Get unique assignees from all tasks
       const assignees = new Set<string>();
       filteredTasks.forEach((task) =>
         task.assignee.forEach((assignee) => assignees.add(assignee.id))
       );
-
-      // Initialize empty arrays for each assignee
       assignees.forEach((assigneeId) => {
         grouped[assigneeId] = [];
       });
 
-      // Add "Unassigned" group
       grouped["unassigned"] = [];
 
-      // Populate groups
       filteredTasks.forEach((task) => {
         if (task.assignee.length === 0) {
           grouped["unassigned"].push(task);
         } else {
-          // Add task to each assignee's group
           task.assignee.forEach((assignee) => {
             if (grouped[assignee.id]) {
               grouped[assignee.id].push(task);
@@ -271,11 +218,8 @@ export function TasksInterface({ project }: taskProps) {
         }
       });
     } else if (groupBy === "project") {
-      // Get unique projects from all tasks
       const projects = new Set<string>();
       filteredTasks.forEach((task) => projects.add(task.project.id));
-
-      // Initialize and populate groups
       projects.forEach((projectId) => {
         grouped[projectId] = filteredTasks.filter(
           (task) => task.project.id === projectId
@@ -286,13 +230,10 @@ export function TasksInterface({ project }: taskProps) {
     return grouped;
   };
 
-  const [groupedTasks, setGroupedTasks] = useState<Record<string, Task[]>>({});
+  const [groupedTasks, setGroupedTasks] = useState<Record<string, any[]>>({});
 
   useEffect(() => {
-    // If filteredTasks or groupBy changes, update groupedTasks
     const newGroupedTasks = groupTasks();
-
-    // Only set state if the grouped tasks have changed
     setGroupedTasks(newGroupedTasks);
   }, [tasks]);
   
@@ -311,8 +252,6 @@ export function TasksInterface({ project }: taskProps) {
     if(updated.id != updated.statut)
       await handleUpdateStatutTask(updated.id, updated.statut);
     if (project) await getTasksByProjectID(project?.id);
-    
-    // setTasks(tasks.map((task) => (task.id === updated.id ? updated : task)));
     setSelectedTask(updated);
   };
 
@@ -380,8 +319,6 @@ export function TasksInterface({ project }: taskProps) {
     );
     setTasks(updatedTasks);
 
-
-
   };
 
   return (
@@ -403,7 +340,7 @@ export function TasksInterface({ project }: taskProps) {
           tasks={tasks}
         />
 
-        <div className="flex flex-1 overflow-x-hidden overflow-y-scroll">
+        <div className="flex flex-1 overflow-hidden">
           {viewMode === "board" ? (
             <TasksBoard
               groupedTasks={groupedTasks}
@@ -429,8 +366,6 @@ export function TasksInterface({ project }: taskProps) {
           )}
         </div>
       </div>
-
-      
         <TaskCreateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
@@ -440,7 +375,6 @@ export function TasksInterface({ project }: taskProps) {
         setAddTaskError={setAddTaskError}
         project={project}
       />
-      
       
     </div>
   );

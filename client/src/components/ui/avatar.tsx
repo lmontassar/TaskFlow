@@ -29,7 +29,6 @@ function AvatarImage({
                   ( props?.src?.startsWith("avatar")
                     ? `/api/user/avatar/${props.src}`
                     : props.src )
-  console.log(EditsProp)
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"

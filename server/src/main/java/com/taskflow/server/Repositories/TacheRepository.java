@@ -13,4 +13,6 @@ import java.util.List;
 public interface TacheRepository extends MongoRepository<Tache,String>{
     public List<Tache> getAllByProject(Project p);
     public List<Tache> findByAssigneeContainingOrRapporteur(User u,User u2);
+    public List<Tache> getAllByParent(Tache t);
+    // Precedente is a list of tasks
 }

@@ -9,6 +9,9 @@ import { Clock, AlertCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import type { Task, GroupBy } from "./tasks-interface"
 import useTasks from "../../hooks/useTasks"
+import { useTranslation } from "react-i18next"
+import { enUS, fr, ar, es } from 'date-fns/locale'
+
 
 interface TasksBoardProps {
   groupedTasks: Record<string, any[]>
@@ -18,29 +21,40 @@ interface TasksBoardProps {
 }
 
 export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: TasksBoardProps) {
-  const {checkIfAssigneeTask , checkIfCreatorOfProject} = useTasks();
+  const localeMap: Record<string, Locale> = {
+    en: enUS,
+    fr: fr,
+    ar: ar,
+    es: es,
+  }
+  const { t , i18n  } = useTranslation()
+  const {
+    checkIfAssigneeTask,
+    checkIfCreatorOfProject,
+    getDifficulteBadge: getDifficulteIcon,
+  } = useTasks();
   const getColumnTitle = (key: string): string => {
     if (groupBy === "status") {
       switch (key) {
         case "TODO":
-          return "To Do"
+          return t("tasks.tasks-list.status.todo", "To Do")
         case "PROGRESS":
-          return "In Progress"
+          return t("tasks.tasks-list.status.progress", "In Progress")
         case "REVIEW":
-          return "Review"
+          return t("tasks.tasks-list.status.review", "Review")
         case "DONE":
-          return "Done"
+          return t("tasks.tasks-list.status.done", "Done")
         default:
           return key
       }
     } else if (groupBy === "priority") {
       switch (key) {
         case "easy":
-          return "Easy"
+          return t("tasks.tasks-list.difficulty.easy", "Easy")
         case "normal":
-          return "normal"
+          return t("tasks.tasks-list.difficulty.normal", "Normal")
         case "hard":
-          return "Hard"
+          return t("tasks.tasks-list.difficulty.hard", "Hard")
         default:
           return key
       }
@@ -64,7 +78,6 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
       }
       return "Unknown Project"
     }
-
     return key
   }
 
@@ -98,72 +111,12 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
     return "bg-slate-50"
   }
 
- 
-
-  // const getDifficulteIcon = (difficulte: string) => {
-  //   switch (difficulte.toLowerCase()) {
-  //     case "hard":
-  //       return <AlertCircle className="h-4 w-4 text-red-500">hard</AlertCircle>
-  //     case "normal":
-  //       return <AlertCircle className="h-4 w-4 text-yellow-500" />
-  //     case "easy":
-  //       return <AlertCircle className="h-4 w-4 text-green-500" />
-  //     default:
-  //       return null
-  //   }
-  // }
-
-  // const getDifficulteIcon = (difficulte: string) => {
-  //   console.log(difficulte)
-  //   switch (difficulte.toLowerCase()) {
-  //     case "hard":
-  //       return  <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-  //                 Hard
-  //               </Badge>
-  //     case "normal":
-  //       return  <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-  //                 Normal
-  //               </Badge>
-  //     case "easy":
-  //       return <Badge variant="outline" className="bg-slate-50 text-yellow-700 border-yellow-200">
-  //               Easy
-  //              </Badge>
-  //     default:
-  //       return null
-  //   }
-  // }
-
-  const getDifficulteIcon = (difficulte: string) => {
-    switch (difficulte.toLowerCase()) {
-      case "hard":
-        return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-            Hard
-          </Badge>
-        )
-      case "normal":
-        return (
-          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-            Normal
-          </Badge>
-        )
-      case "easy":
-        return (
-          <Badge variant="outline" className="bg-slate-50">
-            Easy
-          </Badge>
-        )
-      default:
-        return <Badge variant="outline">{difficulte}</Badge>
-    }
-  }
-
   const formatDueDate = (dateString?: string) => {
     if (!dateString) return null
-
     try {
       const dueDate = new Date(dateString)
-      return formatDistanceToNow(dueDate, { addSuffix: true })
+      const locale = localeMap[i18n.language] || enUS
+      return formatDistanceToNow(dueDate, { addSuffix: true, locale })
     } catch (error) {
       return null
     }
@@ -184,27 +137,39 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
             <Droppable droppableId={columnId} isDropDisabled={false}>
               {(provided) => (
                 <div ref={provided.innerRef} {...provided.droppableProps} className="flex-1 overflow-hidden">
-                  <ScrollArea className="h-[calc(100vh-16rem)]">
-                    <div className="space-y-2 p-3">
+                  <ScrollArea className="h-[calc(100vh-16rem)] w-full ">
+                    <div className="space-y-2 p-3 overflow-hidden">
                       {tasks.map((task, index) => (
-                        <Draggable key={task.id} draggableId={task.id} index={index} isDragDisabled={checkIfAssigneeTask(task)===false && checkIfCreatorOfProject(task?.project) === false }>
-                          {(provided) => (
+                        <Draggable
+                          key={task.id}
+                          draggableId={task.id}
+                          index={index}
+                          isDragDisabled={
+                            checkIfAssigneeTask(task) === false && checkIfCreatorOfProject(task?.project) === false
+                          }
+                        >
+                          {(provided, snapshot) => (
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`w-full select-none  ${ checkIfAssigneeTask(task)===false && checkIfCreatorOfProject(task?.project) === false ? "cursor-not-allowed" :  "cursor-crosshair"}`}
+                              className={`w-full select-none ${
+                                !checkIfAssigneeTask(task) && !checkIfCreatorOfProject(task?.project)
+                                  ? "cursor-not-allowed"
+                                  : snapshot.isDragging
+                                    ? "cursor-grabbing"
+                                    : "cursor-grab"
+                              }`}
                             >
                               <Card
-                                className={`overflow-hidden transition-shadow hover:shadow-md w-full ${checkIfAssigneeTask(task)===false && checkIfCreatorOfProject(task?.project) === false ? "bg-gray-300" :""} `} 
-                                
+                                className={`overflow-hidden transition-shadow hover:shadow-md w-full max-w-full ${checkIfAssigneeTask(task) === false && checkIfCreatorOfProject(task?.project) === false ? "bg-gray-300" : ""} `}
                                 onClick={() => onTaskClick(task)}
                               >
                                 <CardContent className="p-3">
                                   <div className="space-y-2">
-                                    <div className="flex items-start justify-between gap-2">
+                                    <div className=" flex items-start justify-between gap-2">
                                       <h4
-                                        className="flex-1 font-medium truncate max-w-full overflow-hidden text-ellipsis"
+                                        className="flex-1 font-medium break-words whitespace-normal line-clamp-2"
                                         title={task.nomTache}
                                       >
                                         {task.nomTache}
@@ -217,9 +182,7 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
                                         {task.assignee.map((assignee: any) => (
                                           <Avatar key={assignee.id} className="h-6 w-6 border-2 border-background">
                                             <AvatarImage
-                                              src={
-                                                assignee.avatar
-                                              }
+                                              src={assignee.avatar || "/placeholder.svg"}
                                               alt={assignee.nom}
                                             />
                                             <AvatarFallback className="text-[10px]">{assignee.initials}</AvatarFallback>
@@ -265,4 +228,3 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
     </DragDropContext>
   )
 }
-
