@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/tache")
 public class TacheController {
 
-    private static final Pattern XSS_PATTERN = Pattern.compile("[<>\"'%;)(&+]");
+    private static final Pattern XSS_PATTERN = Pattern.compile("[<>\"%;&+]");
 
     @Autowired
     private ProjectService projectSer;
@@ -221,7 +221,7 @@ public class TacheController {
                 return ResponseEntity.notFound().build();
 
             setPrivilege(u, p, null);
-            if (canDeleteTasks == false)
+            if (canAddTasks == false)
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
             if ((task.getNomTache() == null ||
