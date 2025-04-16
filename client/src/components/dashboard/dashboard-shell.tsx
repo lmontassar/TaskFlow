@@ -148,8 +148,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a
-                  onClick={() => localStorage.removeItem("token")}
-                  href="/login"
+                  onClick={() => localStorage.removeItem("authToken")}
+                  
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
