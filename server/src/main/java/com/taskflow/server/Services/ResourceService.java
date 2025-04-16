@@ -14,10 +14,17 @@ public class ResourceService {
     public TemporalResource createTemporalResource(TemporalResource temporalResource){
         return resourceRepository.save(temporalResource);
     }
+
     public EnergeticResource createEnergeticResource(EnergeticResource energeticResource){
         return resourceRepository.save(energeticResource);
     }
     public MaterialResource createMaterialResource(MaterialResource materialResource){
         return resourceRepository.save(materialResource);
+    }
+    public Resource getById(String id){
+        return resourceRepository.getById(id);
+    }
+    public void deleteById(String id) {
+        resourceRepository.deleteById(id);
     }
 }

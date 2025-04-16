@@ -20,7 +20,6 @@ export function ProjectTabs({ projects }: any) {
         <TabsTrigger value="members">Members</TabsTrigger>
         <TabsTrigger value="resources">Resources</TabsTrigger>
         <TabsTrigger value="discussions">Discussions</TabsTrigger>
-        <TabsTrigger value="activity">Activity</TabsTrigger>
       </TabsList>
       <TabsContent value="tasks" className="mt-6">
         <ProjectTasks project={projects} />
@@ -32,13 +31,10 @@ export function ProjectTabs({ projects }: any) {
         <ProjectMembers />
       </TabsContent>
       <TabsContent value="resources" className="mt-6">
-        <ProjectResources />
+        <ProjectResources project={projects} />
       </TabsContent>
       <TabsContent value="discussions" className="mt-6">
         <ProjectDiscussions />
-      </TabsContent>
-      <TabsContent value="activity" className="mt-6">
-        <ProjectActivity />
       </TabsContent>
     </Tabs>
   );

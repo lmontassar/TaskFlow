@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -47,130 +46,88 @@ import {
   Users,
   Laptop,
   Briefcase,
+  FileText,
   Clock,
   Search,
-  FileText,
   Filter,
+  PlusIcon,
 } from "lucide-react";
+import useResources from "../../../hooks/useResources";
+import { useTranslation } from "react-i18next";
 
 interface Resource {
   id: string;
-  name: string;
-  type: "human" | "equipment" | "material" | "software" | "service";
-  quantity: number;
-  unit: string;
-  costPerUnit: number;
-  totalCost: number;
+  nom: string;
+  type: string;
+  categorie: string;
+  qte: number;
+  unitMeasure?: string;
+  unit?: string;
+  coutUnitaire: number;
   notes?: string;
-  status: "available" | "allocated" | "pending" | "unavailable";
+  newcategorie?: string;
+  status: "AVAILABLE" | "ALLOCATED" | "PENDING" | "UNAVAILABLE";
+  qteDisponibilite?: number;
+  consommationTotale?: number;
+  consommationMax?: number;
+  utilisationTotale?: number;
 }
 
-export function ProjectResources() {
-  const [resources, setResources] = useState<Resource[]>([
-    {
-      id: "res-1",
-      name: "Senior Developer",
-      type: "human",
-      quantity: 2,
-      unit: "people",
-      costPerUnit: 800,
-      totalCost: 1600,
-      notes: "Frontend specialists with React experience",
-      status: "allocated",
-    },
-    {
-      id: "res-2",
-      name: "UI/UX Designer",
-      type: "human",
-      quantity: 1,
-      unit: "people",
-      costPerUnit: 750,
-      totalCost: 750,
-      status: "allocated",
-    },
-    {
-      id: "res-3",
-      name: "MacBook Pro",
-      type: "equipment",
-      quantity: 3,
-      unit: "units",
-      costPerUnit: 2500,
-      totalCost: 7500,
-      notes: "16-inch, M2 Pro, 32GB RAM",
-      status: "available",
-    },
-    {
-      id: "res-4",
-      name: "Adobe Creative Cloud",
-      type: "software",
-      quantity: 2,
-      unit: "licenses",
-      costPerUnit: 80,
-      totalCost: 160,
-      notes: "Monthly subscription",
-      status: "available",
-    },
-    {
-      id: "res-5",
-      name: "Meeting Room",
-      type: "service",
-      quantity: 1,
-      unit: "room",
-      costPerUnit: 0,
-      totalCost: 0,
-      notes: "Main conference room, booked every Monday 10-11 AM",
-      status: "allocated",
-    },
-    {
-      id: "res-6",
-      name: "Design Assets",
-      type: "material",
-      quantity: 1,
-      unit: "package",
-      costPerUnit: 350,
-      totalCost: 350,
-      notes: "Premium UI kit and icon set",
-      status: "pending",
-    },
-    {
-      id: "res-7",
-      name: "Cloud Hosting",
-      type: "service",
-      quantity: 1,
-      unit: "subscription",
-      costPerUnit: 200,
-      totalCost: 200,
-      notes: "AWS hosting for development environment",
-      status: "available",
-    },
-  ]);
+const initialFormData = {
+  nom: "",
+  type: "",
+  qte: 1,
+  categorie: "",
+  unitMeasure: "",
+  utilisationTotale: 0,
+  qteDisponibilite: 0,
+  consommationTotale: 0,
+  consommationMax: 0,
+  coutUnitaire: 0,
+  status: "AVAILABLE",
+  notes: "",
+  newcategorie: "",
+};
 
+export function ProjectResources({ project }: { project: any }) {
+  const { t } = useTranslation();
+  const [resources, setResources] = useState<Resource[]>(
+    project.listeRessource || []
+  );
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [currentResource, setCurrentResource] = useState<Resource | null>(null);
+  const [currentResource, setCurrentResource] = useState<any | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string | null>(null);
+  const [formData, setFormData] =
+    useState<typeof initialFormData>(initialFormData);
 
-  // Form state for add/edit
-  const [formData, setFormData] = useState<Omit<Resource, "id" | "totalCost">>({
-    name: "",
-    type: "human",
-    quantity: 1,
-    unit: "",
-    costPerUnit: 0,
-    status: "available",
-    notes: "",
-  });
+  // Get unique categories using a Set
+  const uniqueCategories = useMemo(() => {
+    const categoriesSet = new Set<string>();
+    resources.forEach((resource) => {
+      if (resource.categorie) {
+        categoriesSet.add(resource.categorie);
+      }
+    });
+    return Array.from(categoriesSet);
+  }, [resources]);
+
+  const { createResource, editResource, deleteResource } = useResources();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]:
-        name === "quantity" || name === "costPerUnit"
-          ? Number.parseFloat(value) || 0
-          : value,
+      [name]: [
+        "qte",
+        "coutUnitaire",
+        "qteDisponibilite",
+        "consommationMax",
+      ].includes(name)
+        ? Number.parseFloat(value) || 0
+        : value,
     });
   };
 
@@ -181,17 +138,7 @@ export function ProjectResources() {
     });
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      type: "human",
-      quantity: 1,
-      unit: "",
-      costPerUnit: 0,
-      status: "available",
-      notes: "",
-    });
-  };
+  const resetForm = () => setFormData(initialFormData);
 
   const openAddDialog = () => {
     resetForm();
@@ -201,13 +148,18 @@ export function ProjectResources() {
   const openEditDialog = (resource: Resource) => {
     setCurrentResource(resource);
     setFormData({
-      name: resource.name,
+      ...initialFormData,
+      nom: resource.nom,
       type: resource.type,
-      quantity: resource.quantity,
-      unit: resource.unit,
-      costPerUnit: resource.costPerUnit,
+      qte: resource.qte,
+      unitMeasure: resource.unitMeasure || "",
+      unit: resource.unit || "",
+      coutUnitaire: resource.coutUnitaire,
+      categorie: resource.categorie,
       status: resource.status,
       notes: resource.notes || "",
+      qteDisponibilite: resource.qteDisponibilite || 0,
+      consommationMax: resource.consommationMax || 0,
     });
     setIsEditDialogOpen(true);
   };
@@ -216,48 +168,91 @@ export function ProjectResources() {
     setCurrentResource(resource);
     setIsDeleteDialogOpen(true);
   };
-
-  const handleAddResource = () => {
-    const newResource: Resource = {
-      id: `res-${Date.now()}`,
+  const validateForm = () => {
+    const requiredFields = ["nom", "type", "categorie", "coutUnitaire"];
+    if (formData.type === "Temporal" || formData.type === "Energetic") {
+      requiredFields.push("unitMeasure");
+    } else if (formData.type === "Material") {
+      requiredFields.push("qteDisponibilite");
+    }
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        return false;
+      }
+    }
+    return true;
+  };
+  const handleAddResource = async () => {
+    const resourceData = {
       ...formData,
-      totalCost: formData.quantity * formData.costPerUnit,
+      projectId: project.id,
+      categorie:
+        formData.categorie === "other"
+          ? formData.newcategorie
+          : formData.categorie,
     };
 
-    setResources([...resources, newResource]);
-    setIsAddDialogOpen(false);
-    resetForm();
+    try {
+      const newResource = await createResource(resourceData);
+      if (newResource) {
+        setResources((prev) => [...prev, newResource]);
+        setIsAddDialogOpen(false);
+        resetForm();
+      }
+    } catch (error) {
+      console.error("Error adding resource:", error);
+    }
   };
-
-  const handleEditResource = () => {
+  const handleEditResource = async () => {
+    if (!validateForm()) {
+      return;
+    }
     if (!currentResource) return;
 
-    const updatedResource: Resource = {
+    const updatedResource: any = {
       ...currentResource,
       ...formData,
-      totalCost: formData.quantity * formData.costPerUnit,
+      projectId: project.id,
+      categorie:
+        formData.categorie === "other"
+          ? formData.newcategorie!
+          : formData.categorie,
     };
-
-    setResources(
-      resources.map((res) =>
-        res.id === currentResource.id ? updatedResource : res
-      )
-    );
-    setIsEditDialogOpen(false);
-    setCurrentResource(null);
-    resetForm();
+    console.log("Updated Resource:", updatedResource);
+    try {
+      const update = await editResource(updatedResource);
+      if (update) {
+        setResources(
+          resources.map((res) =>
+            res.id === currentResource.id ? updatedResource : res
+          )
+        );
+        setIsEditDialogOpen(false);
+        setCurrentResource(null);
+        resetForm();
+      }
+    } catch (error) {
+      console.error("Error adding resource:", error);
+    }
   };
 
-  const handleDeleteResource = () => {
+  const handleDeleteResource = async () => {
     if (!currentResource) return;
-
-    setResources(resources.filter((res) => res.id !== currentResource.id));
-    setIsDeleteDialogOpen(false);
-    setCurrentResource(null);
+    currentResource.projectId = project.id;
+    try {
+      const deleted = await deleteResource(currentResource);
+      if (deleted) {
+        setResources(resources.filter((res) => res.id !== currentResource.id));
+        setIsDeleteDialogOpen(false);
+        setCurrentResource(null);
+      }
+    } catch (error) {
+      console.error("Error adding resource:", error);
+    }
   };
 
   const getTypeIcon = (type: string) => {
-    switch (type) {
+    switch (type.toLowerCase()) {
       case "human":
         return <Users className="h-4 w-4 text-blue-500" />;
       case "equipment":
@@ -274,71 +269,79 @@ export function ProjectResources() {
   };
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "available":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-green-50 text-green-700 border-green-200"
-          >
-            Available
-          </Badge>
-        );
-      case "allocated":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-blue-50 text-blue-700 border-blue-200"
-          >
-            Allocated
-          </Badge>
-        );
-      case "pending":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-yellow-50 text-yellow-700 border-yellow-200"
-          >
-            Pending
-          </Badge>
-        );
-      case "unavailable":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-red-50 text-red-700 border-red-200"
-          >
-            Unavailable
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
+    const statusMap = {
+      available: {
+        className: "bg-green-50 text-green-700 border-green-200",
+        label: t("resource.available"),
+      },
+      allocated: {
+        className: "bg-blue-50 text-blue-700 border-blue-200",
+        label: t("resource.allocated"),
+      },
+      pending: {
+        className: "bg-yellow-50 text-yellow-700 border-yellow-200",
+        label: t("resource.pending"),
+      },
+      unavailable: {
+        className: "bg-red-50 text-red-700 border-red-200",
+        label: t("resource.unavailable"),
+      },
+    };
+
+    const statusKey = status.toLowerCase() as keyof typeof statusMap;
+    const statusInfo = statusMap[statusKey] || { className: "", label: status };
+
+    return (
+      <Badge variant="outline" className={statusInfo.className}>
+        {statusInfo.label}
+      </Badge>
+    );
   };
 
   // Calculate total cost
-  const totalCost = resources.reduce(
-    (sum, resource) => sum + resource.totalCost,
-    0
-  );
+  const totalCost = useMemo(() => {
+    return resources.reduce(
+      (sum, resource) => sum + resource.coutUnitaire * resource.qte,
+      0
+    );
+  }, [resources]);
 
   // Filter resources
-  const filteredResources = resources.filter((resource) => {
-    const matchesSearch =
-      resource.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (resource.notes || "").toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = !filterType || resource.type === filterType;
-    return matchesSearch && matchesType;
-  });
+  const filteredResources = useMemo(() => {
+    return resources.filter((resource) => {
+      const matchesSearch =
+        resource.nom?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (resource.notes || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      const matchesType =
+        !filterType || resource.type.toLowerCase() === filterType.toLowerCase();
+      return matchesSearch && matchesType;
+    });
+  }, [resources, searchQuery, filterType]);
+
+  useEffect(() => {
+    if (formData.categorie && formData.categorie !== "other") {
+      const matchedResource = resources.find(
+        (res) => res.categorie === formData.categorie
+      );
+      if (matchedResource?.type) {
+        setFormData((prev) => ({
+          ...prev,
+          type: matchedResource.type,
+        }));
+      }
+    }
+  }, [formData.categorie, resources]);
 
   return (
     <>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Project Resources</CardTitle>
+          <CardTitle>{t("resource.title")}</CardTitle>
           <Button onClick={openAddDialog}>
             <Plus className="mr-2 h-4 w-4" />
-            Add Resource
+            {t("resource.add_resource")}
           </Button>
         </CardHeader>
         <CardContent>
@@ -348,8 +351,8 @@ export function ProjectResources() {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search resources..."
-                  className="w-full pl-8 sm:w-[300px]"
+                  placeholder={t("resource.search")}
+                  className="w-full pl-8 sm:w-64"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -362,29 +365,26 @@ export function ProjectResources() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => setFilterType(null)}>
-                    All Types {!filterType && "✓"}
+                    {t("resource.all_types")} {!filterType && "✓"}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => setFilterType("human")}>
-                    Human Resources {filterType === "human" && "✓"}
+                    {t("resource.temporal")} {filterType === "temporal" && "✓"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterType("equipment")}>
-                    Equipment {filterType === "equipment" && "✓"}
+                    {t("resource.energetic")}{" "}
+                    {filterType === "energetic" && "✓"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterType("material")}>
-                    Materials {filterType === "material" && "✓"}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterType("software")}>
-                    Software {filterType === "software" && "✓"}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterType("service")}>
-                    Services {filterType === "service" && "✓"}
+                    {t("resource.material")} {filterType === "material" && "✓"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Total Cost:</span>
+              <span className="text-sm text-muted-foreground">
+                {t("resource.total_cost")}:
+              </span>
               <span className="font-medium">${totalCost.toLocaleString()}</span>
             </div>
           </div>
@@ -393,13 +393,14 @@ export function ProjectResources() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Resource</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Cost Per Unit</TableHead>
-                  <TableHead>Total Cost</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="w-[80px]"></TableHead>
+                  <TableHead>{t("resource.resource")}</TableHead>
+                  <TableHead>{t("resource.type")}</TableHead>
+                  <TableHead>{t("resource.quantity")}</TableHead>
+                  <TableHead>{t("resource.allocated_quantity")}</TableHead>
+                  <TableHead>{t("resource.cost_per_unit")}</TableHead>
+                  <TableHead>{t("resource.total_cost")}</TableHead>
+                  <TableHead>{t("resource.status")}</TableHead>
+                  <TableHead className="w-20"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -408,7 +409,7 @@ export function ProjectResources() {
                     <TableRow key={resource.id}>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{resource.name}</div>
+                          <div className="font-medium">{resource.nom}</div>
                           {resource.notes && (
                             <div className="text-xs text-muted-foreground">
                               {resource.notes}
@@ -423,13 +424,20 @@ export function ProjectResources() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {resource.quantity} {resource.unit}
+                        {resource.qte} {resource.unit || resource.unitMeasure}
                       </TableCell>
                       <TableCell>
-                        ${resource.costPerUnit.toLocaleString()}
+                        {resource.qte - (resource?.qteDisponibilite || 0)}{" "}
+                        {resource.unit || resource.unitMeasure}
                       </TableCell>
                       <TableCell>
-                        ${resource.totalCost.toLocaleString()}
+                        ${resource.coutUnitaire.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        $
+                        {(
+                          resource.qte * resource.coutUnitaire
+                        ).toLocaleString()}
                       </TableCell>
                       <TableCell>{getStatusBadge(resource.status)}</TableCell>
                       <TableCell>
@@ -466,7 +474,7 @@ export function ProjectResources() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={7} className="h-24 text-center">
-                      No resources found.
+                      {t("resource.no_resources")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -478,50 +486,103 @@ export function ProjectResources() {
 
       {/* Add Resource Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Resource</DialogTitle>
+            <DialogTitle>{t("resource.add_resource_form.title")}</DialogTitle>
             <DialogDescription>
-              Add a new resource to the project.
+              {t("resource.add_resource_form.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="mb-2" htmlFor="categorie">
+                  {t("resource.add_resource_form.categorie")}
+                </Label>
+                <Select
+                  value={formData.categorie}
+                  onValueChange={(value) =>
+                    handleSelectChange("categorie", value)
+                  }
+                >
+                  <SelectTrigger id="categorie">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {uniqueCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">
+                      <div className="flex items-center">
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        {t("resource.add_resource_form.add_new_categorie")}
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {formData.categorie === "other" && (
+                <div>
+                  <Label className="mb-2" htmlFor="newcategorie">
+                    {t("resource.add_resource_form.new_categorie")}
+                  </Label>
+                  <Input
+                    id="newcategorie"
+                    name="newcategorie"
+                    value={formData.newcategorie}
+                    onChange={handleInputChange}
+                    placeholder="Enter new category"
+                  />
+                </div>
+              )}
               <div className="col-span-2">
-                <Label htmlFor="name" className="mb-2">
-                  Resource Name
+                <Label className="mb-2" htmlFor="nom">
+                  {t("resource.name")}
                 </Label>
                 <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
+                  id="nom"
+                  name="nom"
+                  value={formData.nom}
                   onChange={handleInputChange}
-                  placeholder="Enter resource name"
+                  placeholder={t("resource.add_resource_form.name_placeholder")}
                 />
               </div>
               <div>
-                <Label htmlFor="type" className="mb-2">
-                  Type
+                <Label className="mb-2" htmlFor="type">
+                  {t("resource.type")}
                 </Label>
                 <Select
                   value={formData.type}
                   onValueChange={(value) => handleSelectChange("type", value)}
+                  disabled={
+                    formData.categorie !== "other" && formData.categorie !== ""
+                  }
                 >
                   <SelectTrigger id="type">
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue
+                      placeholder={t(
+                        "resource.add_resource_form.type_placeholder"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="human">Human</SelectItem>
-                    <SelectItem value="equipment">Equipment</SelectItem>
-                    <SelectItem value="material">Material</SelectItem>
-                    <SelectItem value="software">Software</SelectItem>
-                    <SelectItem value="service">Service</SelectItem>
+                    <SelectItem value="Temporal">
+                      {t("resource.temporal")}
+                    </SelectItem>
+                    <SelectItem value="Material">
+                      {t("resource.material")}
+                    </SelectItem>
+                    <SelectItem value="Energetic">
+                      {t("resource.energetic")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="status" className="mb-2">
-                  Status
+                <Label className="mb-2" htmlFor="status">
+                  {t("resource.status")}
                 </Label>
                 <Select
                   value={formData.status}
@@ -531,67 +592,117 @@ export function ProjectResources() {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="allocated">Allocated</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="unavailable">Unavailable</SelectItem>
+                    <SelectItem value="AVAILABLE">
+                      {t("resource.available")}
+                    </SelectItem>
+                    <SelectItem value="ALLOCATED">
+                      {t("resource.allocated")}
+                    </SelectItem>
+                    <SelectItem value="PENDING">
+                      {t("resource.pending")}
+                    </SelectItem>
+                    <SelectItem value="UNAVAILABLE">
+                      {t("resource.unavailable")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="quantity" className="mb-2">
-                  Quantity
+                <Label className="mb-2" htmlFor="qte">
+                  {t("resource.quantity")}
                 </Label>
                 <Input
-                  id="quantity"
-                  name="quantity"
+                  id="qte"
+                  name="qte"
                   type="number"
                   min="0"
                   step="1"
-                  value={formData.quantity}
+                  value={formData.qte}
                   onChange={handleInputChange}
                 />
               </div>
               <div>
-                <Label htmlFor="unit" className="mb-2">
-                  Unit
-                </Label>
-                <Input
-                  id="unit"
-                  name="unit"
-                  value={formData.unit}
-                  onChange={handleInputChange}
-                  placeholder="e.g., hours, licenses, units"
-                />
+                {formData.type === "Temporal" ||
+                formData.type === "Energetic" ? (
+                  <>
+                    <Label className="mb-2" htmlFor="unitMeasure">
+                      {t("resource.add_resource_form.unit")}
+                    </Label>
+                    <Input
+                      id="unitMeasure"
+                      name="unitMeasure"
+                      value={formData.unitMeasure}
+                      onChange={handleInputChange}
+                      placeholder="e.g., hours, licenses, kWh"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Label className="mb-2" htmlFor="qteDisponibilite">
+                      {t("resource.add_resource_form.available_quantity")}
+                    </Label>
+                    <Input
+                      id="qteDisponibilite"
+                      name="qteDisponibilite"
+                      value={formData.qteDisponibilite}
+                      onChange={handleInputChange}
+                      placeholder="e.g., 100, 50, 25"
+                      type="number"
+                      min="0"
+                    />
+                  </>
+                )}
               </div>
-              <div className="col-span-2">
-                <Label htmlFor="costPerUnit" className="mb-2">
-                  Cost Per Unit ($)
+              {formData.type === "Material" && (
+                <div>
+                  <Label className="mb-2" htmlFor="consommationMax">
+                    {t("resource.add_resource_form.maximum_consumption")}
+                  </Label>
+                  <Input
+                    id="consommationMax"
+                    name="consommationMax"
+                    value={formData.consommationMax}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 10, 20, 30"
+                    type="number"
+                    min="0"
+                  />
+                </div>
+              )}
+              <div
+                className={
+                  formData.type === "Material" ? "col-span-1" : "col-span-2"
+                }
+              >
+                <Label className="mb-2" htmlFor="coutUnitaire">
+                  {t("resource.cost_per_unit")} ($)
                 </Label>
                 <div className="relative">
                   <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="costPerUnit"
-                    name="costPerUnit"
+                    id="coutUnitaire"
+                    name="coutUnitaire"
                     type="number"
                     min="0"
                     step="0.01"
                     className="pl-8"
-                    value={formData.costPerUnit}
+                    value={formData.coutUnitaire}
                     onChange={handleInputChange}
                   />
                 </div>
               </div>
               <div className="col-span-2">
-                <Label htmlFor="notes" className="mb-2">
-                  Notes (Optional)
+                <Label className="mb-2" htmlFor="notes">
+                  {t("resource.add_resource_form.notes_optional")}
                 </Label>
                 <Input
                   id="notes"
                   name="notes"
                   value={formData.notes}
                   onChange={handleInputChange}
-                  placeholder="Additional details about this resource"
+                  placeholder={t(
+                    "resource.add_resource_form.notes_placeholder"
+                  )}
                 />
               </div>
             </div>
@@ -607,43 +718,109 @@ export function ProjectResources() {
 
       {/* Edit Resource Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Resource</DialogTitle>
-            <DialogDescription>Update resource details.</DialogDescription>
+            <DialogTitle>
+              {t("resource.add_resource_form.edit_title")}
+            </DialogTitle>
+            <DialogDescription>
+              {t("resource.add_resource_form.edit_description")}
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="mb-2" htmlFor="edit-categorie">
+                  {t("resource.add_resource_form.categorie")}
+                </Label>
+                <Select
+                  value={formData.categorie}
+                  onValueChange={(value) =>
+                    handleSelectChange("categorie", value)
+                  }
+                >
+                  <SelectTrigger id="edit-categorie">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {uniqueCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">
+                      <div className="flex items-center">
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        {t("resource.add_resource_form.new_categorie")}
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {formData.categorie === "other" && (
+                <div>
+                  <Label className="mb-2" htmlFor="edit-newcategorie">
+                    {t("resource.add_resource_form.new_categorie")}
+                  </Label>
+                  <Input
+                    id="edit-newcategorie"
+                    name="newcategorie"
+                    value={formData.newcategorie}
+                    onChange={handleInputChange}
+                    placeholder={t(
+                      "resource.add_resource_form.new_categorie_placeholder"
+                    )}
+                  />
+                </div>
+              )}
               <div className="col-span-2">
-                <Label htmlFor="edit-name">Resource Name</Label>
+                <Label className="mb-2" htmlFor="edit-nom">
+                  {t("resource.name")}
+                </Label>
                 <Input
-                  id="edit-name"
-                  name="name"
-                  value={formData.name}
+                  id="edit-nom"
+                  name="nom"
+                  className={formData.nom ? "" : "border-destructive"}
+                  value={formData.nom}
                   onChange={handleInputChange}
-                  placeholder="Enter resource name"
+                  placeholder={t("resource.add_resource_form.name_placeholder")}
                 />
               </div>
               <div>
-                <Label htmlFor="edit-type">Type</Label>
+                <Label className="mb-2" htmlFor="edit-type">
+                  {t("resource.type")}
+                </Label>
                 <Select
                   value={formData.type}
                   onValueChange={(value) => handleSelectChange("type", value)}
+                  disabled={
+                    formData.categorie !== "other" && formData.categorie !== ""
+                  }
                 >
                   <SelectTrigger id="edit-type">
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue
+                      placeholder={t(
+                        "resource.add_resource_form.type_placeholder"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="human">Human</SelectItem>
-                    <SelectItem value="equipment">Equipment</SelectItem>
-                    <SelectItem value="material">Material</SelectItem>
-                    <SelectItem value="software">Software</SelectItem>
-                    <SelectItem value="service">Service</SelectItem>
+                    <SelectItem value="Temporal">
+                      {t("resource.temporal")}
+                    </SelectItem>
+                    <SelectItem value="Material">
+                      {t("resource.material")}
+                    </SelectItem>
+                    <SelectItem value="Energetic">
+                      {t("resource.energetic")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="edit-status">Status</Label>
+                <Label className="mb-2" htmlFor="edit-status">
+                  {t("resource.status")}
+                </Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => handleSelectChange("status", value)}
@@ -652,59 +829,131 @@ export function ProjectResources() {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="allocated">Allocated</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="unavailable">Unavailable</SelectItem>
+                    <SelectItem value="AVAILABLE">
+                      {t("resource.available")}
+                    </SelectItem>
+                    <SelectItem value="ALLOCATED">
+                      {t("resource.allocated")}
+                    </SelectItem>
+                    <SelectItem value="PENDING">
+                      {t("resource.pending")}
+                    </SelectItem>
+                    <SelectItem value="UNAVAILABLE">
+                      {t("resource.unavailable")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="edit-quantity">Quantity</Label>
+                <Label className="mb-2" htmlFor="edit-qte">
+                  {t("resource.quantity")}
+                </Label>
                 <Input
-                  id="edit-quantity"
-                  name="quantity"
+                  id="edit-qte"
+                  className={formData.qte ? "" : "border-destructive"}
+                  name="qte"
                   type="number"
                   min="0"
                   step="1"
-                  value={formData.quantity}
+                  value={formData.qte}
                   onChange={handleInputChange}
                 />
               </div>
+
               <div>
-                <Label htmlFor="edit-unit">Unit</Label>
-                <Input
-                  id="edit-unit"
-                  name="unit"
-                  value={formData.unit}
-                  onChange={handleInputChange}
-                  placeholder="e.g., hours, licenses, units"
-                />
+                {formData.type === "Temporal" ||
+                formData.type === "Energetic" ? (
+                  <>
+                    <Label className="mb-2" htmlFor="edit-unitMeasure">
+                      {t("resource.add_resource_form.unit")}
+                    </Label>
+                    <Input
+                      id="edit-unitMeasure"
+                      className={
+                        formData.unitMeasure ? "" : "border-destructive"
+                      }
+                      name="unitMeasure"
+                      value={formData.unitMeasure}
+                      onChange={handleInputChange}
+                      placeholder="e.g., hours, licenses, units"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Label className="mb-2" htmlFor="edit-qteDisponibilite">
+                      {t("resource.add_resource_form.available_quantity")}
+                    </Label>
+                    <Input
+                      id="edit-qteDisponibilite"
+                      name="qteDisponibilite"
+                      className={
+                        formData.qteDisponibilite ? "" : "border-destructive"
+                      }
+                      value={formData.qteDisponibilite}
+                      onChange={handleInputChange}
+                      placeholder="e.g., 100, 50, 25"
+                      type="number"
+                      min="0"
+                    />
+                  </>
+                )}
               </div>
-              <div className="col-span-2">
-                <Label htmlFor="edit-costPerUnit">Cost Per Unit ($)</Label>
+              {formData.type === "Material" && (
+                <div>
+                  <Label className="mb-2" htmlFor="edit-consommationMax">
+                    {t("resource.add_resource_form.maximum_consumption")}
+                  </Label>
+                  <Input
+                    id="edit-consommationMax"
+                    name="consommationMax"
+                    value={formData.consommationMax}
+                    className={
+                      formData.consommationMax ? "" : "border-destructive"
+                    }
+                    onChange={handleInputChange}
+                    placeholder="e.g., 10, 20, 30"
+                    type="number"
+                    min="0"
+                  />
+                </div>
+              )}
+              <div
+                className={
+                  formData.type === "Material" ? "col-span-1" : "col-span-2"
+                }
+              >
+                <Label className="mb-2" htmlFor="edit-coutUnitaire">
+                  {t("resource.cost_per_unit")} ($)
+                </Label>
                 <div className="relative">
                   <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="edit-costPerUnit"
-                    name="costPerUnit"
+                    id="edit-coutUnitaire"
+                    unitMeasure
+                    name="coutUnitaire"
+                    className={`pl-8  ${
+                      formData.coutUnitaire ? "" : "border-destructive"
+                    }`}
                     type="number"
                     min="0"
-                    step="0.01"
-                    className="pl-8"
-                    value={formData.costPerUnit}
+                    step="0.5"
+                    value={formData.coutUnitaire}
                     onChange={handleInputChange}
                   />
                 </div>
               </div>
               <div className="col-span-2">
-                <Label htmlFor="edit-notes">Notes (Optional)</Label>
+                <Label className="mb-2" htmlFor="edit-notes">
+                  {t("resource.add_resource_form.notes_optional")}
+                </Label>
                 <Input
                   id="edit-notes"
                   name="notes"
                   value={formData.notes}
                   onChange={handleInputChange}
-                  placeholder="Additional details about this resource"
+                  placeholder={t(
+                    "resource.add_resource_form.notes_placeholder"
+                  )}
                 />
               </div>
             </div>
@@ -723,7 +972,7 @@ export function ProjectResources() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Delete Resource</DialogTitle>
             <DialogDescription>
@@ -734,10 +983,11 @@ export function ProjectResources() {
           <div className="py-4">
             {currentResource && (
               <div className="rounded-md border p-4">
-                <div className="font-medium">{currentResource.name}</div>
+                <div className="font-medium">{currentResource.nom}</div>
                 <div className="mt-1 text-sm text-muted-foreground">
-                  {currentResource.quantity} {currentResource.unit} · $
-                  {currentResource.totalCost.toLocaleString()}
+                  {currentResource.qte}{" "}
+                  {currentResource.unitMeasure || currentResource.unit} · $
+                  {currentResource.coutUnitaire.toLocaleString()}
                 </div>
               </div>
             )}

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,18 +55,19 @@ public class ProjectService {
         }
         return null;
     }
-    public Project addResource(Project p, Resource resource)
-    {
-
-        if(p != null)
-        {
+    public Project addResource(Project p, Resource resource) {
+        if (p != null) {
             Set<Resource> resources = p.getListeRessource();
+            if (resources == null) {
+                resources = new HashSet<>(); // Use HashSet for Set
+            }
             resources.add(resource);
             p.setListeRessource(resources);
             return projectRepository.save(p);
         }
         return null;
     }
+
     public Project removeCollaborator(Project p, User user) {
         if (user != null) {
             Set<Collaborator> collab = p.getListeCollaborateur();
@@ -160,6 +162,10 @@ public class ProjectService {
             throw new RuntimeException("Project not found with ID: " + id);
         }
         return project;
+    }
+    public void removeResource(Project project, Resource resource) {
+        project.getListeRessource().remove(resource);
+        projectRepository.save(project);
     }
 
 }
