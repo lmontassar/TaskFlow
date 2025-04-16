@@ -95,7 +95,7 @@ export function ProjectResources({ project }: { project: any }) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [currentResource, setCurrentResource] = useState<Resource | null>(null);
+  const [currentResource, setCurrentResource] = useState<any | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string | null>(null);
   const [formData, setFormData] =
@@ -112,7 +112,7 @@ export function ProjectResources({ project }: { project: any }) {
     return Array.from(categoriesSet);
   }, [resources]);
 
-  const { createResource } = useResources();
+  const { createResource, editResource, deleteResource } = useResources();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -166,7 +166,20 @@ export function ProjectResources({ project }: { project: any }) {
     setCurrentResource(resource);
     setIsDeleteDialogOpen(true);
   };
-
+  const validateForm = () => {
+    const requiredFields = ["nom", "type", "categorie", "coutUnitaire"];
+    if (formData.type === "Temporal" || formData.type === "Energetic") {
+      requiredFields.push("unitMeasure");
+    } else if (formData.type === "Material") {
+      requiredFields.push("qteDisponibilite");
+    }
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        return false;
+      }
+    }
+    return true;
+  };
   const handleAddResource = async () => {
     const resourceData = {
       ...formData,
@@ -188,35 +201,52 @@ export function ProjectResources({ project }: { project: any }) {
       console.error("Error adding resource:", error);
     }
   };
-
-  const handleEditResource = () => {
+  const handleEditResource = async () => {
+    if (!validateForm()) {
+      return;
+    }
     if (!currentResource) return;
 
-    const updatedResource: Resource = {
+    const updatedResource: any = {
       ...currentResource,
       ...formData,
+      projectId: project.id,
       categorie:
         formData.categorie === "other"
           ? formData.newcategorie!
           : formData.categorie,
     };
-
-    setResources(
-      resources.map((res) =>
-        res.id === currentResource.id ? updatedResource : res
-      )
-    );
-    setIsEditDialogOpen(false);
-    setCurrentResource(null);
-    resetForm();
+    console.log("Updated Resource:", updatedResource);
+    try {
+      const update = await editResource(updatedResource);
+      if (update) {
+        setResources(
+          resources.map((res) =>
+            res.id === currentResource.id ? updatedResource : res
+          )
+        );
+        setIsEditDialogOpen(false);
+        setCurrentResource(null);
+        resetForm();
+      }
+    } catch (error) {
+      console.error("Error adding resource:", error);
+    }
   };
 
-  const handleDeleteResource = () => {
+  const handleDeleteResource = async () => {
     if (!currentResource) return;
-
-    setResources(resources.filter((res) => res.id !== currentResource.id));
-    setIsDeleteDialogOpen(false);
-    setCurrentResource(null);
+    currentResource.projectId = project.id;
+    try {
+      const deleted = await deleteResource(currentResource);
+      if (deleted) {
+        setResources(resources.filter((res) => res.id !== currentResource.id));
+        setIsDeleteDialogOpen(false);
+        setCurrentResource(null);
+      }
+    } catch (error) {
+      console.error("Error adding resource:", error);
+    }
   };
 
   const getTypeIcon = (type: string) => {
@@ -670,6 +700,48 @@ export function ProjectResources({ project }: { project: any }) {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="mb-2" htmlFor="edit-categorie">
+                  Resource Category
+                </Label>
+                <Select
+                  value={formData.categorie}
+                  onValueChange={(value) =>
+                    handleSelectChange("categorie", value)
+                  }
+                >
+                  <SelectTrigger id="edit-categorie">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {uniqueCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="other">
+                      <div className="flex items-center">
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        Add new category
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {formData.categorie === "other" && (
+                <div>
+                  <Label className="mb-2" htmlFor="edit-newcategorie">
+                    New Category
+                  </Label>
+                  <Input
+                    id="edit-newcategorie"
+                    name="newcategorie"
+                    value={formData.newcategorie}
+                    onChange={handleInputChange}
+                    placeholder="Enter new category"
+                  />
+                </div>
+              )}
               <div className="col-span-2">
                 <Label className="mb-2" htmlFor="edit-nom">
                   Resource Name
@@ -677,6 +749,7 @@ export function ProjectResources({ project }: { project: any }) {
                 <Input
                   id="edit-nom"
                   name="nom"
+                  className={formData.nom ? "" : "border-destructive"}
                   value={formData.nom}
                   onChange={handleInputChange}
                   placeholder="Enter resource name"
@@ -688,6 +761,9 @@ export function ProjectResources({ project }: { project: any }) {
                 </Label>
                 <Select
                   value={formData.type}
+                  disabled={
+                    formData.categorie !== "other" && formData.categorie !== ""
+                  }
                   onValueChange={(value) => handleSelectChange("type", value)}
                 >
                   <SelectTrigger id="edit-type">
@@ -725,6 +801,7 @@ export function ProjectResources({ project }: { project: any }) {
                 </Label>
                 <Input
                   id="edit-qte"
+                  className={formData.qte ? "" : "border-destructive"}
                   name="qte"
                   type="number"
                   min="0"
@@ -733,19 +810,69 @@ export function ProjectResources({ project }: { project: any }) {
                   onChange={handleInputChange}
                 />
               </div>
+
               <div>
-                <Label className="mb-2" htmlFor="edit-unitMeasure">
-                  Unit
-                </Label>
-                <Input
-                  id="edit-unitMeasure"
-                  name="unitMeasure"
-                  value={formData.unitMeasure}
-                  onChange={handleInputChange}
-                  placeholder="e.g., hours, licenses, units"
-                />
+                {formData.type === "Temporal" ||
+                formData.type === "Energetic" ? (
+                  <>
+                    <Label className="mb-2" htmlFor="edit-unitMeasure">
+                      Unit
+                    </Label>
+                    <Input
+                      id="edit-unitMeasure"
+                      className={
+                        formData.unitMeasure ? "" : "border-destructive"
+                      }
+                      name="unitMeasure"
+                      value={formData.unitMeasure}
+                      onChange={handleInputChange}
+                      placeholder="e.g., hours, licenses, units"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Label className="mb-2" htmlFor="edit-qteDisponibilite">
+                      Available Quantity
+                    </Label>
+                    <Input
+                      id="edit-qteDisponibilite"
+                      name="qteDisponibilite"
+                      className={
+                        formData.qteDisponibilite ? "" : "border-destructive"
+                      }
+                      value={formData.qteDisponibilite}
+                      onChange={handleInputChange}
+                      placeholder="e.g., 100, 50, 25"
+                      type="number"
+                      min="0"
+                    />
+                  </>
+                )}
               </div>
-              <div className="col-span-2">
+              {formData.type === "Material" && (
+                <div>
+                  <Label className="mb-2" htmlFor="edit-consommationMax">
+                    Maximum Consumption
+                  </Label>
+                  <Input
+                    id="edit-consommationMax"
+                    name="consommationMax"
+                    value={formData.consommationMax}
+                    className={
+                      formData.consommationMax ? "" : "border-destructive"
+                    }
+                    onChange={handleInputChange}
+                    placeholder="e.g., 10, 20, 30"
+                    type="number"
+                    min="0"
+                  />
+                </div>
+              )}
+              <div
+                className={
+                  formData.type === "Material" ? "col-span-1" : "col-span-2"
+                }
+              >
                 <Label className="mb-2" htmlFor="edit-coutUnitaire">
                   Cost Per Unit ($)
                 </Label>
@@ -753,11 +880,14 @@ export function ProjectResources({ project }: { project: any }) {
                   <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="edit-coutUnitaire"
+                    unitMeasure
                     name="coutUnitaire"
+                    className={`pl-8  ${
+                      formData.coutUnitaire ? "" : "border-destructive"
+                    }`}
                     type="number"
                     min="0"
-                    step="0.01"
-                    className="pl-8"
+                    step="0.5"
                     value={formData.coutUnitaire}
                     onChange={handleInputChange}
                   />

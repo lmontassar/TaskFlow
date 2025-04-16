@@ -155,5 +155,9 @@ public class ProjectService {
         }
         return project;
     }
+    public void removeResource(Project project, Resource resource) {
+        project.getListeRessource().remove(resource);
+        projectRepository.save(project);
+    }
 
 }

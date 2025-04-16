@@ -200,5 +200,30 @@ public class ResourceController {
         }
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteResource(@RequestHeader("Authorization") String token,
+                                            @PathVariable String id,@RequestBody Map<String, Object> requestBody) {
+        String userId = MyJWT.extractUserId(token);
+        Resource resource = resourceService.getById(id);
+
+        if (resource == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource not found.");
+        }
+        String projectId = (String) requestBody.get("projectId");
+        Project project = projectService.getProjectById(projectId);
+        if (!projectService.isCreator(userId, project)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not allowed to create resources!");
+        }
+
+        try {
+            projectService.removeResource(project, resource);
+            resourceService.deleteById(id);
+            return ResponseEntity.ok("Resource deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete resource: " + e.getMessage());
+        }
+    }
+
 
 }

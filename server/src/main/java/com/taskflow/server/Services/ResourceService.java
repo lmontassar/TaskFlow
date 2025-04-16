@@ -14,6 +14,7 @@ public class ResourceService {
     public TemporalResource createTemporalResource(TemporalResource temporalResource){
         return resourceRepository.save(temporalResource);
     }
+
     public EnergeticResource createEnergeticResource(EnergeticResource energeticResource){
         return resourceRepository.save(energeticResource);
     }
@@ -22,5 +23,8 @@ public class ResourceService {
     }
     public Resource getById(String id){
         return resourceRepository.getById(id);
+    }
+    public void deleteById(String id) {
+        resourceRepository.deleteById(id);
     }
 }
