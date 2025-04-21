@@ -161,10 +161,14 @@ export function TasksBoard({ groupedTasks, groupBy, onTaskClick, onDragEnd }: Ta
                                     : "cursor-grab"
                               }`}
                             >
-                              <Card
-                                className={`overflow-hidden transition-shadow hover:shadow-md w-full max-w-full ${checkIfAssigneeTask(task) === false && checkIfCreatorOfProject(task?.project) === false ? "bg-gray-300" : ""} `}
-                                onClick={() => onTaskClick(task)}
-                              >
+                            <Card
+                              className={`overflow-hidden w-full max-w-full rounded-xl shadow-sm hover:shadow-md transition-shadow border-l-4 ${
+                                !checkIfAssigneeTask(task) && !checkIfCreatorOfProject(task?.project)
+                                  ? "bg-gray-100 text-gray-500 red-l-red-400 border-red-400 cursor-not-allowed"
+                                  : "bg-white border-l-green-400 hover:bg-gray-50 border-green-400 cursor-pointer"
+                              }`}
+                              onClick={() => onTaskClick(task)} >
+
                                 <CardContent className="p-3">
                                   <div className="space-y-2">
                                     <div className=" flex items-start justify-between gap-2">

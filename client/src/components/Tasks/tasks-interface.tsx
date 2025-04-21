@@ -5,7 +5,6 @@ import { TasksHeader } from "@/components/tasks/tasks-header";
 import { TasksBoard } from "@/components/tasks/tasks-board";
 import { TasksList } from "@/components/tasks/tasks-list";
 import { TaskDetails } from "@/components/tasks/task-details";
-import { useMediaQuery } from "@/hooks/use-mobile";
 import { TaskCreateModal } from "@/components/tasks/task-create-modal";
 import useTasks from "../../hooks/useTasks";
 import { useTranslation } from "react-i18next"
@@ -52,7 +51,8 @@ export function TasksInterface({ project }: taskProps) {
     setAddTaskError,
     getTasksByProjectID,
     checkIfCreatorOfProject,
-    getMyTasks
+    getMyTasks,
+    isLoading
   } = useTasks();
 
   useEffect(() => {
@@ -242,12 +242,12 @@ export function TasksInterface({ project }: taskProps) {
     if (project) await getTasksByProjectID(project?.id);
     return res;
   }
-  const handleTaskClick = (task: Task) => {
+  const handleTaskClick = (task: any) => {
     setSelectedTask(task);
     setShowTaskDetails(true);
   };
 
-  const handleTaskUpdate = async (updated: Task) => {
+  const handleTaskUpdate = async (updated: any) => {
     await handleUpdateTask(updated);
     if(updated.id != updated.statut)
       await handleUpdateStatutTask(updated.id, updated.statut);
@@ -256,11 +256,12 @@ export function TasksInterface({ project }: taskProps) {
   };
 
   const handleTaskDelete = async (taskId: string) => {
+    setShowTaskDetails(false);
     setTasks(tasks.filter((task) => task.id !== taskId));
     await handleDeleteTask(taskId);
     if (project) getTasksByProjectID(project?.id);
     setSelectedTask(null);
-    setShowTaskDetails(false);
+    
   };
 
   const handleViewModeChange = (mode: ViewMode) => {
@@ -349,7 +350,7 @@ export function TasksInterface({ project }: taskProps) {
               onDragEnd={handleDragEnd}
             />
           ) : (
-            <TasksList project={project}  tasks={filteredTasks} setTasks={setTasks} onTaskClick={handleTaskClick} handleUpdateStatutTask={handleUpdateStatutTask} />
+            <TasksList project={project} isLoading={isLoading}  tasks={filteredTasks} setTasks={setTasks} onTaskClick={handleTaskClick} handleUpdateStatutTask={handleUpdateStatutTask} />
           )}
 
           {showTaskDetails && selectedTask && (

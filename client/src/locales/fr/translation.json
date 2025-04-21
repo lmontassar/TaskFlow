@@ -285,16 +285,16 @@
         "description": "ne pourra plus changer le statut de cette tâche, mais vous pouvez l'ajouter à nouveau."
       },
       "remove_subtask": {
-        "title": "Êtes-vous sûr de vouloir supprimer « {subTaskToDelete.nomTache} » des sous-tâches ?",
-        "description": "sera simplement supprimée de la section des sous-tâches de « {task.nomTache} »."
+        "title": "Êtes-vous sûr de vouloir supprimer '{{taskName}}' des sous-tâches?",
+        "description": "sera simplement supprimée de la section des sous-tâches de '{{taskName}}'."
       },
       "remove_precaution": {
-        "title": "Êtes-vous sûr de vouloir supprimer « {{taskName}} » des tâches précédentes ?",
-        "description": "« {{precTaskName}} » sera simplement supprimée de la section des tâches précédentes de « {{taskName}} »."
+        "title": "Êtes-vous sûr de vouloir supprimer '{{taskName}}' des tâches précédentes?",
+        "description": "'{{precTaskName}}' sera simplement supprimée de la section des tâches précédentes de '{{taskName}}'."
       },
       "remove_parallel": {
-        "title": "Êtes-vous sûr de vouloir supprimer « {{taskName}} » des tâches parallèles ?",
-        "description": "« {{parallelTaskName}} » sera simplement supprimée de la section des tâches parallèles de « {{taskName}} »."
+        "title": "Êtes-vous sûr de vouloir supprimer '{{taskName}}' des tâches parallèles?",
+        "description": "'{{parallelTaskName}}' sera simplement supprimée de la section des tâches parallèles de '{{taskName}}'."
       },
       "tabs": {
         "assignees": "Assignés",
@@ -342,7 +342,7 @@
       "margin": "Marge",
       "no_assignees": "Aucun assigné pour cette tâche",
       "dependencies": "Dépendances de la tâche",
-      "remove": "Supprimer",
+      "remove": "Disassocier",
       "no_previous_tasks": "Il n'y a pas de tâches précédentes",
       "no_subtasks": "Il n'y a pas de sous-tâches",
       "no_parallel_tasks": "Il n'y a pas de tâches parallèles",
@@ -416,5 +416,6 @@
       "maximum_consumption": "Consommation maximale",
       "notes_placeholder": "Détails supplémentaires sur cette ressource"
     }
-  }
+  },
+  "loading": "Chargement..." 
 }

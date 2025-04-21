@@ -284,8 +284,8 @@
         "description": "won't be able to change the status of this task anymore, but you can add them again."
       },
       "remove_subtask": {
-        "title": "Are you sure you want to remove '{subTaskToDelete.nomTache}'' from sub-tasks?",
-        "description": "will be just removed from the '{task.nomTache}' sub-tasks section."
+        "title": "Are you sure you want to remove '{taskName}'' from sub-tasks?",
+        "description": "will be just removed from the '{taskName}' sub-tasks section."
       },
       "remove_precaution": {
         "title": "Are you sure you want to remove '{{taskName}}' from previous tasks?",
@@ -341,7 +341,7 @@
       "margin": "Marge",
       "no_assignees": "No assignees for this task",
       "dependencies": "Task Dependencies",
-      "remove": "Remove",
+      "remove": "Disassociate",
       "no_previous_tasks": "There are no precedentes tasks",
       "no_subtasks": "There are no subTasks",
       "no_parallel_tasks": "There is no parallel tasks",
@@ -415,5 +415,6 @@
       "maximum_consumption": "Maximum Consumption",
       "notes_placeholder": "Additional details about this resource"
     }
-  }
-}
+  },
+  "loading": "Loading..."
+} 

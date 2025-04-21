@@ -433,6 +433,25 @@ public class TacheController {
         }
     }
 
+    @GetMapping("/get/taskscanbeprecedente/{id}")
+    public ResponseEntity<?> getTasksCanBePrecedente(
+            @RequestHeader("Authorization") String token,
+            @PathVariable("id") String taskID) {
+        try {
+            User u = getUserFromToken(token);
+            Tache t = tacheSer.findTacheById(taskID);
+            this.setPrivilege(u, t.getProject(), t);
+            if (canGet == false)
+                return ResponseEntity.notFound().build();
+            List<Tache> tasks = tacheSer.getTasksCanBePrecedente(t);
+            System.out.println(tasks.size() + " -------------------------------------- "+ t.getId());
+            return ResponseEntity.ok().body(tasks);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("/get/user/{id}")
     public ResponseEntity<?> getByUser(
             @RequestHeader("Authorization") String token) {
@@ -464,9 +483,7 @@ public class TacheController {
             Tache task = tacheSer.findTacheById(taskID);
             if (task == null)
                 return ResponseEntity.notFound().build();
-
             setPrivilege(u, null, task);
-
             if (canChangeStatus == false) // IF return 403
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
@@ -568,7 +585,13 @@ public class TacheController {
             Tache newTask = tacheSer.update(oldTask);
             return ResponseEntity.ok().body(newTask);
 
-        } catch (Exception error) {
+        } catch (Exception err) {
+            System.out.println("-----------------------------------------------------------------------------");
+            System.out.println("-----------------------------------------------------------------------------");
+            System.out.println(err.getMessage());
+            System.out.println("-----------------------------------------------------------------------------");
+            System.out.println("-----------------------------------------------------------------------------");
+
             return ResponseEntity.badRequest().build();
         }
     }

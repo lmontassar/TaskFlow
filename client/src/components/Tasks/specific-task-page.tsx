@@ -61,6 +61,7 @@ export default function SpecificTaskPage() {
   const [tasksToHide, setTasksToHide] = useState<any>(null);
   const { t } = useTranslation();
   const {
+    getTasksCanBePrecedente,
     formatDurationReact,
     getStatusBadge,
     getDifficulteBadge,
@@ -168,9 +169,8 @@ export default function SpecificTaskPage() {
         duree: duration,
         marge: marge,
       }
-
-      await handleUpdateTask(updatedTask)
-
+      const res = await handleUpdateTask(updatedTask)
+      if( res != true ) { return } 
       if (updatedTask.id !== updatedTask.statut) {
         await handleUpdateStatutTask(updatedTask.id, updatedTask.statut)
       }
@@ -216,13 +216,13 @@ export default function SpecificTaskPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "DONE":
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />
+        return <CheckCircle2 className="cursor-pointer h-4 w-4 text-green-500" />
       case "PROGRESS":
-        return <Clock className="h-4 w-4 text-amber-500" />
+        return <Clock className="cursor-pointer h-4 w-4 text-amber-500" />
       case "REVIEW":
-        return <Circle className="h-4 w-4 text-gray-400" />
+        return <Circle className="cursor-pointer h-4 w-4 text-gray-400" />
       default:
-        return <Circle className="h-4 w-4 text-gray-400" />
+        return <Circle className="cursor-pointer h-4 w-4 text-gray-400" />
     }
   }
 
@@ -312,6 +312,18 @@ export default function SpecificTaskPage() {
     const tasks = await getTasksByProjectID(task.project.id)
     return tasks
   }
+  const handlegetTasksCanBePrecedente = async () => {
+    const tasks = await getTasksCanBePrecedente(task.id);
+    console.log(tasks)
+    return tasks;
+  }
+
+  const handlechangeStatut = async (taskID: any, statut: any) => {
+    const res = await handleUpdateStatutTask(taskID, statut);
+    if (res === true) {
+        setTask({ ...task, statut })  
+    }
+  };
 
   const resetTasksToHide = (action: any, task: any) => {
     switch (action) {
@@ -437,6 +449,7 @@ export default function SpecificTaskPage() {
                 {t(
                   "tasks.specific.remove_subtask.title",
                   "Are you sure you want to remove '{subTaskToDelete.nomTache}'' from sub-tasks?",
+                  { taskName: subTaskToDelete.nomTache }
                 )}
               </DialogTitle>
               <DialogDescription>
@@ -444,6 +457,7 @@ export default function SpecificTaskPage() {
                 {t(
                   "tasks.specific.remove_subtask.description",
                   "will be just removed from the '{task.nomTache}' sub-tasks section.",
+                  { taskName: task.nomTache }
                 )}
               </DialogDescription>
             </DialogHeader>
@@ -537,7 +551,7 @@ export default function SpecificTaskPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/project?id=${task.project.id}`}>{task.project.nom}</BreadcrumbLink>
+              <BreadcrumbLink><Link to={`/projects/${task.project.id}`}> {task.project.nom}</Link>  </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -787,7 +801,50 @@ export default function SpecificTaskPage() {
                   <h2 className="text-2xl font-bold mb-2">{task.nomTache}</h2>
                   <div className="flex flex-wrap justify-between gap-2">
                     <div className="flex gap-2">
-                      {getStatusBadge(task.statut)}
+                      
+                    {  (canEditStatut) && (
+                    <>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          {getStatusBadge(task.statut)}
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-24">
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => handlechangeStatut(task.id, "TODO")}
+                              >
+                                {getStatusBadge("TODO")}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() =>
+                                  handlechangeStatut(task.id, "PROGRESS")
+                                }
+                              >
+                                {getStatusBadge("PROGRESS")}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() =>
+                                  handlechangeStatut(task.id, "REVIEW")
+                                }
+                              >
+                                {getStatusBadge("REVIEW")}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => handlechangeStatut(task.id, "DONE")}
+                              >
+                                {getStatusBadge("DONE")}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </>
+                      ) || <>{getStatusBadge(task.statut)}</>}  
+                      
+
+
+
                       {getDifficulteBadge(task.difficulte)}
                     </div>
                     {task.dateFinEstime && (
@@ -1071,10 +1128,10 @@ export default function SpecificTaskPage() {
                                 <Badge
                                   onClick={() => setSubTaskToDelete(ta)}
                                   variant="outline"
-                                  className="flex gap-1 bg-red-100 border-1 border-red-200 text-red-700"
+                                  className="cursor-pointer flex gap-1 bg-red-100 border-1 border-red-200 text-red-700"
                                 >
                                   <span>{t("tasks.specific.remove", "Remove")}</span>
-                                  <CircleMinus className="h-4 w-4 bg-red-50 text-red-700 border-red-200" />
+                                  <CircleMinus className="h-4 w-4 text-red-700 border-red-200" />
                                 </Badge>
                               )}
                             </div>
@@ -1084,8 +1141,6 @@ export default function SpecificTaskPage() {
                       </div>
                     </div>
                   ))}
-
-                  {/* ))} */}
                 </div>
               </CardContent>
             </Card>
@@ -1108,7 +1163,7 @@ export default function SpecificTaskPage() {
                     key={`prec-search-${task.id}`}
                     placeholder={t("tasks.taskSearch.searchAndAdd")}
                     onTaskSelect={handleAddPrecTask}
-                    fetchTasks={handleGetAllTasks}
+                    fetchTasks={handlegetTasksCanBePrecedente}
                     tasksToHide={tasksToHide}
                     thisTask={task}
                   />
@@ -1127,7 +1182,7 @@ export default function SpecificTaskPage() {
                         <div className="absolute left-3 top-8 bottom-0 w-0.5 bg-blue-200 z-0" />
                       )}
                       <div className="flex items-start gap-3 relative z-10">
-                        <div className="mt-1 bg-blue-100 rounded-full p-1"> {getStatusIcon(ta.statut)}</div>
+                        <div className="mt-1 bg-blue-100 rounded-full p-1">{getStatusIcon(ta.statut)}</div>
                         <div className="flex-1 bg-blue-50 rounded-lg p-3 border border-blue-100">
                           <div className="flex justify-between items-center mb-1">
                             <h3 className="font-bold underline cursor-pointer">
@@ -1148,7 +1203,7 @@ export default function SpecificTaskPage() {
                                 <Badge
                                   onClick={() => setPrecTaskToDelete(ta)}
                                   variant="outline"
-                                  className="flex gap-1 bg-red-100 border-1 border-red-200 text-red-700"
+                                  className="cursor-pointer flex gap-1 bg-red-100 border-1 border-red-200 text-red-700"
                                 >
                                   {t("tasks.specific.remove", "Remove")}
                                   <CircleMinus className="h-4 w-4 bg-red-50 text-red-700 border-red-200" />
@@ -1226,7 +1281,7 @@ export default function SpecificTaskPage() {
                                 <Badge
                                   onClick={() => setParallelTaskToDelete(ta)}
                                   variant="outline"
-                                  className="flex gap-1 bg-red-100 border-1 border-red-200 text-red-700"
+                                  className="cursor-pointer flex gap-1 bg-red-100 border-1 border-red-200 text-red-700"
                                 >
                                   {t("tasks.specific.remove", "Remove")}
                                   <CircleMinus className="h-4 w-4 bg-red-50 text-red-700 border-red-200" />

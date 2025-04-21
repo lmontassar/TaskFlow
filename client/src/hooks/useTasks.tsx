@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 const useTasks = () => {
   let [tasks, setTasks] = useState([]);
+  let [isLoading , setIsLoading] = useState(false);
   const [addTaskError, setAddTaskError] = useState<string | null>("");
   const { t  } = useTranslation();
 
@@ -31,49 +32,49 @@ const useTasks = () => {
       switch (status) {
         case "TODO":
           return (
-            <Badge variant="outline" className="bg-slate-50">
+            <Badge variant="outline" className="cursor-pointer bg-slate-50">
               {t(`tasks.tasks-list.status.todo`)}
             </Badge>
           )
         case "PROGRESS":
           return (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge variant="outline" className="cursor-pointer bg-blue-50 text-blue-700 border-blue-200">
               {t(`tasks.tasks-list.status.progress`)}
             </Badge>
           )
         case "REVIEW":
           return (
-            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+            <Badge variant="outline" className="cursor-pointer bg-yellow-50 text-yellow-700 border-yellow-200">
               {t(`tasks.tasks-list.status.review`)}
             </Badge>
           )
         case "DONE":
           return (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            <Badge variant="outline" className="cursor-pointer bg-green-50 text-green-700 border-green-200">
               {t(`tasks.tasks-list.status.done`)}
             </Badge>
           )
         default:
-          return <Badge variant="outline">{status}</Badge>
+          return <Badge variant="outline" className="cursor-pointer" >{status}</Badge>
       }
   }
   const getDifficulteBadge = (difficulte: string) => {
       switch (difficulte.toLowerCase()) {
         case "hard":
           return (
-            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+            <Badge variant="outline" className="cursor-pointer bg-red-50 text-red-700 border-red-200">
               {t(`tasks.tasks-list.difficulty.hard`)}
             </Badge>
           )
         case "normal":
           return (
-            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+            <Badge variant="outline" className="cursor-pointer bg-yellow-50 text-yellow-700 border-yellow-200">
               {t(`tasks.tasks-list.difficulty.normal`)}
             </Badge>
           )
         case "easy":
           return (
-            <Badge variant="outline" className="bg-slate-50">
+            <Badge variant="outline" className="cursor-pointer bg-slate-50">
               {t(`tasks.tasks-list.difficulty.easy`)}
             </Badge>
           )
@@ -343,6 +344,22 @@ const useTasks = () => {
   const handleUpdateTask = async (updated: any) => {
     try {
       const token = localStorage.getItem("authToken");
+      // send only the ID and the attributes you want to edit
+      const fixedTask = {
+        budgetEstime : updated.budgetEstime ,
+        dateCreation : updated.dateCreation ,
+        dateDebut: updated.dateDebut ,
+        dateFin: updated.dateFin ,
+        dateFinEstime: updated.dateFinEstime ,
+        description: updated.description ,
+        difficulte: updated.difficulte ,
+        duree: updated.duree ,
+        id: updated.id ,
+        marge: updated.marge ,
+        nomTache: updated.nomTache ,
+        qualite: updated.qualite ,
+        statut: updated.statut ,
+      }
       if (!token) {
         alert("Authentication token missing!");
         return;
@@ -354,9 +371,9 @@ const useTasks = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updated),
+        body: JSON.stringify(fixedTask),
       });
-
+      
       if (res.ok) {
         return true;
       } else {
@@ -377,6 +394,7 @@ const useTasks = () => {
     return false;
   };
   const getTasksByProjectID = async (projectID: any) => {
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -393,6 +411,7 @@ const useTasks = () => {
       if (res.ok) {
         const result = await res.json();
         setTasks(result)
+        setIsLoading(false);
         return result;
       } else {
         console.log("error");
@@ -400,9 +419,11 @@ const useTasks = () => {
     } catch (error) {
       console.log("error");
     }
+    setIsLoading(false);
     return [];
   };
   const getMyTasks = async () =>{
+    setIsLoading(true);
     const token:String  = localStorage.getItem("authToken") || "";
     if (!token) return;
     const id = JSON.parse(atob(token.split('.')[1])).id;
@@ -418,6 +439,7 @@ const useTasks = () => {
 
       if (res.ok) {
         const result = await res.json();
+        setIsLoading(false);
         return setTasks(result);
       } else {
         console.log("error");
@@ -425,6 +447,7 @@ const useTasks = () => {
     } catch (error) {
       console.log("error");
     }
+    setIsLoading(false);
     return [];
   };
   const handleDeleteAssignee = async (taskID:any,userID:any) => {
@@ -512,6 +535,34 @@ const useTasks = () => {
     }
     return [];
   };
+
+  const getTasksCanBePrecedente = async (taskID: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        return;
+      }
+      const res = await fetch(`/api/tache/get/taskscanbeprecedente/${taskID}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        console.log(result)
+        return result;
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.log("error");
+    }
+    return [];
+  };
+
   const GetSubTasks = async (subTaskID: any) => {
     try {
       const token = localStorage.getItem("authToken");
@@ -630,9 +681,10 @@ const useTasks = () => {
     }
     return false;
   };
-  
 
   return {
+    getTasksCanBePrecedente,
+    isLoading,
     formatDurationReact,
     getStatusBadge,
     getDifficulteBadge,

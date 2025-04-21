@@ -27,6 +27,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import Loading from "../ui/loading";
 
 interface TasksListProps {
   tasks: Task[];
@@ -34,6 +35,7 @@ interface TasksListProps {
   project: any;
   handleUpdateStatutTask: any;
   setTasks: any;
+  isLoading:any;
 }
 export function TasksList({
   project,
@@ -41,6 +43,7 @@ export function TasksList({
   setTasks,
   onTaskClick,
   handleUpdateStatutTask,
+  isLoading
 }: TasksListProps) {
   const { t } = useTranslation();
   const p = "tasks.tasks-list";
@@ -70,6 +73,8 @@ export function TasksList({
 
   const { checkIfAssigneeTask, checkIfCreatorOfProject } = useTasks();
 
+  
+
   return (
     <ScrollArea className="p-4 w-full overflow-y-auto">
       <Table className="w-full table-fixed">
@@ -88,7 +93,7 @@ export function TasksList({
             <TableHead className="w-[15%] whitespace-nowrap hidden lg:table-cell">
               {t(`${p}.header.due_date`)}
             </TableHead>
-            {project == null && (
+            { !project && (
               <TableHead className="w-[10%] whitespace-nowrap">
                 {t(`${p}.header.project`)}
               </TableHead>
@@ -101,6 +106,16 @@ export function TasksList({
             </TableHead>
           </TableRow>
         </TableHeader>
+        { isLoading && 
+          (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={7} className="text-center">
+                  <Loading></Loading>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          ) ||( (tasks && tasks.length > 0  ) &&  (
         <TableBody>
           {tasks.map((task) => (
             <TableRow
@@ -108,12 +123,12 @@ export function TasksList({
               className={`cursor-pointer  ${
                 checkIfAssigneeTask(task) ||
                 checkIfCreatorOfProject(task?.project)
-                  ? "hover:bg-muted/50"
-                  : "bg-gray-200 hover:bg-gray-100"
+                  ? "bg-white hover:bg-gray-50 border-l-4 border-green-400"
+                  : "bg-gray-100 hover:bg-gray-100 text-gray-500 border-l-4 border-red-400"
               }`}
             >
               <TableCell
-                className=" whitespace-nowrap font-medium"
+                className="whitespace-nowrap font-medium"
                 onClick={() => onTaskClick(task)}
               >
                 <div className=" flex  flex-col">
@@ -123,8 +138,8 @@ export function TasksList({
                 </div>
               </TableCell>
               <TableCell className="whitespace-nowrap">
-                {checkIfAssigneeTask(task) ||
-                  (checkIfCreatorOfProject(task?.project) && (
+                {  (checkIfAssigneeTask(task) || 
+                   checkIfCreatorOfProject(task?.project)) && (
                     <>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -162,7 +177,7 @@ export function TasksList({
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </>
-                  )) || <>{getStatusBadge(task.statut)}</>}
+                  ) || <>{getStatusBadge(task.statut)}</>}
               </TableCell>
               <TableCell className="whitespace-nowrap">
                 {getDifficulteBadge(task.difficulte)}
@@ -170,7 +185,7 @@ export function TasksList({
               <TableCell className="whitespace-nowrap hidden lg:table-cell">
                 {formatDate(task.dateFinEstime)}
               </TableCell>
-              {project == null && (
+              {!project && (
                 <TableCell className="whitespace-nowrap">
                   <Badge variant="outline">{task?.project?.nom}</Badge>
                 </TableCell>
@@ -213,6 +228,15 @@ export function TasksList({
             </TableRow>
           ))}
         </TableBody>
+        ) || (
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={7} className="text-center">
+                There are no tasks
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        ) )}
       </Table>
     </ScrollArea>
   );

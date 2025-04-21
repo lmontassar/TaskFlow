@@ -49,14 +49,30 @@ public class TacheService {
         t.setStatut(statut);
         return tacheRep.save(t);
     }
+
     public void delete(Tache t) {
+        List<Tache> taches = tacheRep.getAllByParent(t);
+        for(Tache ta : taches ) {
+            ta.setParent(null);
+            tacheRep.save(ta);
+        }
+        List<Tache> paralleles = tacheRep.findAllByParallelesContains(t);
+        for(Tache ta : paralleles ) {
+            ta.deleteParallele(t);
+            tacheRep.save(ta);
+        }
+        List<Tache> precendes = tacheRep.findAllByPrecedentesContains(t);
+        for(Tache ta : precendes ) {
+            ta.deletePrecedente(t);
+            tacheRep.save(ta);
+        }
         tacheRep.delete(t);
     }
-
 
     public boolean IsRapporteur(User u,Tache task){
         return task.getRapporteur().equals(u);
     }
+
     public boolean IsUserExistInAsignee(User u,Tache task) {
         if(u == null || task == null) return false;
         for (User Asignee : task.getAssignee() ) {
@@ -69,6 +85,7 @@ public class TacheService {
         if( u == null || task == null ) return false ;
         return u.getId().equals(task.getProject().getCreateur().getId());
     }
+
     public boolean isMember(User AssigneeUser,Tache  task){
         for (Collaborator members: task.getProject().getListeCollaborateur()) {
             if( AssigneeUser.equals( members.getUser() ) ) {
@@ -76,12 +93,14 @@ public class TacheService {
             }
         } return false;
     }
+
     public Tache addAssignee(User AssigneeUser,Tache  task) {
         List<User> assignees = task.getAssignee() ;
         assignees.add(AssigneeUser);
         task.setAssignee(  assignees );
         return tacheRep.save(task);
     }
+
     public Tache removeAssignee(User AssigneeUser,Tache  task) {
         List<User> assignees = task.getAssignee() ;
         assignees.remove(AssigneeUser);
@@ -127,6 +146,28 @@ public class TacheService {
 
     public List<Tache> getSubTasks(Tache task) {
         return tacheRep.getAllByParent(task);
+    }
+    public List<Tache> getTasksCanBePrecedente(Tache task) {
+        List<Tache> allTasks = tacheRep.getAllByProject(task.getProject());
+        List<Tache> result = new ArrayList<>();
+
+        for (Tache t : allTasks) {
+            if (t.equals(task)) continue;
+            if ( task.equals(t.getParent()) || t.equals(task.getParent())) continue;
+
+            if (task.getPrecedentes() != null && task.getPrecedentes().contains(t)) continue;
+            if (task.getParalleles() != null && task.getParalleles().contains(t)) continue;
+
+            if( t.getDateFinEstime() == null && t.getDateDebut() != null && t.getDuree() >= 0 ) {
+                t.setDateFinEstime(t.getDateDebut().plusSeconds(t.getDuree()));
+            }
+            
+            if (   (t.getDateFinEstime() != null && task.getDateDebut() != null &&
+            t.getDateFinEstime().isBefore(task.getDateDebut())) ||   (t.getDateDebut() == null)  ) {
+                result.add(t);
+            }
+        }
+        return result;
     }
 
 }
