@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
-import { useNotifications } from "../../hooks/useGetNotifications";
+import { useNotifications } from "../../utils/NotificationContext";
 
 export type NotificationType =
   | "INVITATION"
@@ -56,8 +56,6 @@ export function NotificationsDropdown() {
     setNotifications,
     unreadCount,
     setUnreadCount,
-    loading,
-    error,
   } = useNotifications();
 
   const formatDate = (dateString: string) => {

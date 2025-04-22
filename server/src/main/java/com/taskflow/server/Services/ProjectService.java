@@ -20,8 +20,6 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
     @Autowired
-    private UserService userService;
-    @Autowired
     public SimpMessagingTemplate messagingTemplate;
     public Project createProject(Project p, User u) {
         // Ensure user is valid

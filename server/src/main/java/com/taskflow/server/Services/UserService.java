@@ -1,13 +1,11 @@
 package com.taskflow.server.Services;
 
-import com.taskflow.server.Entities.Collaborator;
-import com.taskflow.server.Entities.Project;
-import com.taskflow.server.Entities.UserSearchResponce;
+import com.taskflow.server.Entities.*;
+import com.taskflow.server.Repositories.ProjectRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.UserRepository;
 
 import io.micrometer.common.util.StringUtils;
@@ -16,15 +14,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     public User findOrCreateUser(User u) {
         User existingUser = userRepository.findByEmail(u.getEmail()).orElse(null);
@@ -99,9 +99,58 @@ public class UserService {
         return u;
     }
 
-    public List<User> search(String query ){
+    public Boolean isCollaborator(User u , Project p){
+        for (Collaborator members: p.getListeCollaborateur()) {
+            if( u.equals( members.getUser() ) ) {
+                return true;
+            }
+        } return false;
+    }
+    public List<Project> getAllMyProjects(String userId) {
+        return  projectRepository.findAll().stream()
+                .filter(project -> {
+                    boolean isCollaborator = project.getListeCollaborateur().stream()
+                            .anyMatch(collaborator ->
+                                    collaborator.getUser() != null &&
+                                            userId.equals(collaborator.getUser().getId())
+                            );
+
+                    boolean isCreator = project.getCreateur() != null &&
+                            project.getCreateur().getId() != null &&
+                            userId.equals(project.getCreateur().getId());
+
+                    return (isCollaborator || isCreator);
+                }).collect(Collectors.toList());
+    }
+    public Boolean isAvailable(User user,Project project){
+        List<Project> projects =getAllMyProjects(user.getId());
+        for (Project p: projects) {
+            if((project.getDateDebut().before(p.getDateFinEstime()) &&
+                    project.getDateDebut().after(p.getDateDebut()))&& !Objects.equals(project.getId(), p.getId())){
+                return false;
+            }
+        }
+        return true;
+    }
+    public List<SearchResponce> search(String query , String projectId){
+        Project project = projectRepository.getProjectById(projectId);
+
+
         List<User> userList = userRepository.findByNomContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
-        return userList;
+        List<SearchResponce> finalUserList = new ArrayList<>();
+        for (User user:userList
+             ) {
+            SearchResponce searchResponce = new SearchResponce();
+            searchResponce.setId(user.getId());
+            searchResponce.setPrenom(user.getPrenom());
+            searchResponce.setAvatar(user.getAvatar());
+            searchResponce.setNom(user.getNom());
+            searchResponce.setEmail(user.getEmail());
+            searchResponce.setTitle(user.getTitle());
+            searchResponce.setIsAvailable(isAvailable(user,project));
+            finalUserList.add(searchResponce);
+        }
+        return finalUserList;
     }
     public void deleteUser(String id) {
         userRepository.deleteById(id);

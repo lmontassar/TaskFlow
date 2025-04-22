@@ -8,6 +8,7 @@ import com.taskflow.server.Services.LoginSecurityService;
 import jakarta.mail.MessagingException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -522,8 +523,9 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public List<User> searchUsers(@RequestParam String query) {
-        return userService.search(query);
+    public List<?> searchUsers(@RequestParam String query,@RequestParam String projectId) {
+
+        return userService.search(query,projectId);
     }
 
 
