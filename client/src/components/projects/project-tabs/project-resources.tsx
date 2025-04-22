@@ -612,7 +612,7 @@ export function ProjectResources({ project }: { project: any }) {
                   </>
                 )}
               </div>
-              {formData.type === "Material" && (
+              {formData.type === "Energetic" && (
                 <div>
                   <Label className="mb-2" htmlFor="consommationMax">
                     {t("resource.add_resource_form.maximum_consumption")}
@@ -630,7 +630,7 @@ export function ProjectResources({ project }: { project: any }) {
               )}
               <div
                 className={
-                  formData.type === "Material" ? "col-span-1" : "col-span-2"
+                  formData.type === "Energetic" ? "col-span-1" : "col-span-2"
                 }
               >
                 <Label className="mb-2" htmlFor="coutUnitaire">
