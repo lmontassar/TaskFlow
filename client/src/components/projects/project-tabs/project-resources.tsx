@@ -580,33 +580,7 @@ export function ProjectResources({ project }: { project: any }) {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label className="mb-2" htmlFor="status">
-                  {t("resource.status")}
-                </Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => handleSelectChange("status", value)}
-                >
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="AVAILABLE">
-                      {t("resource.available")}
-                    </SelectItem>
-                    <SelectItem value="ALLOCATED">
-                      {t("resource.allocated")}
-                    </SelectItem>
-                    <SelectItem value="PENDING">
-                      {t("resource.pending")}
-                    </SelectItem>
-                    <SelectItem value="UNAVAILABLE">
-                      {t("resource.unavailable")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
               <div>
                 <Label className="mb-2" htmlFor="qte">
                   {t("resource.quantity")}
@@ -621,9 +595,9 @@ export function ProjectResources({ project }: { project: any }) {
                   onChange={handleInputChange}
                 />
               </div>
-              <div>
-                {formData.type === "Temporal" ||
-                formData.type === "Energetic" ? (
+              <div className="col-span-2">
+                {(formData.type === "Temporal" ||
+                  formData.type === "Energetic") && (
                   <>
                     <Label className="mb-2" htmlFor="unitMeasure">
                       {t("resource.add_resource_form.unit")}
@@ -634,21 +608,6 @@ export function ProjectResources({ project }: { project: any }) {
                       value={formData.unitMeasure}
                       onChange={handleInputChange}
                       placeholder="e.g., hours, licenses, kWh"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Label className="mb-2" htmlFor="qteDisponibilite">
-                      {t("resource.add_resource_form.available_quantity")}
-                    </Label>
-                    <Input
-                      id="qteDisponibilite"
-                      name="qteDisponibilite"
-                      value={formData.qteDisponibilite}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 100, 50, 25"
-                      type="number"
-                      min="0"
                     />
                   </>
                 )}

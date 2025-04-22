@@ -39,12 +39,6 @@ public class ResourceController {
         String categorie = (String) requestBody.get("categorie");
 
         // Parse status safely
-        Resource.Status status;
-        try {
-            status = Resource.Status.valueOf(statusString.toUpperCase());
-        } catch (Exception e) {
-            status = Resource.Status.AVAILABLE;
-        }
 
         float coutUnitaire = ((Number) requestBody.get("coutUnitaire")).floatValue();
 
@@ -59,8 +53,9 @@ public class ResourceController {
                 temporalResource.setCategorie(categorie);
                 temporalResource.setCoutUnitaire(coutUnitaire);
                 temporalResource.setUnitMeasure(unitMesure);
+
                 temporalResource.setQte(qte);
-                temporalResource.setStatus(status);
+                temporalResource.setStatus(Resource.Status.AVAILABLE);
                 temporalResource.setNotes(note);
                 System.out.println("1");
                 TemporalResource saved = resourceService.createTemporalResource(temporalResource);
@@ -73,7 +68,6 @@ public class ResourceController {
 
             case "Energetic": {
                 String unit = (String) requestBody.get("unitMeasure");
-                float consommationTotale = ((Number) requestBody.get("consommationTotale")).floatValue();
                 float consommationMax = ((Number) requestBody.get("consommationMax")).floatValue();
 
                 EnergeticResource energeticResource = new EnergeticResource();
@@ -81,10 +75,10 @@ public class ResourceController {
                 energeticResource.setType(type);
                 energeticResource.setCategorie(categorie);
                 energeticResource.setCoutUnitaire(coutUnitaire);
-                energeticResource.setStatus(status);
+                energeticResource.setStatus(Resource.Status.AVAILABLE);
                 energeticResource.setUnitMeasure(unit);
                 energeticResource.setNotes(note);
-                energeticResource.setConsommationTotale(consommationTotale);
+                energeticResource.setConsommationTotale(0);
                 energeticResource.setConsommationMax(consommationMax);
 
                 EnergeticResource saved = resourceService.createEnergeticResource(energeticResource);
@@ -97,7 +91,6 @@ public class ResourceController {
 
             case "Material": {
                 int qte = ((Number) requestBody.get("qte")).intValue();
-                int qteDisponibilite = ((Number) requestBody.get("qteDisponibilite")).intValue();
                 int utilisationTotale = ((Number) requestBody.get("utilisationTotale")).intValue();
 
                 MaterialResource materialResource = new MaterialResource();
@@ -105,10 +98,10 @@ public class ResourceController {
                 materialResource.setNom(resourceName);
                 materialResource.setNotes(note);
                 materialResource.setCategorie(categorie);
-                materialResource.setStatus(status);
+                materialResource.setStatus(Resource.Status.AVAILABLE);
                 materialResource.setType(type);
                 materialResource.setCoutUnitaire(coutUnitaire);
-                materialResource.setQteDisponibilite(qteDisponibilite);
+                materialResource.setQteDisponibilite(qte);
                 materialResource.setUtilisationTotale(utilisationTotale);
 
                 MaterialResource saved = resourceService.createMaterialResource(materialResource);
