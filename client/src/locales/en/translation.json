@@ -274,6 +274,12 @@
       "no_assignees": "No Assignees"
     },
     "specific": {
+      "errors": {
+        "status_404": "Task not found! Please check the task ID — it may have been removed.",
+        "status_403": "You don't have access to view this task. You can ask the project creator to add you.",
+        "status_400": "Server error. Please refresh...",
+        "status_500": "Server error. Please refresh..."
+      },
       "title": "Task Details",
       "delete_confirm": {
         "title": "Are you sure you want to delete this task?",
@@ -284,8 +290,8 @@
         "description": "won't be able to change the status of this task anymore, but you can add them again."
       },
       "remove_subtask": {
-        "title": "Are you sure you want to remove '{taskName}'' from sub-tasks?",
-        "description": "will be just removed from the '{taskName}' sub-tasks section."
+        "title": "Are you sure you want to remove {{taskName}}' from sub-tasks?",
+        "description": "will be just removed from the '{{taskName}}' sub-tasks section."
       },
       "remove_precaution": {
         "title": "Are you sure you want to remove '{{taskName}}' from previous tasks?",
@@ -416,5 +422,91 @@
       "notes_placeholder": "Additional details about this resource"
     }
   },
-  "loading": "Loading..."
-} 
+  "loading": "Loading...",
+  "toast": {
+    "server_error": "Something went wrong",
+    "use_tasks": {
+      "delete_task": {
+        "loading": "Deleting task...",
+        "success": "Task deleted successfully!",
+        "error": "Failed to delete the task."
+      },
+      "add_subtask": {
+        "loading": "Adding sub-task...",
+        "success": "Sub-task added successfully!",
+        "error": "Failed to add sub-task."
+      },
+      "update_status": {
+        "loading": "Updating task status...",
+        "success": "Task status updated successfully!",
+        "error": "Failed to update task status."
+      },
+      "disassociate_subtask": {
+        "loading": "Disassociating subtask...",
+        "success": "Subtask disassociated successfully!",
+        "error": "Failed to disassociate subtask."
+      },
+      "disassociate_precedentetask": {
+        "loading": "Disassociating preceding task...",
+        "success": "Preceding task disassociated successfully!",
+        "error": "Failed to disassociate preceding task."
+      },
+      "disassociate_parallelestask": {
+        "loading": "Disassociating parallel task...",
+        "success": "Parallel task disassociated successfully!",
+        "error": "Failed to disassociate parallel task."
+      },
+      "add_precedentetask": {
+        "loading": "Adding preceding task...",
+        "success": "Preceding task added successfully!",
+        "error": "Failed to add preceding task."
+      },
+      "add_paralleletask": {
+        "loading": "Adding parallel task...",
+        "success": "Parallel task added successfully!",
+        "error": "Failed to add parallel task."
+      },
+      "add_parenttask": {
+        "loading": "Adding parent task...",
+        "success": "Parent task added successfully!",
+        "error": "Failed to add parent task."
+      },
+      "disassociate_parenttask": {
+        "loading": "Disassociating parent task...",
+        "success": "Parent task disassociated successfully!",
+        "error": "Failed to disassociate parent task."
+      },
+      "add_assigne": { 
+        "loading": "Adding assignee...", 
+        "success": "Assignee added successfully!",
+        "error": "Failed to add assignee." 
+      },
+      "delete_assigne": { 
+        "loading": "Removing assignee...", 
+        "success": "Assignee removed successfully!",
+        "error": "Failed to remove assignee." 
+      },
+      "add_task": {
+        "success": "Task added successfully!",
+        "error": "Failed to add task.",
+        "unauthorized": "You are not authorized to add tasks.",
+        "invalid_input": "Invalid task data."
+      }
+    }
+  },
+  "task": {
+    "update_success": "Task updated successfully!",
+    "error": {
+      "nom_tache_invalid": "Invalid task name.",
+      "description_invalid": "Invalid description.",
+      "date_invalid": "Invalid dates.",
+      "duree_invalid": "Duration must be positive.",
+      "marge_invalid": "Margin must be positive.",
+      "budget_invalid": "Estimated budget must be positive.",
+      "qualite_invalid": "Quality must be between 0 and 5.",
+      "difficulte_invalid": "Difficulty is required.",
+      "bad_request": "Bad request.",
+      "unexpected": "An unexpected error occurred."
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { format, parseISO, isValid } from "date-fns"
 import _ from "lodash"
@@ -40,6 +40,7 @@ import { UserSearch } from "@/components/ui/assigneeSearch"
 import useTasks from "@/hooks/useTasks"
 import { DropdownMenuSeparator } from "../ui/dropdown-menu"
 import { TasksSearch } from "../ui/TasksSearch"
+import ConfirmAlert from "../ui/confirm_alert"
 
 export default function SpecificTaskPage() {
   const navigate = useNavigate();
@@ -59,6 +60,8 @@ export default function SpecificTaskPage() {
   const [precTaskToDelete, setPrecTaskToDelete] = useState<any>(null);
   const [parallelTaskToDelete, setParallelTaskToDelete] = useState<any>(null);
   const [tasksToHide, setTasksToHide] = useState<any>(null);
+  const [status , setStatus] = useState(null) ;
+  const [editError , setEditError] = useState("");
   const { t } = useTranslation();
   const {
     getTasksCanBePrecedente,
@@ -77,32 +80,31 @@ export default function SpecificTaskPage() {
     handleDeleteTask,
     handleUpdateStatutTask,
     checkIfCreatorOfProject,
-    handleAddAssignee,
     checkIfAssigneeTask,
     DeleteSubTask,
-    getTasksByProjectID
-  } = useTasks()
+    getTasksByProjectID,
+  } = useTasks();
 
   useEffect(() => {
     const fetchTask = async () => {
       setLoading(true)
       try {
-        const taskData = await GetTask(taskId)
-        setTask(taskData)
-        setEditedTask(taskData)
-        setDuration(taskData.duree)
-        setMarge(taskData.marge)
+        const {result , status } = await GetTask(taskId);
+        setStatus(status)
+        setTask(result)
+        setEditedTask(result)
+        setDuration(result.duree)
+        setMarge(result.marge)
         const subTasks = await GetSubTasks(taskId)
         setSubTasks(subTasks)
-        console.log(taskData?.precedentes, taskData?.paralleles, taskData)
         let updatedTasksToHide = [
           ...subTasks,
-          taskData,
+          result,
 
-          ...(taskData?.precedentes || []),
-          ...(taskData?.paralleles || []),
+          ...(result?.precedentes || []),
+          ...(result?.paralleles || []),
         ]
-        if (taskData?.parent != null) updatedTasksToHide = [...updatedTasksToHide, taskData?.parent]
+        if (result?.parent != null) updatedTasksToHide = [...updatedTasksToHide, result?.parent]
 
         setTasksToHide(updatedTasksToHide)
       } catch (err) {
@@ -118,38 +120,46 @@ export default function SpecificTaskPage() {
     }
   }, [taskId])
 
-  useEffect(() => {
-    if (assigneeToAdd) {
-      handleAddNewAssignee()
-    }
-  }, [assigneeToAdd])
 
-  const handleAddNewAssignee = async () => {
-    if (!assigneeToAdd || !task) return
+  // useEffect(() => {
+  //   if (assigneeToAdd ) {
+  //     console.log("Bakhaaa")
+  //     handleAddNewAssignee()
+  //   }
+  // }, [assigneeToAdd])
 
-    try {
-      await handleAddAssignee(task.id, assigneeToAdd.id)
-      // Refresh task data
-      const updatedTask = await GetTask(taskId)
-      setTask(updatedTask)
-      setEditedTask(updatedTask)
-    } catch (err) {
-      console.error("Failed to add assignee:", err)
-    } finally {
-      setAssigneeToAdd(null)
-    }
-  }
 
-  const handleRemoveAssignee = async (userId: string) => {
+
+  // const handleAddNewAssignee = async () => {
+  //   if (!assigneeToAdd || !task) return
+
+  //   try {
+  //     const res = await handleAddAssignee(task.id, assigneeToAdd.id)
+  //     if(res == true) {
+  //       const updatedTask =  { ...task , assignee: [...task.assignee,assigneeToAdd ] }
+  //       setTask(updatedTask)
+  //       setEditedTask(updatedTask)
+  //     }
+
+  //   } catch (err) {
+  //     console.error("Failed to add assignee:", err)
+  //   } finally {
+  //     setAssigneeToAdd(null)
+  //   }
+  // }
+
+  const handleRemoveAssignee = async () => {
     if (!task) return
 
     try {
-      await handleDeleteAssignee(task.id, userId)
+      const res = await handleDeleteAssignee(task.id, assigneeToDelete?.id)
       // Refresh task data
-      const updatedTask = await GetTask(taskId)
-      setTask(updatedTask)
-      setEditedTask(updatedTask)
-      setAssigneeToDelete(null)
+      if (res == true) {
+        const updatedTask = { ...task , assignee: task.assignee.filter( (t:any)=>t.id!=assigneeToDelete?.id)}
+        setTask(updatedTask)
+        setEditedTask(updatedTask)
+        setAssigneeToDelete(null)
+      }
     } catch (err) {
       console.error("Failed to remove assignee:", err)
     }
@@ -163,22 +173,25 @@ export default function SpecificTaskPage() {
   }
 
   const saveChanges = async () => {
+    setEditError("")
     try {
       const updatedTask = {
         ...editedTask,
         duree: duration,
         marge: marge,
       }
-      const res = await handleUpdateTask(updatedTask)
-      if( res != true ) { return } 
-      if (updatedTask.id !== updatedTask.statut) {
+      if ( task.statut !== updatedTask.statut) {
         await handleUpdateStatutTask(updatedTask.id, updatedTask.statut)
       }
+      
+      const {message ,result } = await handleUpdateTask(updatedTask)
+      setEditError(message)
+      if( result != true ) return 
 
       // Refresh task data
-      const refreshedTask = await GetTask(taskId)
-      setTask(refreshedTask)
-      setEditedTask(refreshedTask)
+      //const refreshedTask = await GetTask(taskId)
+      setTask(updatedTask)
+      setEditedTask(updatedTask)
       setIsEditing(false)
     } catch (err) {
       console.error("Failed to update task:", err)
@@ -230,7 +243,7 @@ export default function SpecificTaskPage() {
 
   const handleAddParent = async (Parent: any) => {
     if (task?.parent != null) handleDeleteParent()
-    const result = await AddSubTask(Parent.id, task.id)
+    const result = await AddSubTask(Parent.id, task.id , "parent")
     if (result == true)
       setTask((task: any) => ({
         ...task,
@@ -241,7 +254,7 @@ export default function SpecificTaskPage() {
   }
 
   const handleDeleteParent = async () => {
-    await DeleteSubTask(task.parent.id, taskId)
+    await DeleteSubTask(task.parent.id, taskId, "parent")
     resetTasksToHide("delete", task.parent)
     setTask((task: any) => ({
       ...task,
@@ -256,33 +269,33 @@ export default function SpecificTaskPage() {
     resetTasksToHide("add", subTask)
   }
 
-  const handleDeleteSubTask = async (subTaskID: any) => {
-    await DeleteSubTask(taskId, subTaskID)
+  const handleDeleteSubTask = async () => {
+    await DeleteSubTask(taskId, subTaskToDelete.id)
     resetTasksToHide(
       "delete",
-      subTasks.find((t: any) => t.id == subTaskID),
+      subTasks.find((t: any) => t.id == subTaskToDelete.id),
     )
-    setSubTasks(subTasks.filter((t: any) => t.id != subTaskID))
+    setSubTasks(subTasks.filter((t: any) => t.id != subTaskToDelete.id))
     setSubTaskToDelete(null)
   }
 
-  const handleDeletePrecTask = async (precID: any) => {
-    await DeletePrecTask(taskId, precID)
+  const handleDeletePrecTask = async () => {
+    await DeletePrecTask(taskId, precTaskToDelete.id)
     resetTasksToHide(
       "delete",
-      task.precedentes.find((t: any) => t.id == precID),
+      task.precedentes.find((t: any) => t.id == precTaskToDelete.id),
     )
-    task.precedentes = task.precedentes.filter((t: any) => t.id != precID)
+    task.precedentes = task.precedentes.filter((t: any) => t.id != precTaskToDelete.id)
     setPrecTaskToDelete(null)
   }
 
-  const handleDeleteParallelTask = async (parallelTaskID: any) => {
-    await DeleteParallelTask(taskId, parallelTaskID)
+  const handleDeleteParallelTask = async () => {
+    await DeleteParallelTask(taskId, parallelTaskToDelete.id)
     resetTasksToHide(
       "delete",
-      task.paralleles.find((t: any) => t.id == parallelTaskID),
+      task.paralleles.find((t: any) => t.id == parallelTaskToDelete.id),
     )
-    task.paralleles = task.paralleles.filter((t: any) => t.id != parallelTaskID)
+    task.paralleles = task.paralleles.filter((t: any) => t.id != parallelTaskToDelete.id)
     setParallelTaskToDelete(null)
   }
 
@@ -314,7 +327,6 @@ export default function SpecificTaskPage() {
   }
   const handlegetTasksCanBePrecedente = async () => {
     const tasks = await getTasksCanBePrecedente(task.id);
-    console.log(tasks)
     return tasks;
   }
 
@@ -375,8 +387,8 @@ export default function SpecificTaskPage() {
       <div className="container mx-auto py-6">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error || "Failed to load task details. Please try again."}</AlertDescription>
+          <AlertTitle>Error {status}</AlertTitle>
+          <AlertDescription>{  t(`tasks.specific.errors.status_${status}`) }</AlertDescription>
         </Alert>
         <Button className="mt-4" onClick={() => navigate(-1)}>
           Go Back
@@ -390,156 +402,60 @@ export default function SpecificTaskPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t("tasks.specific.delete_confirm.title", "Are you sure you want to delete this task?")}
-            </DialogTitle>
-            <DialogDescription>
-              {t(
-                "tasks.specific.delete_confirm.description",
-                "This action cannot be undone. This will permanently delete the task and all associated data.",
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={deleteTask}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
-      <Dialog open={assigneeToDelete !== null} onOpenChange={() => setAssigneeToDelete(null)}>
-        {assigneeToDelete && (
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {t("tasks.specific.remove_assignee.title", "Are you sure you want to remove this assignee?")}
-              </DialogTitle>
-              <DialogDescription>
-                {assigneeToDelete.prenom} {assigneeToDelete.nom}{" "}
-                {t(
-                  "tasks.specific.remove_assignee.description",
-                  "won't be able to change the status of this task anymore, but you can add them again.",
-                )}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setAssigneeToDelete(null)}>
-                {t("common.cancel")}
-              </Button>
-              <Button variant="destructive" onClick={() => handleRemoveAssignee(assigneeToDelete.id)}>
-                {t("common.delete")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        )}
-      </Dialog>
 
-      <Dialog open={subTaskToDelete !== null} onOpenChange={() => setSubTaskToDelete(null)}>
-        {subTaskToDelete && (
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {t(
-                  "tasks.specific.remove_subtask.title",
-                  "Are you sure you want to remove '{subTaskToDelete.nomTache}'' from sub-tasks?",
-                  { taskName: subTaskToDelete.nomTache }
-                )}
-              </DialogTitle>
-              <DialogDescription>
-                '{subTaskToDelete.nomTache}'{" "}
-                {t(
-                  "tasks.specific.remove_subtask.description",
-                  "will be just removed from the '{task.nomTache}' sub-tasks section.",
-                  { taskName: task.nomTache }
-                )}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setSubTaskToDelete(null)}>
-                {t("common.cancel")}
-              </Button>
-              <Button variant="destructive" onClick={() => handleDeleteSubTask(subTaskToDelete.id)}>
-                {t("common.delete")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        )}
-      </Dialog>
 
-      <Dialog open={precTaskToDelete !== null} onOpenChange={() => setPrecTaskToDelete(null)}>
-        {precTaskToDelete && (
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {t(
-                  "tasks.specific.remove_precaution.title",
-                  "Are you sure you want to remove '{{taskName}}' from previous tasks?",
-                  { taskName: precTaskToDelete.nomTache }
-                )}
-              </DialogTitle>
-              <DialogDescription>
-                {t(
-                  "tasks.specific.remove_precaution.description",
-                  "'{{precTaskName}}' will be just removed from the '{{taskName}}' previous tasks section.",
-                  {
-                    precTaskName: precTaskToDelete.nomTache,
-                    taskName: task.nomTache,
-                  }
-                )}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setPrecTaskToDelete(null)}>
-                {t("common.cancel")}
-              </Button>
-              <Button variant="destructive" onClick={() => handleDeletePrecTask(precTaskToDelete.id)}>
-                {t("common.delete")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        )}
-      </Dialog>
 
-      <Dialog open={parallelTaskToDelete !== null} onOpenChange={() => setParallelTaskToDelete(null)}>
-        {parallelTaskToDelete && (
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {t(
-                  "tasks.specific.remove_parallel.title",
-                  "Are you sure you want to remove '{{taskName}}' from parallel tasks?",
-                  { taskName: parallelTaskToDelete.nomTache }
-                )}
-              </DialogTitle>
-              <DialogDescription>
-                {t(
-                  "tasks.specific.remove_parallel.description",
-                  "'{{parallelTaskName}}' will be just removed from the '{{taskName}}' parallel tasks section.",
-                  {
-                    parallelTaskName: parallelTaskToDelete.nomTache,
-                    taskName: task.nomTache,
-                  }
-                )}
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setParallelTaskToDelete(null)}>
-                {t("common.cancel")}
-              </Button>
-              <Button variant="destructive" onClick={() => handleDeleteParallelTask(parallelTaskToDelete.id)}>
-                {t("common.delete")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        )}
-      </Dialog>
+        
+      
+      <ConfirmAlert key="delete-task" confirmDelete={confirmDelete} setConfirmDelete={setConfirmDelete} FunctionToDO={deleteTask}
+        Title={t("tasks.specific.delete_confirm.title", "Are you sure you want to delete this task?")}
+        Description={t( "tasks.specific.delete_confirm.description",
+                        "This action cannot be undone. This will permanently delete the task and all associated data.", )}
+        CancelText={t("common.cancel")} ConfirmText={t("common.delete")}
+      />
+
+      { (assigneeToDelete) && (
+        <ConfirmAlert key="delete-assigne" confirmDelete={assigneeToDelete} setConfirmDelete={setAssigneeToDelete} FunctionToDO={handleRemoveAssignee}
+            Title={t("tasks.specific.remove_assignee.title", "Are you sure you want to remove this assignee?")}
+            Description={`${assigneeToDelete.prenom} ${assigneeToDelete.nom} 
+                    ${t( "tasks.specific.remove_assignee.description",
+                      "won't be able to change the status of this task anymore, but you can add them again.", )}`}
+            CancelText={t("common.cancel")} ConfirmText={t("common.delete")}
+        />
+      )}
+
+      { (subTaskToDelete) && (
+        <ConfirmAlert key="delete-subTask" confirmDelete={subTaskToDelete} setConfirmDelete={setSubTaskToDelete} FunctionToDO={handleDeleteSubTask}
+            Title={t( "tasks.specific.remove_subtask.title", "Are you sure you want to remove '{subTaskToDelete.nomTache}'' from sub-tasks?",
+              { taskName: subTaskToDelete.nomTache } )}
+                Description={`${subTaskToDelete.nomTache}' 
+                              ${t( "tasks.specific.remove_subtask.description",  "will be just removed from the '{task.nomTache}' sub-tasks section.",
+                              { taskName: task.nomTache } )}`}
+            CancelText={t("common.cancel")} ConfirmText={t("common.delete")}
+        />
+      )}
+
+      {(precTaskToDelete) && (
+        <ConfirmAlert key="delete-precTask" confirmDelete={precTaskToDelete} setConfirmDelete={setPrecTaskToDelete} FunctionToDO={handleDeletePrecTask}
+            Title={t( "tasks.specific.remove_precaution.title", "Are you sure you want to remove '{{taskName}}' from previous tasks?", { taskName: precTaskToDelete.nomTache }  )}
+            Description={t( "tasks.specific.remove_precaution.description", "'{{precTaskName}}' will be just removed from the '{{taskName}}' previous tasks section.",
+                              { precTaskName: precTaskToDelete.nomTache,
+                                taskName: task.nomTache, } )}
+            CancelText={t("common.cancel")} ConfirmText={t("common.delete")}
+        />
+      )}
+
+      { (parallelTaskToDelete) && (
+        <ConfirmAlert key="delete-precTask" confirmDelete={parallelTaskToDelete} setConfirmDelete={setParallelTaskToDelete} FunctionToDO={handleDeleteParallelTask}
+            Title={t("tasks.specific.remove_parallel.title","Are you sure you want to remove '{{taskName}}' from parallel tasks?",
+                      { taskName: parallelTaskToDelete.nomTache })}
+            Description={t("tasks.specific.remove_parallel.description","'{{parallelTaskName}}' will be just removed from the '{{taskName}}' parallel tasks section.",
+                          { parallelTaskName: parallelTaskToDelete.nomTache,
+                            taskName: task.nomTache,})}
+            CancelText={t("common.cancel")} ConfirmText={t("common.delete")}
+        />
+      )}
 
       <div className="mb-6">
         <Breadcrumb>
@@ -551,7 +467,7 @@ export default function SpecificTaskPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink><Link to={`/projects/${task.project.id}`}> {task.project.nom}</Link>  </BreadcrumbLink>
+              <BreadcrumbLink><Link to={`/projects/${task.project.id}`}> {task.project.nom}</Link></BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -641,6 +557,16 @@ export default function SpecificTaskPage() {
           <CardContent className="p-6">
             {isEditing ? (
               <div className="space-y-4">
+
+              {editError !== "" && (
+                <Alert
+                  variant="destructive"
+                  className="mb-4 border border-destructive-foreground"
+                >
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription> {editError} </AlertDescription>
+                </Alert>
+              )}
                 <div className="space-y-2">
                   <Label htmlFor="task-name">{t("tasks.specific.form.task_name", "Task Name")}</Label>
                   <Input

@@ -237,22 +237,29 @@ export function TasksInterface({ project }: taskProps) {
     setGroupedTasks(newGroupedTasks);
   }, [tasks]);
   
+
   const addTask = async (task :any) =>{
     const res = await handleTaskCreate(task);
-    if (project) await getTasksByProjectID(project?.id);
+    if (res === true) await getTasksByProjectID(project?.id);
     return res;
   }
+
+
   const handleTaskClick = (task: any) => {
     setSelectedTask(task);
     setShowTaskDetails(true);
   };
 
   const handleTaskUpdate = async (updated: any) => {
-    await handleUpdateTask(updated);
-    if(updated.id != updated.statut)
+    if(selectedTask.statut != updated.statut)
       await handleUpdateStatutTask(updated.id, updated.statut);
+
+    const result:any = await handleUpdateTask(updated);
+    if(result?.result !== true ) return result;
     if (project) await getTasksByProjectID(project?.id);
+    else await getMyTasks()
     setSelectedTask(updated);
+    return result;
   };
 
   const handleTaskDelete = async (taskId: string) => {

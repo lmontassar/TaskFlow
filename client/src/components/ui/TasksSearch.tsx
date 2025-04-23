@@ -8,6 +8,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ChevronsUpDown, ClipboardList } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import Loading from "./loading"
 
 
 // Change the interface to rename 'tasks' to 'tasksToHide'
@@ -124,7 +125,10 @@ export function TasksSearch({
             <CommandInput placeholder={t("tasks.taskSearch.inputPlaceholder")} value={search} onValueChange={setSearch} disabled={disabled} />
             <CommandList>
               {isSearching ? (
-                <div className="py-6 text-center text-sm text-muted-foreground">{t("tasks.staskSearch.loading")}</div>
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  {/* {t("tasks.staskSearch.loading")} */}
+                  <Loading/>
+                </div>
               ) : (
                 <>
                   <CommandEmpty>{t("tasks.taskSearch.empty")}</CommandEmpty>

@@ -37,6 +37,7 @@ import { UserSearch } from "../ui/assigneeSearch"
 import useTasks from "../../hooks/useTasks"
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
 
 
 
@@ -69,6 +70,7 @@ export function TaskDetails({
   const [assigneeToAdd, setAssigneeToAdd] = useState<any>(null)
   const { checkIfCreatorOfProject } = useTasks()
   const [task, setTask] = useState(taskToEdit)
+  const [editError , setEditError] = useState("");
   const { t } = useTranslation()
 
 
@@ -82,6 +84,7 @@ export function TaskDetails({
       [field]: value,
     })
   }
+
   const {    getStatusBadge, formatDurationReact ,
     getDifficulteBadge} = useTasks();
 
@@ -90,13 +93,18 @@ export function TaskDetails({
     task.assignee = task.assignee.filter((assignee) => assignee.id != userID)
   }
 
-  const saveChanges = () => {
-    onUpdate({
+  const saveChanges = async () => {
+    setEditError("")
+    const result:any =await onUpdate({
       ...editedTask,
       ["duree"]: duration,
       ["marge"]: Number(marge),
     })
-
+    console.log(result);
+    if (result.result == false ) {
+      setEditError(result.message); 
+      return 
+    } 
     setIsEditing(false)
   }
 
@@ -267,6 +275,16 @@ export function TaskDetails({
         <div className="p-4">
           {isEditing ? (
             <div className="space-y-4">
+              {editError !== "" && (
+                <Alert
+                  variant="destructive"
+                  className="mb-4 border border-destructive-foreground"
+                >
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription> {editError} </AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="task-name">{t("tasks.details.form.task_name", "Task Name")}</Label>
                 <Textarea

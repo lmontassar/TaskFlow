@@ -58,8 +58,9 @@ public class TacheController {
     private static boolean canAddSubTask = false;
     private static boolean canAddParallel = false;
     private static boolean canDeleteSubTask = false;
-    private static boolean  canDeletePrecedenteTask = false;
+    private static boolean canDeletePrecedenteTask = false;
     private static boolean canDeleteParallelTask = false;
+
     public void ResetPrivilege() {
         canGet = false;
         canEditTasks = false;
@@ -120,6 +121,7 @@ public class TacheController {
                         canDeleteSubTask = true;
                         canDeletePrecedenteTask = true;
                         canDeleteParallelTask = true;
+
                     }
                     if ((tacheSer.IsUserExistInAsignee(u, t)) == true) {
                         canChangeStatus = true;
@@ -150,21 +152,19 @@ public class TacheController {
             Tache task = tacheSer.findTacheById(taskID);
             if (task == null)
                 return ResponseEntity.status(404).body("tache: not found");
-            Project p = projectSer.getProjectById(task.getProject().getId());
-            if (p == null)
-                return ResponseEntity.status(404).body("projet: not found");
 
-            // CHECK PRIVELEGE
-            this.setPrivilege(u, p, task);
+            this.setPrivilege(u, task.getProject(), task);
 
             if (canAddAssignee == false)
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("You're not able to add an asignee to this task");
-            if (tacheSer.isMember(AssigneeUser, task) == false)
+            Boolean ok = tacheSer.isMember(AssigneeUser, task);
+            if (ok == null || !ok) {
+                System.out.println("Is Member: " + ok);
                 return ResponseEntity.status(404).body("This user isn't a member of this project");
+            }
             if (tacheSer.IsUserExistInAsignee(AssigneeUser, task))
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("this user is already added!!!");
-
             tacheSer.addAssignee(AssigneeUser, task);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -175,28 +175,38 @@ public class TacheController {
 
     @DeleteMapping("/delete/assignee")
     public ResponseEntity<?> deleteAssignee(
-            @RequestParam("taskID") String taskID,
-            @RequestParam("userID") String userID,
+            @RequestParam String taskID,
+            @RequestParam String userID,
             @RequestHeader("Authorization") String token
 
     ) {
         try {
+
             User u = getUserFromToken(token);
             User AssigneeUser = userService.findById(userID);
             if (u == null || AssigneeUser == null) {
                 return ResponseEntity.status(404).body("utilisateur : not found"); // 404 Not Found
             }
             Tache task = tacheSer.findTacheById(taskID);
-            if (task == null)
+            if (task == null) {
                 return ResponseEntity.status(404).body("tache: not found");
+            }
             Project p = projectSer.getProjectById(task.getProject().getId());
-            if (p == null)
+            if (p == null) {
                 return ResponseEntity.status(404).body("projet: not found");
-            if (p.getCreateur().getId().equals(u.getId()) == false)
+            }
+
+            if (canDeleteAssignee == false)
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("You're not able to delete an asignee to this task");
-            if (tacheSer.isMember(AssigneeUser, task) == false)
-                return ResponseEntity.status(404).body("This user isn't a member of this project");
+
+            // if (tacheSer.isMember(AssigneeUser, task) == false){
+            // System.out.println("------------------------- ****************************
+            // -----------------------------");
+            // return ResponseEntity.status(404).body("This user isn't a member of this
+            // project");
+            // }
+
             if (tacheSer.IsUserExistInAsignee(AssigneeUser, task) == false)
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("this user isn't exist!!!");
             tacheSer.removeAssignee(AssigneeUser, task);
@@ -324,7 +334,6 @@ public class TacheController {
         }
     }
 
-
     @PostMapping("/add/parallel")
     public ResponseEntity<?> AddParallelTask(
             @RequestParam String taskID,
@@ -384,7 +393,7 @@ public class TacheController {
 
             setPrivilege(u, null, task);
             if (canGet == false)
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
             return ResponseEntity.ok().body(task);
         } catch (Exception e) {
@@ -444,7 +453,7 @@ public class TacheController {
             if (canGet == false)
                 return ResponseEntity.notFound().build();
             List<Tache> tasks = tacheSer.getTasksCanBePrecedente(t);
-            System.out.println(tasks.size() + " -------------------------------------- "+ t.getId());
+            System.out.println(tasks.size() + " -------------------------------------- " + t.getId());
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -502,37 +511,34 @@ public class TacheController {
 
     // @PutMapping("/update/parent/{id}")
     // public ResponseEntity<?> EditParent(
-    //         @RequestParam String taskID,
-    //         @RequestParam String parentTaskID,
-    //         @RequestHeader("Authorization") String token
-    //     ) {
-    //         try{
-    //             User u = getUserFromToken(token);
-    //             if (u == null)
-    //                 return ResponseEntity.notFound().build(); // 404 Not Found
-    //             Tache task = tacheSer.findTacheById(taskID);
-    //             if (task == null)
-    //                 return ResponseEntity.notFound().build();
-    //             Tache parent = tacheSer.findTacheById(parentTaskID);
-    //             if (parent == null)
-    //                 return ResponseEntity.notFound().build();
-    //             setPrivilege(u, null, task);
-    //             if( canEditTasks == false  ) 
-    //                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    //             tacheSer.addSousTache(parent,task);
-    //             return ResponseEntity.ok(task);
-    //         } catch( Exception e) {
-    //             return ResponseEntity.badRequest().build();
-    //         }
+    // @RequestParam String taskID,
+    // @RequestParam String parentTaskID,
+    // @RequestHeader("Authorization") String token
+    // ) {
+    // try{
+    // User u = getUserFromToken(token);
+    // if (u == null)
+    // return ResponseEntity.notFound().build(); // 404 Not Found
+    // Tache task = tacheSer.findTacheById(taskID);
+    // if (task == null)
+    // return ResponseEntity.notFound().build();
+    // Tache parent = tacheSer.findTacheById(parentTaskID);
+    // if (parent == null)
+    // return ResponseEntity.notFound().build();
+    // setPrivilege(u, null, task);
+    // if( canEditTasks == false )
+    // return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    // tacheSer.addSousTache(parent,task);
+    // return ResponseEntity.ok(task);
+    // } catch( Exception e) {
+    // return ResponseEntity.badRequest().build();
     // }
-
-
+    // }
 
     @PutMapping("/update")
     public ResponseEntity<?> update(
             @RequestBody Tache task,
-            @RequestHeader("Authorization") String token
-        ) {
+            @RequestHeader("Authorization") String token) {
         try {
             User u = getUserFromToken(token);
             if (u == null)
@@ -549,23 +555,46 @@ public class TacheController {
 
             //
 
-            if ((task.getNomTache() == null ||
+            // if ((task.getNomTache() == null ||
+            // task.getNomTache().isEmpty() ||
+            // task.getNomTache().length() > 255 ||
+            // XSS_PATTERN.matcher((task.getNomTache())).find())
+            // ||
+            // ((task.getDescription() != null && !task.getDescription().isEmpty()) &&
+            // (task.getDescription().length() > 1000 ||
+            // XSS_PATTERN.matcher((task.getDescription())).find()))
+            // ||
+            // (task.getDateDebut() != null && task.getDateFinEstime() != null &&
+            // task.getDateFinEstime().isBefore(task.getDateDebut()))
+            // || task.getDuree() < 0 || task.getMarge() < 0 || task.getBudgetEstime() < 0
+            // || task.getQualite() > 5
+            // || task.getQualite() < 0 || task.getDifficulte() == null)
+            // return ResponseEntity.status(416).build();
+
+            if (task.getNomTache() == null ||
                     task.getNomTache().isEmpty() ||
                     task.getNomTache().length() > 255 ||
                     XSS_PATTERN.matcher((task.getNomTache())).find())
-                    ||
-                    ((task.getDescription() != null && !task.getDescription().isEmpty()) &&
-                            (task.getDescription().length() > 1000 ||
-                                    XSS_PATTERN.matcher((task.getDescription())).find()))
-                    ||
-                    (task.getDateDebut() != null && task.getDateFinEstime() != null &&
-                            task.getDateFinEstime().isBefore(task.getDateDebut()))
-                    || task.getDuree() < 0 || task.getMarge() < 0 || task.getBudgetEstime() < 0 || task.getQualite() > 5
-                    || task.getQualite() < 0 || task.getDifficulte() == null)
-                return ResponseEntity.status(416).build();
+                return ResponseEntity.status(416).body("nom_tache_invalid");
 
-            // nomTache;
-            oldTask.setNomTache(task.getNomTache());
+            if (((task.getDescription() != null && !task.getDescription().isEmpty()) &&
+                    (task.getDescription().length() > 1000 ||
+                            XSS_PATTERN.matcher((task.getDescription())).find())))
+                return ResponseEntity.status(416).body("description_invalid");
+
+            if (task.getDateDebut() != null
+                    && task.getDateFinEstime() != null
+                    && task.getDateFinEstime().isBefore(task.getDateDebut()))
+                return ResponseEntity.status(416).body("date_invalid");
+
+            if (task.getDuree() < 0 ) return ResponseEntity.status(416).body("duree_invalid");
+            if (task.getMarge() < 0 ) return ResponseEntity.status(416).body("marge_invalid");
+            if (task.getBudgetEstime() < 0 ) return ResponseEntity.status(416).body("budget_invalid");
+            if ( task.getQualite() > 5 || task.getQualite() < 0 ) return ResponseEntity.status(416).body("qualite_invalid");
+            if ( task.getDifficulte() == null ) return ResponseEntity.status(416).body("difficulte_invalid");
+            
+                // nomTache;
+                oldTask.setNomTache(task.getNomTache());
             // description;
             oldTask.setDescription(task.getDescription());
             // budgetEstime;
@@ -641,8 +670,8 @@ public class TacheController {
 
             if (canDeleteSubTask == false)
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            
-            Tache EditedTask = tacheSer.removeSubTask(task,subTask);
+
+            Tache EditedTask = tacheSer.removeSubTask(task, subTask);
             return ResponseEntity.ok(EditedTask);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -670,8 +699,8 @@ public class TacheController {
 
             if (canDeletePrecedenteTask == false)
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            
-            Tache EditedTask = tacheSer.removePrecedente(task,precTask);
+
+            Tache EditedTask = tacheSer.removePrecedente(task, precTask);
             return ResponseEntity.ok(EditedTask);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -700,8 +729,8 @@ public class TacheController {
 
             if (canDeleteParallelTask == false)
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            
-            Tache EditedTask = tacheSer.removeParallel(task,parallelTask);
+
+            Tache EditedTask = tacheSer.removeParallel(task, parallelTask);
             return ResponseEntity.ok(EditedTask);
         } catch (Exception e) {
             System.out.println(e.getMessage());

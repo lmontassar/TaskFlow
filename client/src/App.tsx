@@ -22,6 +22,7 @@ import Notifications from "./pages/Main/Notifications";
 import MyTasksPage from "./pages/Main/MyTasks";
 import SpecificTaskPage from "./components/Tasks/specific-task-page";
 import ProtectedLoginRoutes from "./utils/protectedloginroutes";
+import { Toaster } from "./components/ui/sonner";
 
 export type UserType = {
   id: string;
@@ -60,6 +61,8 @@ function App() {
     return <div>Loading...</div>;
   }
   return (
+    <>
+    <Toaster />
     <Context.Provider value={{ isSignedIn, setIsSignedIn, user, setUser }}>
       <Router>
         <Routes>
@@ -89,6 +92,7 @@ function App() {
         </Routes>
       </Router>
     </Context.Provider>
+    </>
   );
 }
 

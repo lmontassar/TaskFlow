@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import type { Task } from "./tasks-interface"
 import DurationInput from "../ui/divided-duration-input"
@@ -34,7 +34,8 @@ interface TaskCreateModalProps {
   existingTasks: Task[],
   addTaskError: "",
   setAddTaskError: (error: String) => void,
-  project :any
+  project :any , 
+
 }
 
 export function TaskCreateModal({
@@ -45,6 +46,7 @@ export function TaskCreateModal({
   existingTasks,
   addTaskError,
   setAddTaskError,
+  
 }: TaskCreateModalProps) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
   const [taskName, setTaskName] = useState("")
@@ -54,9 +56,11 @@ export function TaskCreateModal({
   const [duration, setDuration] = useState("")
   const [marge, setMarge] = useState("")
   const { t } = useTranslation()
+  const [isLoading, setIsLoading ] = useState(false);
   // Get all unique projects from existing tasks
 
   const handleCreateTask = async () => {
+    setIsLoading(true);
     if (!taskName.trim()) return
 
     const newTask: Task = {
@@ -71,11 +75,12 @@ export function TaskCreateModal({
       marge: marge,
     }
 
-    const ok: any = await onCreateTask(newTask)
-
+    const ok: any = await onCreateTask(newTask);
+    
     if (ok == true) {
-      handleClose()
+      handleClose();
     }
+    setIsLoading(false);
   }
 
   const resetForm = () => {
@@ -173,7 +178,14 @@ export function TaskCreateModal({
             {t("tasks.create_modal.cancel", "Cancel")}
           </Button>
           <Button onClick={handleCreateTask} disabled={!taskName.trim()}>
-            {t("tasks.create_modal.create", "Create Task")}
+          { isLoading && (
+                      <Loader2 className="animate-spin" />
+                    ) || (
+                      <>
+                      {t("tasks.create_modal.create", "Create Task")}
+                      </>
+                    ) 
+          }
           </Button>
         </DialogFooter>
       </DialogContent>
