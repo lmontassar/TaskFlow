@@ -23,6 +23,7 @@ import MyTasksPage from "./pages/Main/MyTasks";
 import SpecificTaskPage from "./components/Tasks/specific-task-page";
 import ProtectedLoginRoutes from "./utils/protectedloginroutes";
 import { Toaster } from "./components/ui/sonner";
+import { NotificationProvider } from "./utils/NotificationContext";
 
 export type UserType = {
   id: string;
@@ -64,33 +65,38 @@ function App() {
     <>
     <Toaster />
     <Context.Provider value={{ isSignedIn, setIsSignedIn, user, setUser }}>
-      <Router>
-        <Routes>
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoutes />}>
-            <Route path="/" element={<Page />}>
-              <Route path="home" element={<Home />} />
-              <Route path="/" element={<Home />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="inbox" element={<Inbox />} />
-              <Route path="notifications" element={<Notifications />} />
-              <Route path="projects/:id" element={<ProjectPage />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="tasks" element={<TasksPage />} />
-              <Route path="my-tasks" element={<MyTasksPage/>} />
-              <Route path="task/:taskId" element={<SpecificTaskPage />} />
+      <NotificationProvider>
+        <Router>
+          <Routes>
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/" element={<Page />}>
+                <Route path="home" element={<Home />} />
+                <Route path="/" element={<Home />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="inbox" element={<Inbox />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="projects/:id" element={<ProjectPage />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="tasks" element={<TasksPage />} />
+                <Route path="my-tasks" element={<MyTasksPage />} />
+                <Route path="task/:taskId" element={<SpecificTaskPage />} />
+              </Route>
             </Route>
-          </Route>
-          {/* Public Routes */}
-          <Route element={<ProtectedLoginRoutes />}>
-            <Route path="/signup" element={<Signup />} />
+            {/* Public Routes */}
+            <Route element={<ProtectedLoginRoutes />}>
+              <Route path="/signup" element={<Signup />} />
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/emailverification" element={<EmailVerification />} />
-          </Route>
-          <Route path="/reset" element={<ResetPassword />} />
-        </Routes>
-      </Router>
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/emailverification"
+                element={<EmailVerification />}
+              />
+            </Route>
+            <Route path="/reset" element={<ResetPassword />} />
+          </Routes>
+        </Router>
+      </NotificationProvider>
     </Context.Provider>
     </>
   );

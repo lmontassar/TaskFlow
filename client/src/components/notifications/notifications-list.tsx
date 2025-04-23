@@ -25,7 +25,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import type { NotificationType } from "./notifications-dropdown";
 import { Link } from "react-router-dom";
-import { useNotifications } from "../../hooks/useGetNotifications";
+import { useNotifications } from "../../utils/NotificationContext";
 
 export function NotificationsList() {
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
@@ -36,8 +36,6 @@ export function NotificationsList() {
     RefuserInvitation,
     notifications,
     setNotifications,
-    unreadCount,
-    setUnreadCount,
     loading,
     error,
   } = useNotifications();
@@ -270,7 +268,7 @@ export function NotificationsList() {
                       </div>
                     )}
 
-                    {notification?.project.id && (
+                    {notification?.project?.id && (
                       <div className="mt-2">
                         <Button
                           variant="link"
@@ -278,7 +276,7 @@ export function NotificationsList() {
                           className="h-auto p-0"
                           asChild
                         >
-                          <Link to={`/projects/${notification?.project.id}`}>
+                          <Link to={`/projects/${notification?.project?.id}`}>
                             View project
                           </Link>
                         </Button>
