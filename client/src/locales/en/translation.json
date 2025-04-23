@@ -422,7 +422,8 @@
       "new_categorie_placeholder": "Enter new categorie",
       "available_quantity": "Available Quantity",
       "maximum_consumption": "Maximum Consumption",
-      "notes_placeholder": "Additional details about this resource"
+      "notes_placeholder": "Additional details about this resource",
+      "total_consumption": "Total Consumption"
     }
   },
   "loading": "Loading...",

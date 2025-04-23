@@ -424,7 +424,8 @@
       "new_categorie_placeholder": "Entrer une nouvelle catégorie",
       "available_quantity": "Quantité disponible",
       "maximum_consumption": "Consommation maximale",
-      "notes_placeholder": "Détails supplémentaires sur cette ressource"
+      "notes_placeholder": "Détails supplémentaires sur cette ressource",
+      "total_consumption": "Consommation totale"
     }
   },
   "loading": "Chargement...",

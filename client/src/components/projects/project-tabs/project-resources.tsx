@@ -808,22 +808,62 @@ export function ProjectResources({ project }: { project: any }) {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label className="mb-2" htmlFor="edit-qte">
-                  {t("resource.quantity")}
-                </Label>
-                <Input
-                  id="edit-qte"
-                  className={formData.qte ? "" : "border-destructive"}
-                  name="qte"
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={formData.qte}
-                  onChange={handleInputChange}
-                />
-              </div>
 
+              {formData.type !== "Energetic" && (
+                <div>
+                  <Label className="mb-2" htmlFor="edit-qte">
+                    {t("resource.quantity")}
+                  </Label>
+                  <Input
+                    id="edit-qte"
+                    className={formData.qte ? "" : "border-destructive"}
+                    name="qte"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={formData.qte}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
+              {formData.type === "Energetic" && (
+                <>
+                  <div>
+                    <Label className="mb-2" htmlFor="edit-consommationMax">
+                      {t("resource.add_resource_form.maximum_consumption")}
+                    </Label>
+                    <Input
+                      id="edit-consommationMax"
+                      name="consommationMax"
+                      value={formData.consommationMax}
+                      className={
+                        formData.consommationMax ? "" : "border-destructive"
+                      }
+                      onChange={handleInputChange}
+                      placeholder="e.g., 10, 20, 30"
+                      type="number"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <Label className="mb-2" htmlFor="edit-consommationTotale">
+                      {t("resource.add_resource_form.total_consumption")}
+                    </Label>
+                    <Input
+                      id="edit-consommationTotale"
+                      name="consommationTotale"
+                      value={formData.consommationTotale}
+                      className={
+                        formData.consommationTotale ? "" : "border-destructive"
+                      }
+                      onChange={handleInputChange}
+                      placeholder="e.g., 10, 20, 30"
+                      type="number"
+                      min="0"
+                    />
+                  </div>
+                </>
+              )}
               <div>
                 {formData.type === "Temporal" ||
                 formData.type === "Energetic" ? (
@@ -862,25 +902,6 @@ export function ProjectResources({ project }: { project: any }) {
                   </>
                 )}
               </div>
-              {formData.type === "Material" && (
-                <div>
-                  <Label className="mb-2" htmlFor="edit-consommationMax">
-                    {t("resource.add_resource_form.maximum_consumption")}
-                  </Label>
-                  <Input
-                    id="edit-consommationMax"
-                    name="consommationMax"
-                    value={formData.consommationMax}
-                    className={
-                      formData.consommationMax ? "" : "border-destructive"
-                    }
-                    onChange={handleInputChange}
-                    placeholder="e.g., 10, 20, 30"
-                    type="number"
-                    min="0"
-                  />
-                </div>
-              )}
               <div
                 className={
                   formData.type === "Material" ? "col-span-1" : "col-span-2"
