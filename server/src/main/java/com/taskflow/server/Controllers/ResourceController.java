@@ -77,7 +77,6 @@ public class ResourceController {
                 energeticResource.setCategorie(categorie);
                 energeticResource.setCoutUnitaire(coutUnitaire);
                 energeticResource.setStatus(Resource.Status.AVAILABLE);
-                energeticResource.setQte(qte);
                 energeticResource.setUnitMeasure(unit);
                 energeticResource.setNotes(note);
                 energeticResource.setConsommationTotale(0);
@@ -168,7 +167,6 @@ public class ResourceController {
                 res.setNom(resourceName);
                 res.setNotes(note);
                 res.setStatus(status);
-                res.setQte(((Number) requestBody.get("qte")).intValue());
                 res.setCategorie(categorie);
                 res.setCoutUnitaire(coutUnitaire);
                 res.setUnitMeasure((String) requestBody.get("unitMeasure"));

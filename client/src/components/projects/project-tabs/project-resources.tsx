@@ -169,7 +169,7 @@ export function ProjectResources({ project }: { project: any }) {
     setIsDeleteDialogOpen(true);
   };
   const validateForm = () => {
-    const requiredFields = ["nom", "type", "categorie", "coutUnitaire"];
+    const requiredFields = ["nom", "type", "coutUnitaire"];
     if (formData.type === "Temporal" || formData.type === "Energetic") {
       requiredFields.push("unitMeasure");
     } else if (formData.type === "Material") {
@@ -301,7 +301,10 @@ export function ProjectResources({ project }: { project: any }) {
   // Calculate total cost
   const totalCost = useMemo(() => {
     return resources.reduce(
-      (sum, resource) => sum + resource.coutUnitaire * resource.qte,
+      (sum, resource) =>
+        sum +
+        resource.coutUnitaire *
+          (resource?.qte ?? resource?.consommationMax ?? 0),
       0
     );
   }, [resources]);
@@ -424,10 +427,12 @@ export function ProjectResources({ project }: { project: any }) {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {resource.qte} {resource.unit || resource.unitMeasure}
+                        {resource.qte || resource.consommationMax}{" "}
+                        {resource.unit || resource.unitMeasure}
                       </TableCell>
                       <TableCell>
-                        {resource.qte - (resource?.qteDisponibilite || 0)}{" "}
+                        {resource.qte - (resource?.qteDisponibilite || 0) ||
+                          resource.consommationTotale}{" "}
                         {resource.unit || resource.unitMeasure}
                       </TableCell>
                       <TableCell>
@@ -436,7 +441,8 @@ export function ProjectResources({ project }: { project: any }) {
                       <TableCell>
                         $
                         {(
-                          resource.qte * resource.coutUnitaire
+                          resource.qte * resource.coutUnitaire ||
+                          resource?.consommationMax * resource.coutUnitaire
                         ).toLocaleString()}
                       </TableCell>
                       <TableCell>{getStatusBadge(resource.status)}</TableCell>
@@ -581,20 +587,38 @@ export function ProjectResources({ project }: { project: any }) {
                 </Select>
               </div>
 
-              <div>
-                <Label className="mb-2" htmlFor="qte">
-                  {t("resource.quantity")}
-                </Label>
-                <Input
-                  id="qte"
-                  name="qte"
-                  type="number"
-                  min="0"
-                  step="1"
-                  value={formData.qte}
-                  onChange={handleInputChange}
-                />
-              </div>
+              {formData.type !== "Energetic" && (
+                <div>
+                  <Label className="mb-2" htmlFor="qte">
+                    {t("resource.quantity")}
+                  </Label>
+                  <Input
+                    id="qte"
+                    name="qte"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={formData.qte}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
+              {formData.type === "Energetic" && (
+                <div>
+                  <Label className="mb-2" htmlFor="consommationMax">
+                    {t("resource.add_resource_form.maximum_consumption")}
+                  </Label>
+                  <Input
+                    id="consommationMax"
+                    name="consommationMax"
+                    value={formData.consommationMax}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 10, 20, 30"
+                    type="number"
+                    min="0"
+                  />
+                </div>
+              )}
               <div className="col-span-2">
                 {(formData.type === "Temporal" ||
                   formData.type === "Energetic") && (
@@ -612,27 +636,8 @@ export function ProjectResources({ project }: { project: any }) {
                   </>
                 )}
               </div>
-              {formData.type === "Energetic" && (
-                <div>
-                  <Label className="mb-2" htmlFor="consommationMax">
-                    {t("resource.add_resource_form.maximum_consumption")}
-                  </Label>
-                  <Input
-                    id="consommationMax"
-                    name="consommationMax"
-                    value={formData.consommationMax}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 10, 20, 30"
-                    type="number"
-                    min="0"
-                  />
-                </div>
-              )}
-              <div
-                className={
-                  formData.type === "Energetic" ? "col-span-1" : "col-span-2"
-                }
-              >
+
+              <div className={"col-span-2"}>
                 <Label className="mb-2" htmlFor="coutUnitaire">
                   {t("resource.cost_per_unit")} ($)
                 </Label>

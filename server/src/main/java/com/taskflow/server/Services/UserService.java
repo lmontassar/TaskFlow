@@ -122,36 +122,50 @@ public class UserService {
                     return (isCollaborator || isCreator);
                 }).collect(Collectors.toList());
     }
-    public Boolean isAvailable(User user,Project project){
-        List<Project> projects =getAllMyProjects(user.getId());
-        for (Project p: projects) {
-            if((project.getDateDebut().before(p.getDateFinEstime()) &&
-                    project.getDateDebut().after(p.getDateDebut()))&& !Objects.equals(project.getId(), p.getId())){
-                return false;
-            }
+    public Boolean isAvailable(User user, Project project) {
+        if (user == null || project == null) return false;
+
+        List<Project> userProjects = getAllMyProjects(user.getId());
+        Date newStart = project.getDateDebut();
+        Date newEnd = project.getDateFinEstime();
+
+        for (Project existingProject : userProjects) {
+            if (Objects.equals(project.getId(), existingProject.getId())) continue;
+
+            Date existingStart = existingProject.getDateDebut();
+            Date existingEnd = existingProject.getDateFinEstime();
+
+            // Check if the new project overlaps with any existing ones
+            boolean overlaps = newStart.before(existingEnd) && newEnd.after(existingStart);
+            if (overlaps) return false;
         }
+
         return true;
     }
-    public List<SearchResponce> search(String query , String projectId){
-        Project project = projectRepository.getProjectById(projectId);
 
+    public List<SearchResponce> search(String query, String projectId) {
+        Project project = projectRepository.getProjectById(projectId);
+        if (project == null) return new ArrayList<>(); // Avoid null pointer
 
         List<User> userList = userRepository.findByNomContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
-        List<SearchResponce> finalUserList = new ArrayList<>();
-        for (User user:userList
-             ) {
-            SearchResponce searchResponce = new SearchResponce();
-            searchResponce.setId(user.getId());
-            searchResponce.setPrenom(user.getPrenom());
-            searchResponce.setAvatar(user.getAvatar());
-            searchResponce.setNom(user.getNom());
-            searchResponce.setEmail(user.getEmail());
-            searchResponce.setTitle(user.getTitle());
-            searchResponce.setIsAvailable(isAvailable(user,project));
-            finalUserList.add(searchResponce);
+        List<SearchResponce> resultList = new ArrayList<>();
+
+        for (User user : userList) {
+            SearchResponce response = new SearchResponce();
+            response.setId(user.getId());
+            response.setPrenom(user.getPrenom());
+            response.setAvatar(user.getAvatar());
+            response.setNom(user.getNom());
+            response.setEmail(user.getEmail());
+            response.setTitle(user.getTitle());
+            response.setIsAvailable(isAvailable(user, project));
+
+            resultList.add(response);
         }
-        return finalUserList;
+
+        return resultList;
     }
+
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }

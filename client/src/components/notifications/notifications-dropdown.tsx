@@ -219,7 +219,7 @@ export function NotificationsDropdown() {
                             {notification.type === "INVITATION" && (
                               <span className="">
                                 {notification.sender.nom} invited you to join{" "}
-                                {notification.project.nom}
+                                {notification.project?.nom}
                               </span>
                             )}
                           </p>

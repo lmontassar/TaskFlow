@@ -18,11 +18,15 @@ interface SearchFormProps {
   setProject?: any;
 }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Loading from "./ui/loading";
 export default function SearchForm({
   children,
   project,
   setProject,
 }: SearchFormProps) {
+  if (!project) {
+    return <Loading />; // or handle the case when project is not provided
+  }
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [results, setResults] = React.useState<any[]>([]);
@@ -42,12 +46,14 @@ export default function SearchForm({
       }),
     });
     if (!result.ok) {
-      throw new Error("Failed to add collaborator");
+      throw new Error(result.statusText);
     }
     const data = await result.json();
     setProject(data);
   };
+
   const fetchResults = React.useCallback(async (query: string) => {
+    const projectId = (await project?.id) || null;
     if (!query.trim()) {
       setResults([]);
       return;
@@ -56,9 +62,9 @@ export default function SearchForm({
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/user/search?query=${encodeURIComponent(query)}&projectId=${
-          project?.id
-        }`
+        `/api/user/search?query=${encodeURIComponent(
+          query
+        )}&projectId=${projectId}`
       );
       if (!response.ok) throw new Error("Search failed");
 
@@ -156,6 +162,15 @@ export default function SearchForm({
                         <span className="ml-2 text-muted-foreground">
                           {result.email || "No Email"}
                         </span>
+                        {result?.isAvailable === false && (
+                          <Badge
+                            variant="outline"
+                            className="bg-red-50 text-red-700 border-red-200"
+                          >
+                            Unavailable
+                          </Badge>
+                        )}
+
                         {!isInProject ? (
                           <Button
                             variant="outline"

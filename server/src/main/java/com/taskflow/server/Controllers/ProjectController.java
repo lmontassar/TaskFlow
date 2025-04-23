@@ -74,6 +74,7 @@ public class ProjectController {
     ) {
         String email = requestBody.get("email");
         String projectId =requestBody.get("projectId");
+
         String role = requestBody.get("role");
         try {
             User user = userService.findById(myJWT.extractUserId(token));

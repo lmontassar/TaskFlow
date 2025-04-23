@@ -87,7 +87,6 @@ public class NotificationService {
             case INVITATION -> {
                 if(sender==null || receiver==null || project == null)
                     return null;
-
                 if(notificationRepository.findAllByReceiverAndProjectAndType(receiver, project, Notification.Type.INVITATION).isEmpty()){
                     notification.setSender(sender);
                     notification.setType(Notification.Type.INVITATION);
