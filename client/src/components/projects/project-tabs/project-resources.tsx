@@ -413,7 +413,10 @@ export function ProjectResources({ project }: { project: any }) {
               <TableBody>
                 {filteredResources.length > 0 ? (
                   filteredResources.map((resource) => (
-                    <TableRow key={resource.id}>
+                    <TableRow
+                      key={resource.id}
+                      onDoubleClick={() => openDialog(resource)}
+                    >
                       <TableCell>
                         <div>
                           <div className="font-medium">{resource.nom}</div>
