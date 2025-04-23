@@ -46,6 +46,15 @@ import { Link } from "react-router-dom";
 import useGetProject from "../../hooks/useGetProjects";
 import { NotificationsDropdown } from "../notifications/notifications-dropdown";
 import useGetUser from "../../hooks/useGetUser";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import { Button } from "../ui/button";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -105,6 +114,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
     ],
   };
 
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false);
+
   // Track the current language
   const [currentLang, setCurrentLang] = React.useState(i18n.language || "en");
 
@@ -113,62 +124,63 @@ export function DashboardShell({ children }: DashboardShellProps) {
     setCurrentLang(lang);
   };
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-2 px-4 py-2">
-            <FolderKanban className="h-6 w-6" />
-            <span className="font-semibold">TaskFlow</span>
-          </div>
-          <Select value={currentLang} onValueChange={changeLanguage}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a Language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Languages</SelectLabel>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="fr">Français</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </SidebarHeader>
-        <SidebarContent>
-          <NavMain items={data.navMain} />
-          <hr />
-          <NavProjects userProjects={projects} projectLoading={isLoading} />
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link to="/profile">
-                  <Settings className="h-4 w-4" />
-                  <span>Settings</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a
-                  onClick={() => localStorage.removeItem("authToken")}
-                  
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        <div className="flex min-h-screen flex-col">
-          <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
-            <SidebarTrigger />
-            <div className="ml-auto flex items-center gap-4">
-              <NotificationsDropdown />
-              <Link to={"profile"}>
+    <>
+      <SidebarProvider>
+        <Sidebar>
+          <SidebarHeader>
+            <div className="flex items-center gap-2 px-4 py-2">
+              <FolderKanban className="h-6 w-6" />
+              <span className="font-semibold">TaskFlow</span>
+            </div>
+            <Select value={currentLang} onValueChange={changeLanguage}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a Language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Languages</SelectLabel>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="fr">Français</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </SidebarHeader>
+          <SidebarContent>
+            <NavMain items={data.navMain} />
+            <hr />
+            <NavProjects userProjects={projects} projectLoading={isLoading} />
+          </SidebarContent>
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link to="/profile">
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a
+                    onClick={() => setConfirmDialogOpen(true)}
+                    className="hover:cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+        <SidebarInset>
+          <div className="flex min-h-screen flex-col">
+            <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
+              <SidebarTrigger />
+              <div className="ml-auto flex items-center gap-4">
+                <NotificationsDropdown />
+                <Link to={"profile"}>
                 <Avatar>
                   <AvatarImage
                     src= {user ? user?.avatar : "" }
@@ -179,11 +191,41 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   </AvatarFallback>
                 </Avatar>
               </Link>
-            </div>
-          </header>
-          <main className="flex-1 space-y-4 p-6">{children}</main>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+              </div>
+            </header>
+            <main className="flex-1 space-y-4 p-6">{children}</main>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+      <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Logout</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to logout?
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                localStorage.removeItem("authToken");
+                setConfirmDialogOpen(false);
+                window.location.reload(); // Reload the page to reflect the logout
+              }}
+            >
+              Logout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
