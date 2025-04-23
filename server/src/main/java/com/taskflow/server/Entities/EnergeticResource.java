@@ -13,4 +13,5 @@ public class EnergeticResource extends Resource {
     private String unitMeasure;
     private float consommationTotale;
     private float consommationMax;
+    private int qte;
 }

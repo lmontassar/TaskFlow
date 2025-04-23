@@ -69,6 +69,7 @@ public class ResourceController {
             case "Energetic": {
                 String unit = (String) requestBody.get("unitMeasure");
                 float consommationMax = ((Number) requestBody.get("consommationMax")).floatValue();
+                int qte = ((Number) requestBody.get("qte")).intValue();
 
                 EnergeticResource energeticResource = new EnergeticResource();
                 energeticResource.setNom(resourceName);
@@ -76,6 +77,7 @@ public class ResourceController {
                 energeticResource.setCategorie(categorie);
                 energeticResource.setCoutUnitaire(coutUnitaire);
                 energeticResource.setStatus(Resource.Status.AVAILABLE);
+                energeticResource.setQte(qte);
                 energeticResource.setUnitMeasure(unit);
                 energeticResource.setNotes(note);
                 energeticResource.setConsommationTotale(0);
@@ -91,7 +93,6 @@ public class ResourceController {
 
             case "Material": {
                 int qte = ((Number) requestBody.get("qte")).intValue();
-                int utilisationTotale = ((Number) requestBody.get("utilisationTotale")).intValue();
 
                 MaterialResource materialResource = new MaterialResource();
                 materialResource.setQte(qte);
@@ -102,7 +103,7 @@ public class ResourceController {
                 materialResource.setType(type);
                 materialResource.setCoutUnitaire(coutUnitaire);
                 materialResource.setQteDisponibilite(qte);
-                materialResource.setUtilisationTotale(utilisationTotale);
+                materialResource.setUtilisationTotale(0);
 
                 MaterialResource saved = resourceService.createMaterialResource(materialResource);
                 Project result = projectService.addResource(project, saved);
@@ -167,6 +168,7 @@ public class ResourceController {
                 res.setNom(resourceName);
                 res.setNotes(note);
                 res.setStatus(status);
+                res.setQte(((Number) requestBody.get("qte")).intValue());
                 res.setCategorie(categorie);
                 res.setCoutUnitaire(coutUnitaire);
                 res.setUnitMeasure((String) requestBody.get("unitMeasure"));
