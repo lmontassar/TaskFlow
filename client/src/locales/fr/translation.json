@@ -394,6 +394,10 @@
     "status": "Statut",
     "edit": "Modifier",
     "delete": "Supprimer",
+    "add_success": "Ressource ajoutée avec succès !",
+    "update_success": "Ressource mise à jour avec succès !",
+    "delete_success": "Ressource supprimée avec succès !",
+
     "delete_confirmation": {
       "title": "Supprimer la ressource",
       "message": "Êtes-vous sûr de vouloir supprimer cette ressource ?",

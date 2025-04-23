@@ -393,6 +393,9 @@
     "status": "Status",
     "edit": "Edit",
     "delete": "Delete",
+    "add_success": "Resource added successfully!",
+    "update_success": "Resource updated successfully!",
+    "delete_success": "Resource deleted successfully!",
     "delete_confirmation": {
       "title": "Delete Resource",
       "message": "Are you sure you want to delete this resource?",
@@ -476,15 +479,15 @@
         "success": "Parent task disassociated successfully!",
         "error": "Failed to disassociate parent task."
       },
-      "add_assigne": { 
-        "loading": "Adding assignee...", 
+      "add_assigne": {
+        "loading": "Adding assignee...",
         "success": "Assignee added successfully!",
-        "error": "Failed to add assignee." 
+        "error": "Failed to add assignee."
       },
-      "delete_assigne": { 
-        "loading": "Removing assignee...", 
+      "delete_assigne": {
+        "loading": "Removing assignee...",
         "success": "Assignee removed successfully!",
-        "error": "Failed to remove assignee." 
+        "error": "Failed to remove assignee."
       },
       "add_task": {
         "success": "Task added successfully!",

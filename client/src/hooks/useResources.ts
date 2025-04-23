@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 function useResources() {
@@ -6,6 +7,7 @@ function useResources() {
   const [error, setError] = useState<string | null>(null);
   const [selectedResource, setSelectedResource] = useState<any | null>(null);
   const token = localStorage.getItem("authToken");
+  const { t } = useTranslation();
   const createResource = async (resource: any) => {
     const res = await fetch("/api/resources/create", {
       method: "POST",
@@ -19,7 +21,7 @@ function useResources() {
       setError("Failed to create resource");
       return null;
     }
-    toast.success("Resource created successfully");
+    toast.success(t("resource.add_success"));
     return await res.json();
   };
   const editResource = async (resource: any) => {
@@ -35,7 +37,7 @@ function useResources() {
       setError("Failed to create resource");
       return null;
     }
-    toast.success("Resource edited successfully");
+    toast.success(t("resource.update_success"));
 
     return await res.json();
   };
@@ -52,7 +54,7 @@ function useResources() {
       setError("Failed to delete resource");
       return null;
     }
-    toast.success("Resource deleted successfully");
+    toast.success(t("resource.delete_success"));
     return await res.text();
   };
   return {
