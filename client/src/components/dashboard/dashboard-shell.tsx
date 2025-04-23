@@ -45,6 +45,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import useGetProject from "../../hooks/useGetProjects";
 import { NotificationsDropdown } from "../notifications/notifications-dropdown";
+import useGetUser from "../../hooks/useGetUser";
 import {
   Dialog,
   DialogContent,
@@ -61,6 +62,8 @@ interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   const { t, i18n } = useTranslation();
   const { projects, isLoading, error, setProjects } = useGetProject();
+  const { user } = useGetUser();
+
   console.log("projects", projects);
 
   const data = {
@@ -177,13 +180,17 @@ export function DashboardShell({ children }: DashboardShellProps) {
               <SidebarTrigger />
               <div className="ml-auto flex items-center gap-4">
                 <NotificationsDropdown />
+                <Link to={"profile"}>
                 <Avatar>
                   <AvatarImage
-                    src="/placeholder.svg?height=32&width=32"
+                    src= {user ? user?.avatar : "" }
                     alt="User"
                   />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarFallback>
+                    {user ? user?.nom?.charAt(0).toUpperCase() : "T"}
+                  </AvatarFallback>
                 </Avatar>
+              </Link>
               </div>
             </header>
             <main className="flex-1 space-y-4 p-6">{children}</main>
