@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 
 function useResources() {
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,7 @@ function useResources() {
       setError("Failed to create resource");
       return null;
     }
+    toast.success("Resource created successfully");
     return await res.json();
   };
   const editResource = async (resource: any) => {
@@ -33,6 +35,8 @@ function useResources() {
       setError("Failed to create resource");
       return null;
     }
+    toast.success("Resource edited successfully");
+
     return await res.json();
   };
   const deleteResource = async (resource: any) => {
@@ -48,6 +52,7 @@ function useResources() {
       setError("Failed to delete resource");
       return null;
     }
+    toast.success("Resource deleted successfully");
     return await res.text();
   };
   return {
