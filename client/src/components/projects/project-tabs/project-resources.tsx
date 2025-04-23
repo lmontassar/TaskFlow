@@ -51,6 +51,7 @@ import {
   Search,
   Filter,
   PlusIcon,
+  DoorOpen,
 } from "lucide-react";
 import useResources from "../../../hooks/useResources";
 import { useTranslation } from "react-i18next";
@@ -113,7 +114,7 @@ export function ProjectResources({ project }: { project: any }) {
     });
     return Array.from(categoriesSet);
   }, [resources]);
-
+  const [isOpenDialog, setIsOpenDialog] = useState(false);
   const { createResource, editResource, deleteResource } = useResources();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +145,10 @@ export function ProjectResources({ project }: { project: any }) {
     resetForm();
     setIsAddDialogOpen(true);
   };
-
+  const openDialog = (resource: Resource) => {
+    setCurrentResource(resource);
+    setIsOpenDialog(true);
+  };
   const openEditDialog = (resource: Resource) => {
     setCurrentResource(resource);
     setFormData({
@@ -459,6 +463,13 @@ export function ProjectResources({ project }: { project: any }) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
+                              onClick={() => openDialog(resource)}
+                            >
+                              <DoorOpen className="mr-2 h-4 w-4" />
+                              Open
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
                               onClick={() => openEditDialog(resource)}
                             >
                               <Edit className="mr-2 h-4 w-4" />
@@ -489,7 +500,99 @@ export function ProjectResources({ project }: { project: any }) {
           </div>
         </CardContent>
       </Card>
+      {/* Open Resource Dialog */}
+      {isOpenDialog && (
+        <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-2xl">
+                {currentResource?.nom}
+              </DialogTitle>
+              <DialogDescription className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  {getTypeIcon(currentResource?.type)}
+                  <span className="capitalize">{currentResource?.type}</span>
+                </div>
+                <span className="text-muted-foreground">•</span>
+                {getStatusBadge(currentResource?.status)}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="rounded-md border">
+                <div className="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3">
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Resource ID
+                    </h4>
+                    <p
+                      className="mt-1 truncate max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap"
+                      title={currentResource?.id}
+                    >
+                      {currentResource?.id}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Type
+                    </h4>
+                    <p className="mt-1 flex items-center gap-1 capitalize">
+                      {getTypeIcon(currentResource?.type)}
+                      {currentResource?.type}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Status
+                    </h4>
+                    <p className="mt-1">
+                      {getStatusBadge(currentResource?.status)}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Quantity
+                    </h4>
+                    <p className="mt-1">
+                      {currentResource?.qte || currentResource?.consommationMax}{" "}
+                      {currentResource?.unitMeasure}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Cost Per Unit
+                    </h4>
+                    <p className="mt-1">
+                      ${currentResource?.coutUnitaire.toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">
+                      Total Cost
+                    </h4>
+                    <p className="mt-1 font-medium">
+                      $
+                      {(
+                        (currentResource?.qte ||
+                          currentResource?.consommationMax) *
+                        currentResource?.coutUnitaire
+                      ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
+              {currentResource.notes && (
+                <div className="rounded-md border p-4">
+                  <h3 className="font-medium">Notes</h3>
+                  <p className="mt-2 whitespace-pre-wrap text-sm">
+                    {currentResource.notes}
+                  </p>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
       {/* Add Resource Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-md">
