@@ -406,8 +406,7 @@ export function ProjectResources({ project }: { project: any }) {
                 <TableRow>
                   <TableHead>{t("resource.resource")}</TableHead>
                   <TableHead>{t("resource.type")}</TableHead>
-                  <TableHead>{t("resource.quantity")}</TableHead>
-                  <TableHead>{t("resource.allocated_quantity")}</TableHead>
+
                   <TableHead>{t("resource.cost_per_unit")}</TableHead>
                   <TableHead>{t("resource.total_cost")}</TableHead>
                   <TableHead>{t("resource.status")}</TableHead>
@@ -439,15 +438,7 @@ export function ProjectResources({ project }: { project: any }) {
                           <span className="capitalize">{resource.type}</span>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {resource.qte || resource.consommationMax}{" "}
-                        {resource.unit || resource.unitMeasure}
-                      </TableCell>
-                      <TableCell>
-                        {resource.qte - (resource?.qteDisponibilite || 0) ||
-                          resource.consommationTotale}{" "}
-                        {resource.unit || resource.unitMeasure}
-                      </TableCell>
+
                       <TableCell>
                         ${resource.coutUnitaire.toLocaleString()}
                       </TableCell>
