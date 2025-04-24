@@ -52,6 +52,7 @@ import {
   Filter,
   PlusIcon,
   DoorOpen,
+  Eye,
 } from "lucide-react";
 import useResources from "../../../hooks/useResources";
 import { useTranslation } from "react-i18next";
@@ -103,7 +104,9 @@ export function ProjectResources({ project }: { project: any }) {
   const [filterType, setFilterType] = useState<string | null>(null);
   const [formData, setFormData] =
     useState<typeof initialFormData>(initialFormData);
-
+  useEffect(() => {
+    setResources(project.listeRessource || []);
+  }, [project.listeRessource]);
   // Get unique categories using a Set
   const uniqueCategories = useMemo(() => {
     const categoriesSet = new Set<string>();
@@ -199,7 +202,8 @@ export function ProjectResources({ project }: { project: any }) {
     try {
       const newResource = await createResource(resourceData);
       if (newResource) {
-        setResources((prev) => [...prev, newResource]);
+        await setResources((prev) => [...prev, newResource]);
+
         setIsAddDialogOpen(false);
         resetForm();
       }
@@ -419,9 +423,11 @@ export function ProjectResources({ project }: { project: any }) {
                     >
                       <TableCell>
                         <div>
-                          <div className="font-medium">{resource.nom}</div>
+                          <div className="font-medium truncate max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap">
+                            {resource.nom}
+                          </div>
                           {resource.notes && (
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-muted-foreground truncate max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap">
                               {resource.notes}
                             </div>
                           )}
@@ -468,8 +474,8 @@ export function ProjectResources({ project }: { project: any }) {
                             <DropdownMenuItem
                               onClick={() => openDialog(resource)}
                             >
-                              <DoorOpen className="mr-2 h-4 w-4" />
-                              Open
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -508,7 +514,7 @@ export function ProjectResources({ project }: { project: any }) {
         <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-2xl">
+              <DialogTitle className="text-2xl truncate max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap">
                 {currentResource?.nom}
               </DialogTitle>
               <DialogDescription className="flex items-center gap-2">
@@ -551,15 +557,50 @@ export function ProjectResources({ project }: { project: any }) {
                       {getStatusBadge(currentResource?.status)}
                     </p>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Quantity
-                    </h4>
-                    <p className="mt-1">
-                      {currentResource?.qte || currentResource?.consommationMax}{" "}
-                      {currentResource?.unitMeasure}
-                    </p>
-                  </div>
+                  {currentResource.type == "Material" && (
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground">
+                        {t("resource.allocated_quantity")}
+                      </h4>
+                      <p className="mt-1">
+                        {currentResource?.qteDisponibilite}{" "}
+                        {currentResource?.unitMeasure}
+                      </p>
+                    </div>
+                  )}
+                  {currentResource.type == "Energetic" ? (
+                    <>
+                      <div>
+                        <h4 className="text-sm font-medium text-muted-foreground">
+                          {t("resource.add_resource_form.maximum_consumption")}
+                        </h4>
+                        <p className="mt-1">
+                          {currentResource?.consommationMax}{" "}
+                          {currentResource?.unitMeasure}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-muted-foreground">
+                          {t("resource.add_resource_form.total_consumption")}
+                        </h4>
+                        <p className="mt-1">
+                          {currentResource?.consommationTotale}{" "}
+                          {currentResource?.unitMeasure}
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground">
+                        {t("resource.quantity")}
+                      </h4>
+                      <p className="mt-1">
+                        {currentResource?.qte ||
+                          currentResource?.consommationMax}{" "}
+                        {currentResource?.unitMeasure}
+                      </p>
+                    </div>
+                  )}
                   <div>
                     <h4 className="text-sm font-medium text-muted-foreground">
                       Cost Per Unit
@@ -586,8 +627,8 @@ export function ProjectResources({ project }: { project: any }) {
 
               {currentResource.notes && (
                 <div className="rounded-md border p-4">
-                  <h3 className="font-medium">Notes</h3>
-                  <p className="mt-2 whitespace-pre-wrap text-sm">
+                  <h3 className="font-medium mb-2">Notes</h3>
+                  <p className="break-words whitespace-pre-wrap text-sm max-w-[calc(var(--container-md)-5rem)]">
                     {currentResource.notes}
                   </p>
                 </div>
