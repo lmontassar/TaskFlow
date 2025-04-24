@@ -143,7 +143,6 @@ public class UserController {
             user.setTwoFactorAuth(false);
             user.setPassword(password);
             user.setCreationDate(new Date());
-            System.out.println(user.toString());
             if(phoneNumber != ""){
                 user.setPhoneNumber(phoneNumber);
             }
@@ -342,7 +341,6 @@ public class UserController {
             }).orElse(ResponseEntity.status(404).build());
                             
         }catch (Exception e){
-            System.out.println(e.getMessage());
             return ResponseEntity.status(400).build();
         }
     }
@@ -427,7 +425,6 @@ public class UserController {
      ) {
         try{
             if ( myJWT.isTokenExpired( jwt) == true ) {
-                System.out.println("Yes the token : "+jwt+ "\t is expired");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
             } 
             String id = myJWT.extractUserId(jwt);
@@ -435,7 +432,6 @@ public class UserController {
             if (u == null ) return ResponseEntity.status(404).build();
             return ResponseEntity.ok().body(u); //200
         } catch(Exception e) {
-            System.out.println(e);
             return ResponseEntity.badRequest().body(null); // 403
         }
     }
@@ -450,7 +446,6 @@ public class UserController {
             String id = myJWT.extractUserId(token);
             User user = userService.findById(id);
             if( user == null ) return ResponseEntity.notFound().build(); // 404
-            System.out.println(twoFactorAuth);
 
                 user.setTwoFactorAuth(twoFactorAuth);
 
@@ -458,7 +453,6 @@ public class UserController {
             if (updatedUser == null ) return ResponseEntity.status(404).build();
             return ResponseEntity.ok().build(); // 200
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.status(400).build(); // 403
         }
     }
@@ -476,7 +470,6 @@ public class UserController {
         try {
             
             if ( token == null || myJWT.isTokenExpired( token) == true ) {
-                System.out.println("Yes the token : "+token+ "\t is expired");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
             }
             String id = myJWT.extractUserId(token);
@@ -516,7 +509,6 @@ public class UserController {
             if (updatedUser == null ) return ResponseEntity.status(404).build();
             return ResponseEntity.ok().build(); // 200
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.status(400).build(); // 403
         }
         

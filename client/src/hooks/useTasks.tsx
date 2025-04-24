@@ -436,6 +436,7 @@ const useTasks = () => {
 
   const getTasksByProjectID = async (projectID: any) => {
     setIsLoading(true);
+    console.log("try to get tasks ... ")
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {

@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwt.validateToken(token)) {
                 String userId = jwt.extractUserId(token);
                 String roles = jwt.extractClaim(token, "roles"); // Extract roles
-                System.out.println(roles);
                 // Set authentication with roles
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userId, null, getAuthoritiesFromRoles(roles));

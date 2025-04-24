@@ -69,7 +69,6 @@ public class NotificationService {
         return notificationRepository.findAllByType(Notification.Type.INVITATION);
     }
     public void sendSocket(User receiver, Notification notification) {
-        System.out.println("Sending notification ID: " + notification.getId() + " to user: " + receiver.getId());
         messagingTemplate.convertAndSend(
                 "/topic/notifications/" + receiver.getId(),
                 notification

@@ -57,10 +57,8 @@ public class ResourceController {
                 temporalResource.setQte(qte);
                 temporalResource.setStatus(Resource.Status.AVAILABLE);
                 temporalResource.setNotes(note);
-                System.out.println("1");
                 TemporalResource saved = resourceService.createTemporalResource(temporalResource);
                 Project result = projectService.addResource(project, saved);
-                System.out.println("1");
                 return (result != null && saved != null)
                         ? ResponseEntity.ok(saved)
                         : ResponseEntity.badRequest().body("Failed to add resource. Check inputs or project validity.");

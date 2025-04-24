@@ -11,8 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Resource {
-    public enum Status{
-        AVAILABLE,ALLOCATED,PENDING,UNAVAILABLE
+    public enum Status {
+        AVAILABLE, ALLOCATED, PENDING, UNAVAILABLE
     }
 
     @Id
@@ -23,6 +23,5 @@ public class Resource {
     private String notes;
     private Status status;
     private String categorie;
-
 
 }

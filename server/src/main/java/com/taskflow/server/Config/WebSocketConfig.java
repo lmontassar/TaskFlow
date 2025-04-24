@@ -59,7 +59,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                 accessor.setUser(new StompPrincipal(user.getId()));
                             }
                         } catch (Exception e) {
-                            System.out.println("WebSocket JWT validation failed: " + e.getMessage());
                             return null;
                         }
                     }

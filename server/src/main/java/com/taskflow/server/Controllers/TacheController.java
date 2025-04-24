@@ -160,7 +160,6 @@ public class TacheController {
                         .body("You're not able to add an asignee to this task");
             Boolean ok = tacheSer.isMember(AssigneeUser, task);
             if (ok == null || !ok) {
-                System.out.println("Is Member: " + ok);
                 return ResponseEntity.status(404).body("This user isn't a member of this project");
             }
             if (tacheSer.IsUserExistInAsignee(AssigneeUser, task))
@@ -168,7 +167,6 @@ public class TacheController {
             tacheSer.addAssignee(AssigneeUser, task);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -200,19 +198,11 @@ public class TacheController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("You're not able to delete an asignee to this task");
 
-            // if (tacheSer.isMember(AssigneeUser, task) == false){
-            // System.out.println("------------------------- ****************************
-            // -----------------------------");
-            // return ResponseEntity.status(404).body("This user isn't a member of this
-            // project");
-            // }
-
             if (tacheSer.IsUserExistInAsignee(AssigneeUser, task) == false)
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("this user isn't exist!!!");
             tacheSer.removeAssignee(AssigneeUser, task);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -261,7 +251,6 @@ public class TacheController {
             tacheSer.addTache(task);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -363,7 +352,6 @@ public class TacheController {
                 return ResponseEntity.status(401).build();
             return ResponseEntity.ok(newTask);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -376,7 +364,6 @@ public class TacheController {
             List<Tache> listTaches = tacheSer.findTaches();
             return ResponseEntity.ok().body(listTaches);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -397,7 +384,6 @@ public class TacheController {
 
             return ResponseEntity.ok().body(task);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -417,7 +403,7 @@ public class TacheController {
                 return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+      
             return ResponseEntity.badRequest().build();
         }
     }
@@ -437,7 +423,6 @@ public class TacheController {
 
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -453,10 +438,8 @@ public class TacheController {
             if (canGet == false)
                 return ResponseEntity.notFound().build();
             List<Tache> tasks = tacheSer.getTasksCanBePrecedente(t);
-            System.out.println(tasks.size() + " -------------------------------------- " + t.getId());
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -474,7 +457,6 @@ public class TacheController {
 
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -504,36 +486,9 @@ public class TacheController {
                 return ResponseEntity.ok().build();
             return ResponseEntity.ok().body(updatedTask);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
-
-    // @PutMapping("/update/parent/{id}")
-    // public ResponseEntity<?> EditParent(
-    // @RequestParam String taskID,
-    // @RequestParam String parentTaskID,
-    // @RequestHeader("Authorization") String token
-    // ) {
-    // try{
-    // User u = getUserFromToken(token);
-    // if (u == null)
-    // return ResponseEntity.notFound().build(); // 404 Not Found
-    // Tache task = tacheSer.findTacheById(taskID);
-    // if (task == null)
-    // return ResponseEntity.notFound().build();
-    // Tache parent = tacheSer.findTacheById(parentTaskID);
-    // if (parent == null)
-    // return ResponseEntity.notFound().build();
-    // setPrivilege(u, null, task);
-    // if( canEditTasks == false )
-    // return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    // tacheSer.addSousTache(parent,task);
-    // return ResponseEntity.ok(task);
-    // } catch( Exception e) {
-    // return ResponseEntity.badRequest().build();
-    // }
-    // }
 
     @PutMapping("/update")
     public ResponseEntity<?> update(
@@ -615,11 +570,6 @@ public class TacheController {
             return ResponseEntity.ok().body(newTask);
 
         } catch (Exception err) {
-            System.out.println("-----------------------------------------------------------------------------");
-            System.out.println("-----------------------------------------------------------------------------");
-            System.out.println(err.getMessage());
-            System.out.println("-----------------------------------------------------------------------------");
-            System.out.println("-----------------------------------------------------------------------------");
 
             return ResponseEntity.badRequest().build();
         }
@@ -645,7 +595,6 @@ public class TacheController {
             tacheSer.delete(OldTask);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -674,7 +623,6 @@ public class TacheController {
             Tache EditedTask = tacheSer.removeSubTask(task, subTask);
             return ResponseEntity.ok(EditedTask);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -703,7 +651,6 @@ public class TacheController {
             Tache EditedTask = tacheSer.removePrecedente(task, precTask);
             return ResponseEntity.ok(EditedTask);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -733,7 +680,6 @@ public class TacheController {
             Tache EditedTask = tacheSer.removeParallel(task, parallelTask);
             return ResponseEntity.ok(EditedTask);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

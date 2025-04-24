@@ -155,7 +155,6 @@ public class ProjectService {
     }
     public Project getProjectById(String id){
         Project project = projectRepository.getProjectById(id);
-        System.out.println(project);
         if (project == null) {
             throw new RuntimeException("Project not found with ID: " + id);
         }

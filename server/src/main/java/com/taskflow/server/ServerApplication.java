@@ -12,7 +12,6 @@ public class ServerApplication {
 	@PostConstruct
 	public void init(){
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        System.out.println("Spring Boot Default TimeZone: " + new java.util.Date()); 
 	}
 
 	public static void main(String[] args) {

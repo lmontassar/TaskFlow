@@ -35,7 +35,6 @@ public class ProjectController {
     ) {
         try {
             if ( token == null || myJWT.isTokenExpired( token)) {
-                System.out.println("Yes the token : "+token+ "\t is expired");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
             }
             if (projectRequest.getNom() == null || projectRequest.getNom().isEmpty() || projectRequest.getDescription() == null || projectRequest.getDescription() .isEmpty()) {
@@ -151,15 +150,11 @@ public class ProjectController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found");
             }
 
-            System.out.println("Before removing collaborator...");
-
             Project updatedProject = projectService.removeCollaborator(project, user);
 
             if (updatedProject == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to remove collaborator.");
             }
-
-            System.out.println("Collaborator removed successfully");
 
             return ResponseEntity.ok(updatedProject);
         } catch (Exception e) {
