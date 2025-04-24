@@ -3,6 +3,7 @@ package com.taskflow.server.Services;
 import com.taskflow.server.Entities.*;
 import com.taskflow.server.Repositories.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +12,14 @@ import java.util.List;
 public class ResourceService {
     @Autowired
     private ResourceRepository resourceRepository;
+    @Autowired
+    public SimpMessagingTemplate messagingTemplate;
+    public void sendSocket(Project project) {
+        messagingTemplate.convertAndSend(
+                "/topic/projects/" + project.getId(),
+                project
+        );
+    }
     public TemporalResource createTemporalResource(TemporalResource temporalResource){
         return resourceRepository.save(temporalResource);
     }

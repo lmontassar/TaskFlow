@@ -20,6 +20,8 @@ public class ResourceController {
     private ProjectService projectService;
     @Autowired
     private JWT MyJWT;
+
+
     @PostMapping("/create")
     public ResponseEntity<?> AddResource(@RequestHeader("Authorization") String token,
                                          @RequestBody Map<String, Object> requestBody) {
@@ -57,8 +59,10 @@ public class ResourceController {
                 temporalResource.setQte(qte);
                 temporalResource.setStatus(Resource.Status.AVAILABLE);
                 temporalResource.setNotes(note);
+
                 TemporalResource saved = resourceService.createTemporalResource(temporalResource);
                 Project result = projectService.addResource(project, saved);
+                resourceService.sendSocket(result);
                 return (result != null && saved != null)
                         ? ResponseEntity.ok(saved)
                         : ResponseEntity.badRequest().body("Failed to add resource. Check inputs or project validity.");
@@ -82,7 +86,7 @@ public class ResourceController {
 
                 EnergeticResource saved = resourceService.createEnergeticResource(energeticResource);
                 Project result = projectService.addResource(project, saved);
-
+                resourceService.sendSocket(result);
                 return (result != null && saved != null)
                         ? ResponseEntity.ok(saved)
                         : ResponseEntity.badRequest().body("Failed to add resource. Check inputs or project validity.");
@@ -104,7 +108,7 @@ public class ResourceController {
 
                 MaterialResource saved = resourceService.createMaterialResource(materialResource);
                 Project result = projectService.addResource(project, saved);
-
+                resourceService.sendSocket(result);
                 return (result != null && saved != null)
                         ? ResponseEntity.ok(saved)
                         : ResponseEntity.badRequest().body("Failed to add resource. Check inputs or project validity.");
@@ -157,7 +161,11 @@ public class ResourceController {
                 res.setCoutUnitaire(coutUnitaire);
                 res.setQte(((Number) requestBody.get("qte")).intValue());
                 res.setUnitMeasure((String) requestBody.get("unitMeasure"));
-                return ResponseEntity.ok(resourceService.createTemporalResource(res));
+                TemporalResource result = resourceService.createTemporalResource(res);
+                Project Updatedproject = projectService.getProjectById(projectId);
+                resourceService.sendSocket(Updatedproject);
+
+                return ResponseEntity.ok(result);
             }
 
             case "Energetic": {
@@ -170,7 +178,10 @@ public class ResourceController {
                 res.setUnitMeasure((String) requestBody.get("unitMeasure"));
                 res.setConsommationTotale(((Number) requestBody.get("consommationTotale")).floatValue());
                 res.setConsommationMax(((Number) requestBody.get("consommationMax")).floatValue());
-                return ResponseEntity.ok(resourceService.createEnergeticResource(res));
+                EnergeticResource result = resourceService.createEnergeticResource(res);
+                Project Updatedproject2 = projectService.getProjectById(projectId);
+                resourceService.sendSocket(Updatedproject2);
+                return ResponseEntity.ok(result);
             }
 
             case "Material": {
@@ -183,7 +194,11 @@ public class ResourceController {
                 res.setQte(((Number) requestBody.get("qte")).intValue());
                 res.setQteDisponibilite(((Number) requestBody.get("qteDisponibilite")).intValue());
                 res.setUtilisationTotale(((Number) requestBody.get("utilisationTotale")).intValue());
-                return ResponseEntity.ok(resourceService.createMaterialResource(res));
+
+                MaterialResource result = resourceService.createMaterialResource(res);
+                Project Updatedproject3 = projectService.getProjectById(projectId);
+                resourceService.sendSocket(Updatedproject3);
+                return ResponseEntity.ok(result);
             }
 
             default:
@@ -209,6 +224,8 @@ public class ResourceController {
         try {
             projectService.removeResource(project, resource);
             resourceService.deleteById(id);
+            Project Updated = projectService.getProjectById(projectId);
+            resourceService.sendSocket(Updated);
             return ResponseEntity.ok("Resource deleted successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
