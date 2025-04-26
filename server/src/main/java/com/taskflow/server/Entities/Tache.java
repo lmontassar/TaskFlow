@@ -50,7 +50,7 @@ public class Tache {
     @DBRef
     private Project project;
 
-    private List<String> attachment;
+    private List<Attachment> attachments;
 
     @DBRef
     @JsonIgnoreProperties({"parent", "precedentes", "paralleles","project"})

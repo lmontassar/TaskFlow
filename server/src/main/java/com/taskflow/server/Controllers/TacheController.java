@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.taskflow.server.Entities.Attachment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -240,7 +241,7 @@ public class TacheController {
 
             task.setAssignee(new ArrayList<>());
             task.setComments(new ArrayList<>());
-            task.setAttachment(new ArrayList<>());
+            task.setAttachments(new ArrayList<>());
             task.setPrecedentes(new ArrayList<>());
             task.setPrecedentes(new ArrayList<>());
 
