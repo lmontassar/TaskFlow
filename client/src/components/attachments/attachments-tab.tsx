@@ -11,52 +11,39 @@ import { PaperclipIcon, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AttachmentsTabProps {
-  taskId: string;
+  task: any;
+  setTask: any;
 }
 
-export function AttachmentsTab({ taskId }: AttachmentsTabProps) {
+export function AttachmentsTab({ task, setTask }: AttachmentsTabProps) {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<Attachment[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(
     null
   );
+  const token = localStorage.getItem("authToken");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   // Fetch existing attachments
   useEffect(() => {
     const fetchAttachments = async () => {
-      try {
-        const response = await fetch(`/api/attachments/list?taskId=${taskId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch attachments");
-        }
-        const data = await response.json();
-        const fetchedAttachments: Attachment[] = data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          size: item.size,
-          type: item.type,
-          url: item.url,
-          createdAt: new Date(item.createdAt),
-        }));
-        setAttachments(fetchedAttachments);
-      } catch (err) {
-        setError("An error occurred while loading attachments.");
-      }
+      setAttachments(task?.attachments || []);
     };
 
     fetchAttachments();
-  }, [taskId]);
+  }, [task?.id]);
 
   // Upload a single file
   const uploadFile = async (file: File): Promise<Attachment> => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("taskId", taskId);
 
-    const response = await fetch("/api/attachments/upload", {
+    const response = await fetch("/api/attachments/add/" + task?.id, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formData,
     });
 

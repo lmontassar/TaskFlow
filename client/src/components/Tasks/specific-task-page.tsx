@@ -1,34 +1,39 @@
-import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { format, parseISO, isValid } from "date-fns"
-import _ from "lodash"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { useTranslation } from "react-i18next"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Clock, ArrowLeft, CheckCircle2, AlertCircle, Circle } from 'lucide-react'
-import useTasks from "@/hooks/useTasks"
-import TaskDependecies from "./ٍspecific-task-components/task-dependecies"
-import SpecificTaskDetails from "./ٍspecific-task-components/spec-task-details"
-import SpecificTaskMainTabs from "./ٍspecific-task-components/spec-main-tabs"
-import SpecificTaskHeader from "./ٍspecific-task-components/spec-task-header"
-
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { format, parseISO, isValid } from "date-fns";
+import _ from "lodash";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Clock,
+  ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+  Circle,
+} from "lucide-react";
+import useTasks from "@/hooks/useTasks";
+import TaskDependecies from "./ٍspecific-task-components/task-dependecies";
+import SpecificTaskDetails from "./ٍspecific-task-components/spec-task-details";
+import SpecificTaskMainTabs from "./ٍspecific-task-components/spec-main-tabs";
+import SpecificTaskHeader from "./ٍspecific-task-components/spec-task-header";
 
 export default function SpecificTaskPage() {
   const navigate = useNavigate();
-  const { taskId } = useParams()
-  const [task, setTask] = useState<any>(null)
+  const { taskId } = useParams();
+  const [task, setTask] = useState<any>(null);
   const [subTasks, setSubTasks] = useState<any>(null);
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedTask, setEditedTask] = useState<any>(null)
-  const [confirmDelete, setConfirmDelete] = useState(false)
-  const [assigneeToDelete, setAssigneeToDelete] = useState<any>(null)
-  const [duration, setDuration] = useState("")
-  const [marge, setMarge] = useState("")
-  const [assigneeToAdd, setAssigneeToAdd] = useState<any>(null)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTask, setEditedTask] = useState<any>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [assigneeToDelete, setAssigneeToDelete] = useState<any>(null);
+  const [duration, setDuration] = useState("");
+  const [marge, setMarge] = useState("");
+  const [assigneeToAdd, setAssigneeToAdd] = useState<any>(null);
   const [subTaskToDelete, setSubTaskToDelete] = useState<any>(null);
   const [precTaskToDelete, setPrecTaskToDelete] = useState<any>(null);
   const [parallelTaskToDelete, setParallelTaskToDelete] = useState<any>(null);
@@ -57,232 +62,244 @@ export default function SpecificTaskPage() {
 
   useEffect(() => {
     const fetchTask = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const res:any = await GetTask(taskId) ;
-        setStatus(res.status)
-        setTask(res.result)
-        setEditedTask(res.result)
-        setDuration(res.result.duree)
-        setMarge(res.result.marge)
-        const subTasks = await GetSubTasks(taskId)
-        setSubTasks(subTasks)
+        const res: any = await GetTask(taskId);
+        setStatus(res.status);
+        setTask(res.result);
+        setEditedTask(res.result);
+        setDuration(res.result.duree);
+        setMarge(res.result.marge);
+        const subTasks = await GetSubTasks(taskId);
+        setSubTasks(subTasks);
         let updatedTasksToHide = [
           ...subTasks,
           res.result,
 
           ...(res.result?.precedentes || []),
           ...(res.result?.paralleles || []),
-        ]
-        if (res.result?.parent != null) updatedTasksToHide = [...updatedTasksToHide, res.result?.parent]
-        setTasksToHide(updatedTasksToHide)
+        ];
+        if (res.result?.parent != null)
+          updatedTasksToHide = [...updatedTasksToHide, res.result?.parent];
+        setTasksToHide(updatedTasksToHide);
       } catch (err) {
-        setError("Failed to load task details")
-        console.error(err)
+        setError("Failed to load task details");
+        console.error(err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
     if (taskId) {
-      fetchTask()
+      fetchTask();
     }
-  }, [taskId])
+  }, [taskId]);
 
   const handleRemoveAssignee = async () => {
-    if (!task) return
+    if (!task) return;
 
     try {
-      const res = await handleDeleteAssignee(task.id, assigneeToDelete?.id)
+      const res = await handleDeleteAssignee(task.id, assigneeToDelete?.id);
       if (res == true) {
-        const updatedTask = { ...task, assignee: task.assignee.filter((t: any) => t.id != assigneeToDelete?.id) }
-        setTask(updatedTask)
-        setEditedTask(updatedTask)
-        setAssigneeToDelete(null)
+        const updatedTask = {
+          ...task,
+          assignee: task.assignee.filter(
+            (t: any) => t.id != assigneeToDelete?.id
+          ),
+        };
+        setTask(updatedTask);
+        setEditedTask(updatedTask);
+        setAssigneeToDelete(null);
       }
     } catch (err) {
-      console.error("Failed to remove assignee:", err)
+      console.error("Failed to remove assignee:", err);
     }
-  }
+  };
 
   const handleTaskUpdate = (field: string, value: any) => {
     setEditedTask({
       ...editedTask,
       [field]: value,
-    })
-  }
+    });
+  };
 
   const saveChanges = async () => {
-    setEditError("")
+    setEditError("");
     try {
       const updatedTask = {
         ...editedTask,
         duree: duration,
         marge: marge,
-      }
+      };
       if (task.statut !== updatedTask.statut) {
-        await handleUpdateStatutTask(updatedTask.id, updatedTask.statut)
+        await handleUpdateStatutTask(updatedTask.id, updatedTask.statut);
       }
 
-      const res:any = await handleUpdateTask(updatedTask)
-      setEditError(res.message)
-      if (res.result != true) return
-      setTask(updatedTask)
-      setEditedTask(updatedTask)
-      setIsEditing(false)
+      const res: any = await handleUpdateTask(updatedTask);
+      setEditError(res.message);
+      if (res.result != true) return;
+      setTask(updatedTask);
+      setEditedTask(updatedTask);
+      setIsEditing(false);
     } catch (err) {
-      console.error("Failed to update task:", err)
+      console.error("Failed to update task:", err);
     }
-  }
+  };
 
   const cancelEditing = () => {
-    setEditedTask(task)
-    setDuration(task.duree)
-    setMarge(task.marge)
-    setIsEditing(false)
-  }
+    setEditedTask(task);
+    setDuration(task.duree);
+    setMarge(task.marge);
+    setIsEditing(false);
+  };
 
   const deleteTask = async () => {
     try {
-      await handleDeleteTask(task.id)
-      navigate("/tasks")
+      await handleDeleteTask(task.id);
+      navigate("/tasks");
     } catch (err) {
-      console.error("Failed to delete task:", err)
+      console.error("Failed to delete task:", err);
     }
-  }
+  };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return null
+    if (!dateString) return null;
 
     try {
-      const date = parseISO(dateString)
-      if (!isValid(date)) return null
-      return format(date, "MMM d, yyyy")
+      const date = parseISO(dateString);
+      if (!isValid(date)) return null;
+      return format(date, "MMM d, yyyy");
     } catch (error) {
-      return null
+      return null;
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "DONE":
-        return <CheckCircle2 className="cursor-pointer h-4 w-4 text-green-500" />
+        return (
+          <CheckCircle2 className="cursor-pointer h-4 w-4 text-green-500" />
+        );
       case "PROGRESS":
-        return <Clock className="cursor-pointer h-4 w-4 text-amber-500" />
+        return <Clock className="cursor-pointer h-4 w-4 text-amber-500" />;
       case "REVIEW":
-        return <Circle className="cursor-pointer h-4 w-4 text-gray-400" />
+        return <Circle className="cursor-pointer h-4 w-4 text-gray-400" />;
       default:
-        return <Circle className="cursor-pointer h-4 w-4 text-gray-400" />
+        return <Circle className="cursor-pointer h-4 w-4 text-gray-400" />;
     }
-  }
+  };
 
   const handleAddParent = async (Parent: any) => {
-    if (task?.parent != null) handleDeleteParent()
-    const result = await AddSubTask(Parent.id, task.id, "parent")
+    if (task?.parent != null) handleDeleteParent();
+    const result = await AddSubTask(Parent.id, task.id, "parent");
     if (result == true)
       setTask((task: any) => ({
         ...task,
         parent: Parent,
-      }))
-    else alert("there is a problem")
-    resetTasksToHide("add", Parent)
-  }
+      }));
+    else alert("there is a problem");
+    resetTasksToHide("add", Parent);
+  };
 
   const handleDeleteParent = async () => {
-    await DeleteSubTask(task.parent.id, taskId, "parent")
-    resetTasksToHide("delete", task.parent)
+    await DeleteSubTask(task.parent.id, taskId, "parent");
+    resetTasksToHide("delete", task.parent);
     setTask((task: any) => ({
       ...task,
       parent: null,
-    }))
-  }
+    }));
+  };
 
   const handleAddSubTask = async (subTask: any) => {
-    const result = await AddSubTask(task.id, subTask.id)
-    if (result == true) setSubTasks([...subTasks, subTask])
-    else alert("there is a problem")
-    resetTasksToHide("add", subTask)
-  }
+    const result = await AddSubTask(task.id, subTask.id);
+    if (result == true) setSubTasks([...subTasks, subTask]);
+    else alert("there is a problem");
+    resetTasksToHide("add", subTask);
+  };
 
   const handleDeleteSubTask = async () => {
-    await DeleteSubTask(taskId, subTaskToDelete.id)
+    await DeleteSubTask(taskId, subTaskToDelete.id);
     resetTasksToHide(
       "delete",
-      subTasks.find((t: any) => t.id == subTaskToDelete.id),
-    )
-    setSubTasks(subTasks.filter((t: any) => t.id != subTaskToDelete.id))
-    setSubTaskToDelete(null)
-  }
+      subTasks.find((t: any) => t.id == subTaskToDelete.id)
+    );
+    setSubTasks(subTasks.filter((t: any) => t.id != subTaskToDelete.id));
+    setSubTaskToDelete(null);
+  };
 
   const handleDeletePrecTask = async () => {
-    await DeletePrecTask(taskId, precTaskToDelete.id)
+    await DeletePrecTask(taskId, precTaskToDelete.id);
     resetTasksToHide(
       "delete",
-      task.precedentes.find((t: any) => t.id == precTaskToDelete.id),
-    )
-    task.precedentes = task.precedentes.filter((t: any) => t.id != precTaskToDelete.id)
-    setPrecTaskToDelete(null)
-  }
+      task.precedentes.find((t: any) => t.id == precTaskToDelete.id)
+    );
+    task.precedentes = task.precedentes.filter(
+      (t: any) => t.id != precTaskToDelete.id
+    );
+    setPrecTaskToDelete(null);
+  };
 
   const handleDeleteParallelTask = async () => {
-    await DeleteParallelTask(taskId, parallelTaskToDelete.id)
+    await DeleteParallelTask(taskId, parallelTaskToDelete.id);
     resetTasksToHide(
       "delete",
-      task.paralleles.find((t: any) => t.id == parallelTaskToDelete.id),
-    )
-    task.paralleles = task.paralleles.filter((t: any) => t.id != parallelTaskToDelete.id)
-    setParallelTaskToDelete(null)
-  }
+      task.paralleles.find((t: any) => t.id == parallelTaskToDelete.id)
+    );
+    task.paralleles = task.paralleles.filter(
+      (t: any) => t.id != parallelTaskToDelete.id
+    );
+    setParallelTaskToDelete(null);
+  };
 
   const handleAddPrecTask = async (precTask: any) => {
-    const result = await AddPrecTask(task.id, precTask.id)
+    const result = await AddPrecTask(task.id, precTask.id);
     if (result == true)
       setTask((task: any) => ({
         ...task,
         precedentes: [...(task.precedentes || []), precTask],
-      }))
-    else alert("there is a problem")
-    resetTasksToHide("add", precTask)
-  }
+      }));
+    else alert("there is a problem");
+    resetTasksToHide("add", precTask);
+  };
 
   const handleAddParallelTask = async (parallelTask: any) => {
-    const result = await AddParallelTask(task.id, parallelTask.id)
+    const result = await AddParallelTask(task.id, parallelTask.id);
     if (result == true)
       setTask((task: any) => ({
         ...task,
         paralleles: [...(task.paralleles || []), parallelTask],
-      }))
-    else alert("there is a problem")
-    resetTasksToHide("add", parallelTask)
-  }
+      }));
+    else alert("there is a problem");
+    resetTasksToHide("add", parallelTask);
+  };
 
   const handleGetAllTasks = async () => {
-    const tasks = await getTasksByProjectID(task.project.id)
-    return tasks
-  }
+    const tasks = await getTasksByProjectID(task.project.id);
+    return tasks;
+  };
   const handlegetTasksCanBePrecedente = async () => {
     const tasks = await getTasksCanBePrecedente(task.id);
     return tasks;
-  }
+  };
 
   const handlechangeStatut = async (taskID: any, statut: any) => {
     const res = await handleUpdateStatutTask(taskID, statut);
     if (res === true) {
-      setTask({ ...task, statut })
+      setTask({ ...task, statut });
     }
   };
 
   const resetTasksToHide = (action: any, task: any) => {
     switch (action) {
       case "add": {
-        setTasksToHide([...tasksToHide, task])
-        break
+        setTasksToHide([...tasksToHide, task]);
+        break;
       }
       case "delete": {
-        setTasksToHide(tasksToHide.filter((t: any) => t.id != task.id))
-        break
+        setTasksToHide(tasksToHide.filter((t: any) => t.id != task.id));
+        break;
       }
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -313,7 +330,7 @@ export default function SpecificTaskPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (error || !task) {
@@ -322,16 +339,19 @@ export default function SpecificTaskPage() {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error {status}</AlertTitle>
-          <AlertDescription>{t(`tasks.specific.errors.status_${status}`)}</AlertDescription>
+          <AlertDescription>
+            {t(`tasks.specific.errors.status_${status}`)}
+          </AlertDescription>
         </Alert>
         <Button className="mt-4" onClick={() => navigate(-1)}>
           Go Back
         </Button>
       </div>
-    )
+    );
   }
-  const canEdit = checkIfCreatorOfProject(task.project)
-  const canEditStatut = checkIfAssigneeTask(task) || checkIfCreatorOfProject(task.project)
+  const canEdit = checkIfCreatorOfProject(task.project);
+  const canEditStatut =
+    checkIfAssigneeTask(task) || checkIfCreatorOfProject(task.project);
 
   return (
     <div className="container mx-auto py-6">
@@ -385,6 +405,7 @@ export default function SpecificTaskPage() {
           key="spec-main"
           canEdit={canEdit}
           task={task}
+          setTask={setTask}
           setAssigneeToAdd={setAssigneeToAdd}
           checkIfCreatorOfProject={checkIfCreatorOfProject}
           setAssigneeToDelete={setAssigneeToDelete}
@@ -408,5 +429,5 @@ export default function SpecificTaskPage() {
         setParallelTaskToDelete={setParallelTaskToDelete}
       />
     </div>
-  )
+  );
 }

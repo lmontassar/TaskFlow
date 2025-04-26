@@ -39,7 +39,7 @@ public class SecurityConfig {
                                 "/user/get", "/user/google", "/user/github",
                                 "/user/resendcode", "/user/verifyEmail", "/user/sendcode",
                                 "/user/resetpasswordtoken", "/user/resetpassword",
-                                "/user/twofactoauth","/user/search","/ws/**", "/error"// Added /error
+                                "/user/twofactoauth","/user/search","/ws/**", "/error","/attachments/file/**"// Added /error
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

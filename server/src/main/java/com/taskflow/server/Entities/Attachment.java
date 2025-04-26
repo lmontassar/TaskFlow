@@ -15,6 +15,9 @@ public class Attachment {
     @Id
     private String id;
     private String name;
+    private float size;
+    private String type;
+    private String url;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    private Date dateCreation;
+    private Date createdAt;
 }

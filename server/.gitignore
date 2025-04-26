@@ -22,6 +22,8 @@ target/
 *.png
 *.jpg
 *.jpeg
+*.txt
+*.pdf
 *.gif
 ### NetBeans ###
 /nbproject/private/

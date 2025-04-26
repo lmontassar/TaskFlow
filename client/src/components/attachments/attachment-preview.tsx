@@ -8,12 +8,35 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import type { Attachment } from "./attachment-item";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface AttachmentPreviewProps {
   attachment: Attachment | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+function TextPreview({ url }: { url: string }) {
+  const [text, setText] = useState<string>("Loading...");
+
+  useEffect(() => {
+    async function fetchText() {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch text file.");
+        }
+        const data = await response.text();
+        setText(data);
+      } catch (error) {
+        setText("Error loading text file.");
+      }
+    }
+
+    fetchText();
+  }, [url]);
+
+  return <>{text}</>;
 }
 
 export function AttachmentPreview({
@@ -23,7 +46,7 @@ export function AttachmentPreview({
 }: AttachmentPreviewProps) {
   useEffect(() => {
     if (open && attachment?.type.includes("pdf") && attachment.url) {
-      window.open(attachment.url, "_blank");
+      window.open("/api/attachments/file/" + attachment.url, "_blank");
       onOpenChange(false); // Close the dialog automatically after opening
     }
   }, [open, attachment, onOpenChange]);
@@ -44,7 +67,7 @@ export function AttachmentPreview({
             {attachment.url && (
               <Button variant="outline" size="sm" asChild>
                 <a
-                  href={attachment.url}
+                  href={"/api/attachments/file/" + attachment.url}
                   download={attachment.name}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -61,7 +84,7 @@ export function AttachmentPreview({
           {isImage && attachment.url && (
             <div className="flex h-full items-center justify-center bg-muted/10 p-2">
               <img
-                src={attachment.url}
+                src={"/api/attachments/file/" + attachment.url}
                 alt={attachment.name}
                 className="max-h-full max-w-full object-contain rounded-md shadow"
               />
@@ -71,8 +94,7 @@ export function AttachmentPreview({
           {isText && attachment.url && (
             <div className="p-4 overflow-auto h-full bg-background">
               <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
-                {/* Ideally, fetch and show real text */}
-                Text preview would be displayed here.
+                <TextPreview url={"/api/attachments/file/" + attachment.url} />
               </pre>
             </div>
           )}

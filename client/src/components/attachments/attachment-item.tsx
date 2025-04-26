@@ -97,12 +97,25 @@ export function AttachmentItem({
     );
   };
 
-  const formatDate = (date: Date): string => {
+  const formatDate = (date: Date | string | null | undefined): string => {
+    if (!date) return "Unknown date";
+
+    let validDate: Date;
+    if (typeof date === "string") {
+      validDate = new Date(date);
+    } else {
+      validDate = date;
+    }
+
+    if (isNaN(validDate.getTime())) {
+      return "Invalid date";
+    }
+
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
-    }).format(date);
+    }).format(validDate);
   };
 
   const isPreviewable = (): boolean => {
@@ -161,7 +174,7 @@ export function AttachmentItem({
             {attachment.url && (
               <Button variant="ghost" size="icon" asChild>
                 <a
-                  href={attachment.url}
+                  href={"/api/attachments/file/" + attachment.url}
                   download={attachment.name}
                   target="_blank"
                   rel="noopener noreferrer"

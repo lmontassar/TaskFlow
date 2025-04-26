@@ -19,6 +19,7 @@ import { AttachmentsTab } from "@/components/attachments/attachments-tab";
 export default function SpecificTaskMainTabs({
   canEdit,
   task,
+  setTask,
   setAssigneeToAdd,
   checkIfCreatorOfProject,
   setAssigneeToDelete,
@@ -102,7 +103,7 @@ export default function SpecificTaskMainTabs({
             </CardContent>
           </Card>
         </TabsContent>
-        <AttachmentsTab />
+        <AttachmentsTab task={task} setTask={setTask} />
       </Tabs>
     </Card>
   );
