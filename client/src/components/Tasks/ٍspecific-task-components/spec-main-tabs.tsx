@@ -103,7 +103,9 @@ export default function SpecificTaskMainTabs({
             </CardContent>
           </Card>
         </TabsContent>
-        <AttachmentsTab task={task} setTask={setTask} />
+        <TabsContent value="attachments" className="pt-2">
+          <AttachmentsTab task={task} />
+        </TabsContent>
       </Tabs>
     </Card>
   );

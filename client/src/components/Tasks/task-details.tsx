@@ -840,8 +840,9 @@ export function TaskDetails({
                     </div>
                   </div>
                 </TabsContent>
-
-                <AttachmentsTab task={task} />
+                <TabsContent value="attachments" className="pt-2">
+                  <AttachmentsTab task={task} />
+                </TabsContent>
               </Tabs>
             </div>
           )}

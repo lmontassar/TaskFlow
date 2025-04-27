@@ -132,7 +132,7 @@ export function AttachmentsTab({ task }: AttachmentsTabProps) {
   const allFiles = [...uploadingFiles, ...attachments];
 
   return (
-    <TabsContent value="attachments" className="mt-4">
+    <>
       <Card>
         <CardContent className="p-6">
           {error && (
@@ -191,6 +191,6 @@ export function AttachmentsTab({ task }: AttachmentsTabProps) {
         onOpenChange={setIsPreviewOpen}
         token={token || ""}
       />
-    </TabsContent>
+    </>
   );
 }
