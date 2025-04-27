@@ -125,6 +125,38 @@ export function AttachmentItem({
     );
   };
 
+  const handleDownload = async () => {
+    if (!attachment.url) return;
+
+    try {
+      const token = localStorage.getItem("authToken") || "";
+
+      const response = await fetch(`/api/attachments/file/${attachment.url}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download file");
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = attachment.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download error:", error);
+      alert("Failed to download the file.");
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -172,15 +204,8 @@ export function AttachmentItem({
         {!attachment.uploading && (
           <>
             {attachment.url && (
-              <Button variant="ghost" size="icon" asChild>
-                <a
-                  href={"/api/attachments/file/" + attachment.url}
-                  download={attachment.name}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Download className="h-4 w-4" />
-                </a>
+              <Button variant="ghost" size="icon" onClick={handleDownload}>
+                <Download className="h-4 w-4" />
               </Button>
             )}
 

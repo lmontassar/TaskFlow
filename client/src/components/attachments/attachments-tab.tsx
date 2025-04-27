@@ -100,8 +100,29 @@ export function AttachmentsTab({ task, setTask }: AttachmentsTabProps) {
     }
   };
 
-  const handleRemoveAttachment = (id: string) => {
-    setAttachments((prev) => prev.filter((attachment) => attachment.id !== id));
+  const handleRemoveAttachment = async (id: string) => {
+    // Remove from UI (client-side)
+    const tacheId = task?.id;
+    try {
+      // Call the backend API to delete the attachment
+      const response = await fetch(`/api/attachments/file/${tacheId}/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token if needed
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete attachment on the server.");
+      }
+      setAttachments((prev) =>
+        prev.filter((attachment) => attachment.id !== id)
+      );
+
+      console.log("Attachment deleted successfully.");
+    } catch (error) {
+      console.error("Error removing attachment:", error);
+    }
   };
 
   const handlePreviewAttachment = (attachment: Attachment) => {
@@ -134,11 +155,6 @@ export function AttachmentsTab({ task, setTask }: AttachmentsTabProps) {
                 <h3 className="text-sm font-medium">
                   Attachments ({allFiles.length})
                 </h3>
-                {attachments.length > 0 && (
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    Download All
-                  </Button>
-                )}
               </div>
 
               {allFiles.length > 0 ? (
@@ -174,6 +190,7 @@ export function AttachmentsTab({ task, setTask }: AttachmentsTabProps) {
         attachment={previewAttachment}
         open={isPreviewOpen}
         onOpenChange={setIsPreviewOpen}
+        token={token || ""}
       />
     </TabsContent>
   );

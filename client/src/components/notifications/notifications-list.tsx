@@ -26,6 +26,7 @@ import { formatDistanceToNow } from "date-fns";
 import type { NotificationType } from "./notifications-dropdown";
 import { Link } from "react-router-dom";
 import { useNotifications } from "../../utils/NotificationContext";
+import Loading from "../ui/loading";
 
 export function NotificationsList() {
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
@@ -40,7 +41,7 @@ export function NotificationsList() {
     error,
   } = useNotifications();
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
   if (error) {
     return <div>Error loading notifications</div>;

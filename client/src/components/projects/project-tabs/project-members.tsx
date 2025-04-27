@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DataTable from "../../DataTable";
 import useGetProject from "../../../hooks/useGetProjects";
 import useProject from "../../../hooks/useProject";
+import Loading from "../../ui/loading";
 
 export function ProjectMembers() {
   const { project, isLoading, error, setProject } = useProject();
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
   return (
     <Card>

@@ -106,4 +106,41 @@ public class AttachmentsController {
                 .body(resource);
     }
 
+
+    @DeleteMapping("/file/{tacheId}/{fileId}")
+    public ResponseEntity<?> deleteAttachment(@PathVariable String tacheId, @PathVariable String fileId) {
+        try {
+            Tache tache = tacheRepository.findById(tacheId).orElse(null);
+            if (tache != null) {
+
+                Optional<Attachment> attachmentOpt = tache.getAttachments()
+                        .stream()
+                        .filter(att -> att.getId().equals(fileId))
+                        .findFirst();
+
+                if (attachmentOpt.isPresent()) {
+                    Attachment attachment = attachmentOpt.get();
+                    String filename = attachment.getName();
+
+                    Path filePath = Paths.get(UPLOAD_DIR + tacheId + "/").resolve(filename).normalize();
+                    Files.deleteIfExists(filePath);
+
+
+                    tache.getAttachments().remove(attachment);
+                    tacheRepository.save(tache);
+
+                    return ResponseEntity.ok("Attachment deleted successfully.");
+                } else {
+                    return ResponseEntity.status(404).body("Attachment not found.");
+                }
+            } else {
+                return ResponseEntity.status(404).body("Tache not found.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Failed to delete attachment.");
+        }
+    }
+
+
 }
