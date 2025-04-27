@@ -23,6 +23,7 @@ export default function SpecificTaskMainTabs({
   setAssigneeToAdd,
   checkIfCreatorOfProject,
   setAssigneeToDelete,
+  checkIfAssigneeTask,
 }: any) {
   const { t } = useTranslation();
   return (
@@ -35,9 +36,12 @@ export default function SpecificTaskMainTabs({
           <TabsTrigger value="comments" className="flex-1">
             {t("tasks.specific.tabs.comments", "Comments")}
           </TabsTrigger>
-          <TabsTrigger value="attachments" className="flex-1">
-            {t("tasks.specific.tabs.attachments", "Attachments")}
-          </TabsTrigger>
+          {(checkIfCreatorOfProject(task?.project) ||
+            checkIfAssigneeTask(task)) && (
+            <TabsTrigger value="attachments" className="flex-1">
+              {t("tasks.specific.tabs.attachments", "Attachments")}
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="assignees" className="mt-2">
@@ -103,9 +107,12 @@ export default function SpecificTaskMainTabs({
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="attachments" className="pt-2">
-          <AttachmentsTab task={task} />
-        </TabsContent>
+        {(checkIfCreatorOfProject(task?.project) ||
+          checkIfAssigneeTask(task)) && (
+          <TabsContent value="attachments" className="pt-2">
+            <AttachmentsTab task={task} />
+          </TabsContent>
+        )}
       </Tabs>
     </Card>
   );

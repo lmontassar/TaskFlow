@@ -86,7 +86,7 @@ export function TaskDetails({
   const [marge, setMarge] = useState(editedTask.marge);
   const [duration, setDuration] = useState(editedTask.duree);
   const [assigneeToAdd, setAssigneeToAdd] = useState<any>(null);
-  const { checkIfCreatorOfProject } = useTasks();
+  const { checkIfCreatorOfProject, checkIfAssigneeTask } = useTasks();
   const [task, setTask] = useState(taskToEdit);
   const [editError, setEditError] = useState("");
   const { t } = useTranslation();
@@ -724,11 +724,13 @@ export function TaskDetails({
                   <TabsTrigger value="comments" className="flex-1">
                     {t("tasks.details.tabs.comments", "Comments")}
                   </TabsTrigger>
-                  <TabsTrigger value="attachments" className="flex-1">
-                    {t("tasks.details.tabs.attachments", "Attachments")}
-                  </TabsTrigger>
+                  {(checkIfCreatorOfProject(task?.project) ||
+                    checkIfAssigneeTask(task)) && (
+                    <TabsTrigger value="attachments" className="flex-1">
+                      {t("tasks.specific.tabs.attachments", "Attachments")}
+                    </TabsTrigger>
+                  )}
                 </TabsList>
-
                 {/* <TabsContent value="comments" className="space-y-4 pt-4">
                   {task.comments.length > 0 ? (
                     <div className="space-y-4">
@@ -789,7 +791,6 @@ export function TaskDetails({
                     </div>
                   </div>
                 </TabsContent> */}
-
                 <TabsContent value="assignees" className="pt-2">
                   <div className="text-center text-sm text-muted-foreground">
                     <div className="grid gap-3 pl-3">
@@ -840,9 +841,13 @@ export function TaskDetails({
                     </div>
                   </div>
                 </TabsContent>
-                <TabsContent value="attachments" className="pt-2">
-                  <AttachmentsTab task={task} />
-                </TabsContent>
+
+                {(checkIfCreatorOfProject(task?.project) ||
+                  checkIfAssigneeTask(task)) && (
+                  <TabsContent value="attachments" className="pt-2">
+                    <AttachmentsTab task={task} />
+                  </TabsContent>
+                )}
               </Tabs>
             </div>
           )}

@@ -409,6 +409,7 @@ export default function SpecificTaskPage() {
           setAssigneeToAdd={setAssigneeToAdd}
           checkIfCreatorOfProject={checkIfCreatorOfProject}
           setAssigneeToDelete={setAssigneeToDelete}
+          checkIfAssigneeTask={checkIfAssigneeTask}
         />
       </div>
       <TaskDependecies
