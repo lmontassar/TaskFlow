@@ -12,10 +12,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AttachmentsTabProps {
   task: any;
-  setTask: any;
 }
 
-export function AttachmentsTab({ task, setTask }: AttachmentsTabProps) {
+export function AttachmentsTab({ task }: AttachmentsTabProps) {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<Attachment[]>([]);
   const [error, setError] = useState<string | null>(null);
