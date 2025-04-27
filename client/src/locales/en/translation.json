@@ -153,7 +153,11 @@
       "browse_your_device": "Browse your device",
       "maximum_size": "Maximum size:",
       "attachments": "Attachments",
-      "uploading": "Uploading..."
+      "uploading": "Uploading...",
+      "upload_success": "File uploaded successfully!",
+      "upload_error": "Error uploading file.",
+      "delete_success": "File deleted successfully!",
+      "delete_error": "Error deleting file."
     },
     "taskSearch": {
       "selectPlaceholder": "Select a task...",

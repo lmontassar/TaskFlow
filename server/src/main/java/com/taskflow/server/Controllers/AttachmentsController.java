@@ -1,8 +1,12 @@
 package com.taskflow.server.Controllers;
 
+import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.Attachment;
 import com.taskflow.server.Entities.Tache;
+import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.TacheRepository;
+import com.taskflow.server.Services.TacheService;
+import com.taskflow.server.Services.UserService;
 import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +33,28 @@ import java.util.*;
 @CrossOrigin(origins = "*") // Allow frontend calls
 public class AttachmentsController {
     @Autowired
-    private TacheRepository tacheRepository;
+    private TacheService tacheService;
+
+    @Autowired
+    private JWT myJWT;
+    @Autowired
+    private UserService userService;
+
     private final String UPLOAD_DIR ="upload/attachments/";
     private final Path baseUploadPath = Paths.get(UPLOAD_DIR).toAbsolutePath().normalize();
     @PostMapping("/add/{tacheId}")
     public ResponseEntity<?> uploadAttachment(@PathVariable String tacheId,
-                                              @RequestParam("file") MultipartFile file) {
+                                              @RequestParam("file") MultipartFile file,@RequestHeader("Authorization") String token) {
         try {
-            Optional<Tache> optionalTache = tacheRepository.findById(tacheId);
-            if (optionalTache.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tache not found");
+            User user = userService.findById(myJWT.extractUserId(token));
+            if(user==null){
+                return ResponseEntity.status(403).build();
             }
 
-            Tache tache = optionalTache.get();
-
+            Tache tache = tacheService.findTacheById(tacheId);
+            if(!tacheService.isCreateur(user,tache)&&!tacheService.IsUserExistInAsignee(user,tache)){
+                return ResponseEntity.status(403).build();
+            }
             // Create directory uploads/{tacheId}/ if not exists
             Path taskFolderPath = baseUploadPath.resolve(tacheId);
             Files.createDirectories(taskFolderPath);
@@ -63,8 +75,7 @@ public class AttachmentsController {
                 tache.setAttachments(new ArrayList<>());
             }
             tache.getAttachments().add(attachment);
-
-            tacheRepository.save(tache);
+            tacheService.update(tache);
 
             return ResponseEntity.ok(attachment);
 
@@ -77,9 +88,18 @@ public class AttachmentsController {
     @GetMapping("/file/{tacheId}/{filename}")
     public ResponseEntity<Resource> getFile(
             @PathVariable String tacheId,
+            @RequestHeader("Authorization") String token,
             @PathVariable String filename
     ) throws IOException, java.io.IOException {
+        User user = userService.findById(myJWT.extractUserId(token));
+        if(user==null){
+            return ResponseEntity.status(403).build();
+        }
 
+        Tache tache = tacheService.findTacheById(tacheId);
+        if(!tacheService.isCreateur(user,tache)&&!tacheService.IsUserExistInAsignee(user,tache)){
+            return ResponseEntity.status(403).build();
+        }
         Path filePath = Paths.get(UPLOAD_DIR).resolve(tacheId).resolve(filename).normalize();
         System.out.println("Requested file path: " + filePath);
 
@@ -108,9 +128,18 @@ public class AttachmentsController {
 
 
     @DeleteMapping("/file/{tacheId}/{fileId}")
-    public ResponseEntity<?> deleteAttachment(@PathVariable String tacheId, @PathVariable String fileId) {
+    public ResponseEntity<?> deleteAttachment(@PathVariable String tacheId, @PathVariable String fileId,@RequestHeader("Authorization") String token) {
         try {
-            Tache tache = tacheRepository.findById(tacheId).orElse(null);
+
+            User user = userService.findById(myJWT.extractUserId(token));
+            if(user==null){
+                return ResponseEntity.status(403).build();
+            }
+
+            Tache tache = tacheService.findTacheById(tacheId);
+            if(!tacheService.isCreateur(user,tache)&&!tacheService.IsUserExistInAsignee(user,tache)){
+                return ResponseEntity.status(403).build();
+            }
             if (tache != null) {
 
                 Optional<Attachment> attachmentOpt = tache.getAttachments()
@@ -127,7 +156,7 @@ public class AttachmentsController {
 
 
                     tache.getAttachments().remove(attachment);
-                    tacheRepository.save(tache);
+                    tacheService.update(tache);
 
                     return ResponseEntity.ok("Attachment deleted successfully.");
                 } else {

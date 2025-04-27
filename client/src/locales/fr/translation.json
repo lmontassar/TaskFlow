@@ -154,7 +154,12 @@
       "browse_your_device": "Parcourir votre appareil",
       "maximum_size": "Taille maximale de fichier :",
       "attachments": "Pièces jointes",
-      "uploading": "Téléchargement en cours..."
+      "uploading": "Téléchargement en cours...",
+      "upload_success": "Téléchargement réussi",
+      "upload_error": "Erreur de téléchargement",
+      "delete_success": "Pièce jointe supprimée avec succès",
+      "delete_error": "Erreur lors de la suppression de la pièce jointe"
+    
     },
     "taskSearch": {
       "selectPlaceholder": "Sélectionnez une tâche...",

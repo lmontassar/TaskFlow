@@ -9,6 +9,8 @@ import { AttachmentItem, type Attachment } from "./attachment-item";
 import { AttachmentPreview } from "./attachment-preview";
 import { PaperclipIcon, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface AttachmentsTabProps {
   task: any;
@@ -21,6 +23,7 @@ export function AttachmentsTab({ task }: AttachmentsTabProps) {
   const [previewAttachment, setPreviewAttachment] = useState<Attachment | null>(
     null
   );
+  const { t } = useTranslation();
   const token = localStorage.getItem("authToken");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
@@ -51,6 +54,7 @@ export function AttachmentsTab({ task }: AttachmentsTabProps) {
     }
 
     const data = await response.json();
+    toast.success(t("tasks.attachments.upload_success"));
     return {
       id: data.id,
       name: data.name,
@@ -117,7 +121,7 @@ export function AttachmentsTab({ task }: AttachmentsTabProps) {
       setAttachments((prev) =>
         prev.filter((attachment) => attachment.id !== id)
       );
-
+      toast.success(t("tasks.attachments.delete_success"));
       console.log("Attachment deleted successfully.");
     } catch (error) {
       console.error("Error removing attachment:", error);
