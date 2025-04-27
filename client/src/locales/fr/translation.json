@@ -148,6 +148,14 @@
     }
   },
   "tasks": {
+    "attachments":{
+      "drag_and_drop": "Glisser-déposer des fichiers ici",
+      "or": "ou",
+      "browse_your_device": "Parcourir votre appareil",
+      "maximum_size": "Taille maximale de fichier :",
+      "attachments": "Pièces jointes",
+      "uploading": "Téléchargement en cours..."
+    },
     "taskSearch": {
       "selectPlaceholder": "Sélectionnez une tâche...",
       "inputPlaceholder": "Rechercher des tâches...",

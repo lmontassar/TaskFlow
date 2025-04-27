@@ -6,6 +6,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface FileUploadAreaProps {
   onFilesAdded: (files: File[]) => void;
@@ -20,6 +21,7 @@ export function FileUploadArea({
   accept = "*/*",
   multiple = true,
 }: FileUploadAreaProps) {
+  const {t} = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -137,19 +139,19 @@ export function FileUploadArea({
           <div className="rounded-full bg-background p-3 shadow-sm">
             <Upload className="h-6 w-6 text-primary" />
           </div>
-          <h3 className="text-lg font-medium">Drag files to upload</h3>
+          <h3 className="text-lg font-medium">{t("tasks.attachments.drag_and_drop")}</h3>
           <p className="text-sm text-muted-foreground">
-            or{" "}
+          {t("tasks.attachments.or")}{" "}
             <Button
               variant="link"
               className="p-0 h-auto"
               onClick={handleButtonClick}
             >
-              browse your device
+              {t("tasks.attachments.browse_your_device")}
             </Button>
           </p>
           <p className="text-xs text-muted-foreground">
-            Maximum file size: {maxSize}MB
+          {t("tasks.attachments.maximum_size")} {maxSize}MB
           </p>
         </div>
       </div>

@@ -133,7 +133,7 @@ export function AttachmentsTab({ task }: AttachmentsTabProps) {
 
   return (
     <>
-      <Card>
+      <Card className="w-full max-h-full border-none bg-background shadow-sm dark:bg-slate-800 overflow-y-scroll">
         <CardContent className="p-6">
           {error && (
             <Alert variant="destructive" className="mb-4">

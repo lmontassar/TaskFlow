@@ -147,6 +147,14 @@
     }
   },
   "tasks": {
+    "attachments":{
+      "drag_and_drop": "Drag files to upload",
+      "or": "or",
+      "browse_your_device": "Browse your device",
+      "maximum_size": "Maximum size:",
+      "attachments": "Attachments",
+      "uploading": "Uploading..."
+    },
     "taskSearch": {
       "selectPlaceholder": "Select a task...",
       "inputPlaceholder": "Search tasks...",
