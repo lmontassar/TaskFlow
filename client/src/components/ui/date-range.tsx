@@ -16,8 +16,9 @@ import {
 
 type Input42Props = {
   className?: string;
-  label: string;
+  label?: string;
   type?: string;
+  value?: { from: Date; to: Date };
   onChange?: (date: { from: Date; to: Date }) => void;
 };
 
@@ -25,11 +26,12 @@ export default function Input42({
   className,
   label,
   onChange,
+  value,
   type,
 }: Input42Props) {
   const [date, setDate] = React.useState({
-    from: new Date(),
-    to: addDays(new Date(), 1),
+    from: value?.from || new Date(),
+    to: value?.to || addDays(new Date(), 1),
   });
 
   // Update the date and call the onChange callback
@@ -50,7 +52,7 @@ export default function Input42({
 
   return (
     <div className={cn("grid gap-2", className)}>
-      <Label>{label}</Label>
+      {label && <Label>{label}</Label>}
       <Popover>
         <PopoverTrigger asChild>
           <Button

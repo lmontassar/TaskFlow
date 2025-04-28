@@ -1,10 +1,7 @@
 package com.taskflow.server.Services;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.taskflow.server.Entities.Collaborator;
 import com.taskflow.server.Entities.Project;
@@ -168,6 +165,40 @@ public class TacheService {
             }
         }
         return result;
+    }
+    public LocalDateTime getLastDate(Project project) {
+        if (project == null) {
+            return null;
+        }
+
+        List<Tache> taches = findTacheByProjectId(project);
+        if (taches == null || taches.isEmpty()) {
+            return null;
+        }
+
+        // Using non-static context and safe compareTo
+        return taches.stream()
+                .map(Tache::getDateFinEstime)
+                .filter(Objects::nonNull)
+                .max((date1, date2) -> date1.compareTo(date2)) // Using compareTo in a custom comparator
+                .orElse(null);
+    }
+    public LocalDateTime getFirstDate(Project project) {
+        if (project == null) {
+            return null;
+        }
+
+        List<Tache> taches = findTacheByProjectId(project);
+        if (taches == null || taches.isEmpty()) {
+            return null;
+        }
+
+        // Using non-static context and safe compareTo
+        return taches.stream()
+                .map(Tache::getDateDebut)
+                .filter(Objects::nonNull)
+                .min((date1, date2) -> date1.compareTo(date2)) // Using compareTo in a custom comparator
+                .orElse(null);
     }
 
 }

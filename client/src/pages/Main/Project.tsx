@@ -4,10 +4,11 @@ import { ProjectTabs } from "@/components/projects/project-tabs";
 import { useNavigate, useParams } from "react-router-dom";
 import useGetProjectById from "../../hooks/useGetProjectById";
 import useProject from "../../hooks/useProject";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function ProjectPage() {
   const navigate = useNavigate();
+  const [isProjectEditing, setIsProjectEditing] = useState(false);
   const { id } = useParams();
   if (!id) {
     return;
@@ -24,8 +25,18 @@ export default function ProjectPage() {
   }
   return (
     <>
-      <ProjectHeader projects={project} setProject={setProject} />
-      <ProjectOverview projects={project} setProject={setProject} />
+      <ProjectHeader
+        projects={project}
+        setProject={setProject}
+        isProjectEditing={isProjectEditing}
+        setIsProjectEditing={setIsProjectEditing}
+      />
+      <ProjectOverview
+        projects={project}
+        setProject={setProject}
+        isProjectEditing={isProjectEditing}
+        setIsProjectEditing={setIsProjectEditing}
+      />
       <ProjectTabs projects={project} setProject={setProject} />
     </>
   );

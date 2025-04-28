@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +23,9 @@ public class ProjectService {
     private ProjectRepository projectRepository;
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    public TacheService tacheService;
     public Project createProject(Project p, User u) {
         // Ensure user is valid
         if (u == null) {
@@ -39,6 +44,25 @@ public class ProjectService {
 
         // Save the project to the database
         return projectRepository.save(p);  // Assuming projectRepository is already defined and injected
+    }
+    public Project updateProject(Project project) {
+        // Convert project dates to LocalDateTime
+        LocalDateTime projectStartDate = project.getDateDebut().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        LocalDateTime projectEndDate = project.getDateFinEstime().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        // Get first and last task dates as LocalDateTime
+        LocalDateTime firstTask = tacheService.getFirstDate(project);
+        LocalDateTime lastTask = tacheService.getLastDate(project);
+        // Check if the project's date range includes the first and last task dates
+        if (projectStartDate.isBefore(firstTask) && projectEndDate.isAfter(lastTask)) {
+            return projectRepository.save(project);
+        }
+
+        return null;
     }
     public Project addCollaborator(Project p,Collaborator c)
     {
