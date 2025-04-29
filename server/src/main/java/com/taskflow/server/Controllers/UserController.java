@@ -6,6 +6,7 @@ import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.*;
 import com.taskflow.server.Services.LoginSecurityService;
 import jakarta.mail.MessagingException;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -218,20 +219,43 @@ public class UserController {
             headers.setBearerAuth(accessToken);
             HttpEntity<String> userEntity = new HttpEntity<>(headers);
             ResponseEntity<Map> userResponse = restTemplate.exchange(userUrl, HttpMethod.GET, userEntity, Map.class);
-
             if (userResponse.getStatusCode() == HttpStatus.OK) {
                 Map<String, Object> userData = userResponse.getBody();
                 User userInfo = new User();
+                HttpHeaders headerss = new HttpHeaders();
+                headerss.setBearerAuth(accessToken);
+                headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-                String email = (String) userData.get("email");
-                if (email == null) {
-                    // Use ID as a fallback for email (or handle differently if needed)
+                HttpEntity<String> entityy = new HttpEntity<>(headers);
+
+                RestTemplate restTemplates = new RestTemplate();
+                ResponseEntity<List<Map<String, Object>>> responses = restTemplate.exchange(
+                        "https://api.github.com/user/emails",
+                        HttpMethod.GET,
+                        entity,
+                        new ParameterizedTypeReference<>() {}
+                );
+
+                List<Map<String, Object>> emails = responses.getBody();
+                if (emails != null && !emails.isEmpty()) {
+                    Map<String, Object> firstEmailEntry = emails.get(0);
+                    String email = (String) firstEmailEntry.get("email");
+                    if (email == null) {
+                        // Use ID as a fallback for email (or handle differently if needed)
+                        userInfo.setEmail(userData.get("id") + "@github.com");
+                    } else {
+                        userInfo.setEmail(email);
+                    }
+                }else{
                     userInfo.setEmail(userData.get("id") + "@github.com");
-                } else {
-                    userInfo.setEmail(email);
                 }
 
+
+
                 String fullName = (String) userData.getOrDefault("name", "");
+                if (fullName == null) {
+                    fullName = "";
+                }
                 String[] nameParts = fullName.split(" ", 2);  // Split into first and last name
 
                 userInfo.setNom(nameParts[0]);                      // First name

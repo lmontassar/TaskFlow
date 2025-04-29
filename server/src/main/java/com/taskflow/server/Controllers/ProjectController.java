@@ -11,9 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
 @RestController
 @RequestMapping("/project")
@@ -162,5 +165,77 @@ public class ProjectController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateProject(@RequestHeader("Authorization") String token, @RequestBody ProjectUpdateRequest projectUpdateRequest) {
+        try {
+            // Validate the token and extract the userId from it
+            String userId = myJWT.extractUserId(token);
+            System.out.println("Token validated, extracted userId: " + projectUpdateRequest);
+
+            // Fetch project details from the request
+            String projectID = projectUpdateRequest.getId();
+            Project project = projectService.getProjectById(projectID);
+
+            // Check if project exists and if the current user is authorized to modify it
+            if (project == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found");
+            }
+            if (!Objects.equals(project.getCreateur().getId(), userId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not authorized to update this project");
+            }
+
+            System.out.println("Project found: " + project.getNom());
+
+            // Prepare the updated project fields from the request body
+            String nom = projectUpdateRequest.getNom();
+            String description = projectUpdateRequest.getDescription();
+            float budgetEstime = projectUpdateRequest.getBudgetEstime();
+
+            String dateDebutStr = String.valueOf(projectUpdateRequest.getDateDebut());
+            String dateFinEstimeStr = String.valueOf(projectUpdateRequest.getDateFinEstime());
+
+            // Define the ISO 8601 DateTimeFormatter
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
+            // Parse the date strings to LocalDateTime
+            LocalDateTime startDate = LocalDateTime.parse(dateDebutStr, formatter);
+            LocalDateTime endDate = LocalDateTime.parse(dateFinEstimeStr, formatter);
+
+            // Convert LocalDateTime to Date
+            Date startDateAsDate = Date.from(startDate.atZone(TimeZone.getDefault().toZoneId()).toInstant());
+            Date endDateAsDate = Date.from(endDate.atZone(TimeZone.getDefault().toZoneId()).toInstant());
+
+            // Set the parsed Date objects to the project
+            project.setDateDebut(startDateAsDate);
+            project.setDateFinEstime(endDateAsDate);
+
+
+
+
+            // Update the project object with the new values
+            project.setNom(nom);
+            project.setDescription(description);
+            project.setBudgetEstime(budgetEstime);
+
+            // Save the updated project
+            Project updatedProject = projectService.updateProject(project);
+            if (updatedProject != null) {
+                return ResponseEntity.ok(updatedProject);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating the project, check project data");
+            }
+
+        } catch (NumberFormatException e) {
+            // Handle case where budgetEstime is invalid
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid number format for budgetEstime");
+
+        } catch (Exception e) {
+            // Log and handle unexpected errors
+            System.err.println("Error updating project: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update project");
+        }
+    }
+
 
 }

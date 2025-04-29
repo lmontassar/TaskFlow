@@ -7,7 +7,12 @@ import SearchForm from "../comp-333";
 import hasPermission from "../../utils/authz";
 import useGetUser from "../../hooks/useGetUser";
 
-export function ProjectHeader({ projects, setProjects }: any) {
+export function ProjectHeader({
+  projects,
+  setProjects,
+  isProjectEditing,
+  setIsProjectEditing,
+}: any) {
   // In a real app, you would fetch the project data based on the ID
 
   const { user } = useGetUser();
@@ -46,7 +51,13 @@ export function ProjectHeader({ projects, setProjects }: any) {
             Add Members
           </SearchForm>
 
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsProjectEditing(!isProjectEditing);
+            }}
+          >
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </Button>

@@ -148,6 +148,19 @@
     }
   },
   "tasks": {
+    "attachments":{
+      "drag_and_drop": "Glisser-déposer des fichiers ici",
+      "or": "ou",
+      "browse_your_device": "Parcourir votre appareil",
+      "maximum_size": "Taille maximale de fichier :",
+      "attachments": "Pièces jointes",
+      "uploading": "Téléchargement en cours...",
+      "upload_success": "Téléchargement réussi",
+      "upload_error": "Erreur de téléchargement",
+      "delete_success": "Pièce jointe supprimée avec succès",
+      "delete_error": "Erreur lors de la suppression de la pièce jointe"
+    
+    },
     "taskSearch": {
       "selectPlaceholder": "Sélectionnez une tâche...",
       "inputPlaceholder": "Rechercher des tâches...",

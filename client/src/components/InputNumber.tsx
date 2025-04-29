@@ -12,19 +12,21 @@ import {
 interface InputNumberProps {
   budget: number;
   setBudget: (value: number) => void;
-  label: string;
+  label?: string;
+  min?: number;
 }
 
 export default function InputNumber({
   budget,
   setBudget,
   label,
+  min = 0,
 }: InputNumberProps) {
   return (
     <NumberField
       defaultValue={budget}
       onChange={(value) => setBudget(value)}
-      minValue={0}
+      minValue={min}
       formatOptions={{
         style: "currency",
         currency: "EUR",
@@ -32,7 +34,10 @@ export default function InputNumber({
       }}
     >
       <div className="*:not-first:mt-2">
-        <Label className="text-foreground text-sm font-medium">{label}</Label>
+        {label && (
+          <Label className="text-foreground text-sm font-medium">{label}</Label>
+        )}
+
         <Group className="border-input doutline-none data-focus-within:border-ring data-focus-within:ring-ring/50 data-focus-within:has-aria-invalid:ring-destructive/20 dark:data-focus-within:has-aria-invalid:ring-destructive/40 data-focus-within:has-aria-invalid:border-destructive relative inline-flex h-9 w-full items-center overflow-hidden rounded-md border text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] data-disabled:opacity-50 data-focus-within:ring-[3px]">
           <Input className="bg-background text-foreground flex-1 px-3 py-2 tabular-nums" />
           <div className="flex h-[calc(100%+2px)] flex-col">

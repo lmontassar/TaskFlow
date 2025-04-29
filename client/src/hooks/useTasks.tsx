@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Badge } from "../components/ui/badge";
 import { useTranslation } from "react-i18next";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 const useTasks = () => {
   let [tasks, setTasks] = useState([]);
@@ -17,18 +17,18 @@ const useTasks = () => {
       { label: t("date.day", "day"), seconds: 86400 },
       { label: t("date.hour", "hour"), seconds: 3600 },
       { label: t("date.minute", "minute"), seconds: 60 },
-    ]
-    let remaining = duration
-    const parts: string[] = []
+    ];
+    let remaining = duration;
+    const parts: string[] = [];
     for (const unit of units) {
-      const count = Math.floor(remaining / unit.seconds)
+      const count = Math.floor(remaining / unit.seconds);
       if (count > 0) {
-        parts.push(`${count} ${unit.label}${count > 1 ? "s" : ""}`)
-        remaining %= unit.seconds
+        parts.push(`${count} ${unit.label}${count > 1 ? "s" : ""}`);
+        remaining %= unit.seconds;
       }
     }
-    return parts.slice(0, 2).join(" and ") || "0 minutes"
-  }
+    return parts.slice(0, 2).join(" and ") || "0 minutes";
+  };
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "TODO":
@@ -36,73 +36,92 @@ const useTasks = () => {
           <Badge variant="outline" className="cursor-pointer bg-slate-50">
             {t(`tasks.tasks-list.status.todo`)}
           </Badge>
-        )
+        );
       case "PROGRESS":
         return (
-          <Badge variant="outline" className="cursor-pointer bg-blue-50 text-blue-700 border-blue-200">
+          <Badge
+            variant="outline"
+            className="cursor-pointer bg-blue-50 text-blue-700 border-blue-200"
+          >
             {t(`tasks.tasks-list.status.progress`)}
           </Badge>
-        )
+        );
       case "REVIEW":
         return (
-          <Badge variant="outline" className="cursor-pointer bg-yellow-50 text-yellow-700 border-yellow-200">
+          <Badge
+            variant="outline"
+            className="cursor-pointer bg-yellow-50 text-yellow-700 border-yellow-200"
+          >
             {t(`tasks.tasks-list.status.review`)}
           </Badge>
-        )
+        );
       case "DONE":
         return (
-          <Badge variant="outline" className="cursor-pointer bg-green-50 text-green-700 border-green-200">
+          <Badge
+            variant="outline"
+            className="cursor-pointer bg-green-50 text-green-700 border-green-200"
+          >
             {t(`tasks.tasks-list.status.done`)}
           </Badge>
-        )
+        );
       default:
-        return <Badge variant="outline" className="cursor-pointer" >{status}</Badge>
+        return (
+          <Badge variant="outline" className="cursor-pointer">
+            {status}
+          </Badge>
+        );
     }
-  }
+  };
   const getDifficulteBadge = (difficulte: string) => {
     switch (difficulte.toLowerCase()) {
       case "hard":
         return (
-          <Badge variant="outline" className="cursor-pointer bg-red-50 text-red-700 border-red-200">
+          <Badge
+            variant="outline"
+            className="cursor-pointer bg-red-50 text-red-700 border-red-200"
+          >
             {t(`tasks.tasks-list.difficulty.hard`)}
           </Badge>
-        )
+        );
       case "normal":
         return (
-          <Badge variant="outline" className="cursor-pointer bg-yellow-50 text-yellow-700 border-yellow-200">
+          <Badge
+            variant="outline"
+            className="cursor-pointer bg-yellow-50 text-yellow-700 border-yellow-200"
+          >
             {t(`tasks.tasks-list.difficulty.normal`)}
           </Badge>
-        )
+        );
       case "easy":
         return (
           <Badge variant="outline" className="cursor-pointer bg-slate-50">
             {t(`tasks.tasks-list.difficulty.easy`)}
           </Badge>
-        )
+        );
       default:
-        return <Badge variant="outline">{difficulte}</Badge>
+        return <Badge variant="outline">{difficulte}</Badge>;
     }
-  }
+  };
   const checkIfCreatorOfProject = (project: any) => {
     if (project && project.createur) {
       const token: String = localStorage.getItem("authToken") || "";
       if (token != "") {
-        const id = JSON.parse(atob(token.split('.')[1])).id;
+        const id = JSON.parse(atob(token.split(".")[1])).id;
         if (id != "" && id == project.createur.id) return true;
       }
     }
     return false;
-  }
+  };
   const checkIfAssigneeTask = (task: any, user: any = null) => {
     if (user == null) {
       const token: String = localStorage.getItem("authToken") || "";
       if (token != "") {
-        const id = JSON.parse(atob(token.split('.')[1])).id;
-        user = { 'id': id }
+        const id = JSON.parse(atob(token.split(".")[1])).id;
+        user = { id: id };
       } else return false;
     }
     return task?.assignee?.some((u: any) => u.id === user.id);
-  }
+  };
   const correctedDifficulty = (difficulty: string) => {
     const mapping: Record<string, string> = {
       normal: "normal", // Fix typo if backend expects this
@@ -215,7 +234,9 @@ const useTasks = () => {
         body: data,
       });
       if (res?.ok) {
-        toast.success(t("toast.use_tasks.update_status.success"), { id: toastId });
+        toast.success(t("toast.use_tasks.update_status.success"), {
+          id: toastId,
+        });
         return true;
       } else {
         toast.error(t("toast.use_tasks.update_status.error"), { id: toastId });
@@ -245,7 +266,9 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        toast.success(t("toast.use_tasks.delete_task.success"), { id: toastId });
+        toast.success(t("toast.use_tasks.delete_task.success"), {
+          id: toastId,
+        });
         return true;
       } else {
         toast.error(t("toast.use_tasks.delete_task.error"), { id: toastId });
@@ -255,8 +278,13 @@ const useTasks = () => {
     }
     return false;
   };
-  const DeleteSubTask = async (taskID: any, subTaskID: any, type: any = null) => {
-    const msg = type === null ? "disassociate_subtask" : "disassociate_parenttask";
+  const DeleteSubTask = async (
+    taskID: any,
+    subTaskID: any,
+    type: any = null
+  ) => {
+    const msg =
+      type === null ? "disassociate_subtask" : "disassociate_parenttask";
     const toastId = toast.loading(t(`toast.use_tasks.${msg}.loading`));
 
     try {
@@ -288,7 +316,9 @@ const useTasks = () => {
     return false;
   };
   const DeletePrecTask = async (taskID: any, precTaskID: any) => {
-    const toastId = toast.loading(t("toast.use_tasks.disassociate_precedentetask.loading"));
+    const toastId = toast.loading(
+      t("toast.use_tasks.disassociate_precedentetask.loading")
+    );
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -308,10 +338,15 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        toast.success(t("toast.use_tasks.disassociate_precedentetask.success"), { id: toastId });
+        toast.success(
+          t("toast.use_tasks.disassociate_precedentetask.success"),
+          { id: toastId }
+        );
         return true;
       } else {
-        toast.error(t("toast.use_tasks.disassociate_precedentetask.error"), { id: toastId });
+        toast.error(t("toast.use_tasks.disassociate_precedentetask.error"), {
+          id: toastId,
+        });
       }
     } catch (error) {
       toast.error(t("toast.server_error"), { id: toastId });
@@ -319,7 +354,9 @@ const useTasks = () => {
     return false;
   };
   const DeleteParallelTask = async (taskID: any, parallelTaskID: any) => {
-    const toastId = toast.loading(t("toast.use_tasks.disassociate_parallelestask.loading"));
+    const toastId = toast.loading(
+      t("toast.use_tasks.disassociate_parallelestask.loading")
+    );
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -339,17 +376,21 @@ const useTasks = () => {
       });
 
       if (!res.ok) {
-        toast.error(t("toast.use_tasks.disassociate_parallelestask.error"), { id: toastId });
+        toast.error(t("toast.use_tasks.disassociate_parallelestask.error"), {
+          id: toastId,
+        });
         return false;
       }
-      toast.success(t("toast.use_tasks.disassociate_parallelestask.success"), { id: toastId });
+      toast.success(t("toast.use_tasks.disassociate_parallelestask.success"), {
+        id: toastId,
+      });
       return true;
-
     } catch (error) {
       toast.error(t("toast.server_error"), { id: toastId });
     }
     return false;
   };
+
   const handleUpdateTask = async (updated: any) => {
     let message = "";
     try {
@@ -369,7 +410,7 @@ const useTasks = () => {
         nomTache: updated.nomTache,
         qualite: updated.qualite,
         statut: updated.statut,
-      }
+      };
       if (!token) {
         alert("Authentication token missing!");
         return;
@@ -385,7 +426,7 @@ const useTasks = () => {
 
       if (res.ok) {
         toast.success(t("task.update_success"));
-        return { message, result: true }
+        return { message, result: true };
       } else {
         switch (res.status) {
           case 416: {
@@ -430,11 +471,11 @@ const useTasks = () => {
     } catch (error) {
       toast.error(t("toast.server_error"));
     }
-    return { message, result: false }
+    return { message, result: false };
   };
   const getTasksByProjectID = async (projectID: any) => {
     setIsLoading(true);
-    console.log("try to get tasks ... ")
+    console.log("try to get tasks ... ");
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -450,7 +491,7 @@ const useTasks = () => {
 
       if (res.ok) {
         const result = await res.json();
-        setTasks(result)
+        setTasks(result);
         setIsLoading(false);
         return result;
       } else {
@@ -466,7 +507,7 @@ const useTasks = () => {
     setIsLoading(true);
     const token: String = localStorage.getItem("authToken") || "";
     if (!token) return;
-    const id = JSON.parse(atob(token.split('.')[1])).id;
+    const id = JSON.parse(atob(token.split(".")[1])).id;
 
     try {
       const res = await fetch(`/api/tache/get/user/${id}`, {
@@ -510,7 +551,9 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        toast.success(t("toast.use_tasks.delete_assigne.success"), { id: toastId });
+        toast.success(t("toast.use_tasks.delete_assigne.success"), {
+          id: toastId,
+        });
         return true;
       } else {
         toast.error(t("toast.use_tasks.delete_assigne.error"), { id: toastId });
@@ -540,7 +583,9 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        toast.success(t("toast.use_tasks.add_assigne.success"), { id: toastId });
+        toast.success(t("toast.use_tasks.add_assigne.success"), {
+          id: toastId,
+        });
         return true;
       } else {
         toast.error(t("toast.use_tasks.add_assigne.error"), { id: toastId });
@@ -571,11 +616,11 @@ const useTasks = () => {
         return { result, status: 200 };
       } else {
         setIsLoading(false);
-        return { result: null, status: res.status }
+        return { result: null, status: res.status };
       }
     } catch (error) {
       setIsLoading(false);
-      return { result: null, status: 404 }
+      return { result: null, status: 404 };
     }
   };
   const getTasksCanBePrecedente = async (taskID: any) => {
@@ -628,7 +673,9 @@ const useTasks = () => {
     return [];
   };
   const AddParallelTask = async (taskID: any, ParallelTaskID: any) => {
-    const toastId = toast.loading(t("toast.use_tasks.add_paralleletask.loading"));
+    const toastId = toast.loading(
+      t("toast.use_tasks.add_paralleletask.loading")
+    );
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -648,10 +695,14 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        toast.success(t("toast.use_tasks.add_paralleletask.success"), { id: toastId });
+        toast.success(t("toast.use_tasks.add_paralleletask.success"), {
+          id: toastId,
+        });
         return true;
       } else {
-        toast.error(t("toast.use_tasks.add_paralleletask.error"), { id: toastId });
+        toast.error(t("toast.use_tasks.add_paralleletask.error"), {
+          id: toastId,
+        });
       }
     } catch (error) {
       toast.error(t("toast.server_error"), { id: toastId });
@@ -689,7 +740,9 @@ const useTasks = () => {
     return false;
   };
   const AddPrecTask = async (taskID: any, PrecTaskID: any) => {
-    const toastId = toast.loading(t("toast.use_tasks.add_precedentetask.loading"));
+    const toastId = toast.loading(
+      t("toast.use_tasks.add_precedentetask.loading")
+    );
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -709,10 +762,14 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        toast.success(t("toast.use_tasks.add_precedentetask.success"), { id: toastId });
+        toast.success(t("toast.use_tasks.add_precedentetask.success"), {
+          id: toastId,
+        });
         return true;
       } else {
-        toast.error(t("toast.use_tasks.add_precedentetask.error"), { id: toastId });
+        toast.error(t("toast.use_tasks.add_precedentetask.error"), {
+          id: toastId,
+        });
       }
     } catch (error) {
       toast.error(t("toast.server_error"), { id: toastId });

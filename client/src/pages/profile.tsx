@@ -59,6 +59,8 @@ export default function Profile() {
     isLoading,
     isImageChanged,
   } = useProfile();
+  console.log(userData);
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Profile Header */}

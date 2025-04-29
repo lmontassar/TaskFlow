@@ -76,7 +76,7 @@ public class Tache {
         return ressources.remove(r);
     }
 
-    private List<String> attachment;
+    private List<Attachment> attachments;
 
     @DBRef
     @JsonIgnoreProperties({ "parent", "precedentes", "paralleles", "project" })
