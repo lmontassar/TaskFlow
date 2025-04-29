@@ -36,4 +36,8 @@ public class ResourceService {
     public void deleteById(String id) {
         resourceRepository.deleteById(id);
     }
+
+    public Resource update(Resource res) {
+        return resourceRepository.save(res);
+    }
 }

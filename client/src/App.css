@@ -128,3 +128,15 @@
 .truncate {
   min-width: 0;
 }
+
+/* Hide all date headers by default */
+.gantt-calendar-header .gantt-calendar-day {
+  display: none !important;
+}
+
+/* Hide empty grid cells (just in case) */
+.gantt-date-grid [data-date] {
+  display: none !important;
+}
+
+

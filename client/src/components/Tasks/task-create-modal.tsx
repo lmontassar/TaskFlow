@@ -19,19 +19,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon, Loader2 } from "lucide-react"
-import { format } from "date-fns"
-import type { Task } from "./tasks-interface"
+import {Loader2 } from "lucide-react"
 import DurationInput from "../ui/divided-duration-input"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
 
 interface TaskCreateModalProps {
   isOpen: boolean
   onClose: () => void
-  onCreateTask: (task: Task) => boolean
-  existingTasks: Task[],
+  onCreateTask: (task: any) => boolean
+  existingTasks: any[],
   addTaskError: "",
   setAddTaskError: (error: String) => void,
   project :any , 
@@ -63,7 +59,7 @@ export function TaskCreateModal({
     setIsLoading(true);
     if (!taskName.trim()) return
 
-    const newTask: Task = {
+    const newTask: any = {
       nomTache: taskName,
       description: taskDescription,
       budgetEstime: budget,

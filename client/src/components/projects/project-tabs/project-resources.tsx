@@ -103,9 +103,10 @@ export function ProjectResources({ project }: { project: any }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string | null>(null);
   const [formData, setFormData] =
-    useState<typeof initialFormData>(initialFormData);
+  useState<typeof initialFormData>(initialFormData);
+
   useEffect(() => {
-    setResources(project.listeRessource || []);
+    setResources( project.listeRessource || []);
   }, [project.listeRessource]);
   // Get unique categories using a Set
   const uniqueCategories = useMemo(() => {
@@ -117,6 +118,8 @@ export function ProjectResources({ project }: { project: any }) {
     });
     return Array.from(categoriesSet);
   }, [resources]);
+
+  
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const { createResource, editResource, deleteResource } = useResources();
 

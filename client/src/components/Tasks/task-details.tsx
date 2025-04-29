@@ -38,6 +38,7 @@ import useTasks from "../../hooks/useTasks"
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
+import { toLocalISOString } from "../../lib/utils"
 
 
 
@@ -416,7 +417,7 @@ export function TaskDetails({
                     <Calendar
                       mode="single"
                       selected={editedTask.dateDebut ? parseISO(editedTask.dateDebut) : undefined}
-                      onSelect={(date) => handleTaskUpdate("dateDebut", date ? date.toISOString() : undefined)}
+                      onSelect={(date:any) => handleTaskUpdate("dateDebut", date ? toLocalISOString(date) : undefined)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -435,7 +436,7 @@ export function TaskDetails({
                     <Calendar
                       mode="single"
                       selected={editedTask.dateFinEstime ? parseISO(editedTask.dateFinEstime) : undefined}
-                      onSelect={(date) => handleTaskUpdate("dateFinEstime", date ? date.toISOString() : undefined)}
+                      onSelect={(date:any) => handleTaskUpdate("dateFinEstime", date ?  toLocalISOString(date) : undefined)}
                       initialFocus
                     />
                   </PopoverContent>

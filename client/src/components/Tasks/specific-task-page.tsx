@@ -13,6 +13,7 @@ import TaskDependecies from "./ٍspecific-task-components/task-dependecies"
 import SpecificTaskDetails from "./ٍspecific-task-components/spec-task-details"
 import SpecificTaskMainTabs from "./ٍspecific-task-components/spec-main-tabs"
 import SpecificTaskHeader from "./ٍspecific-task-components/spec-task-header"
+import SpecificRessourcesTask from "./ٍspecific-task-components/spec-ress-task"
 
 
 export default function SpecificTaskPage() {
@@ -390,6 +391,12 @@ export default function SpecificTaskPage() {
           setAssigneeToDelete={setAssigneeToDelete}
         />
       </div>
+
+      <SpecificRessourcesTask       
+        task= {task}
+        setTask= {setTask}
+      />
+      
       <TaskDependecies
         key="spec-dependencies"
         task={task}

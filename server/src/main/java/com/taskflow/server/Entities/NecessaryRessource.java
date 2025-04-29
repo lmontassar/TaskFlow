@@ -1,34 +1,36 @@
 package com.taskflow.server.Entities;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+
+import javax.persistence.Id;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "resources")
+
+
+@Document(collection = "NecessaryResources")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Resource {
-    public enum Status {
-        AVAILABLE, ALLOCATED, PENDING, UNAVAILABLE
+public class NecessaryRessource {
+    public static enum typeRess {
+        Temporal, Material, Energetic
     }
+
     @Id
     private String id;
-    private String nom;
-    private String type;
-    private float coutUnitaire;
-    private String notes;
-    private Status status;
+    private String name ;
+    private typeRess type;
     private String categorie;
+    private float qte;
 
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Resource resource = (Resource ) o;
-        return this.id.equals(resource.getId());
+        NecessaryRessource tache = (NecessaryRessource ) o;
+        return this.id.equals(tache.getId());
     }
 }

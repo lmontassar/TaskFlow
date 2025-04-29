@@ -13,7 +13,7 @@ public class ServerApplication {
 	public void init(){
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	}
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(ServerApplication.class, args);
 	}

@@ -350,7 +350,6 @@ const useTasks = () => {
     }
     return false;
   };
-  
   const handleUpdateTask = async (updated: any) => {
     let message = "";
     try {
@@ -399,22 +398,22 @@ const useTasks = () => {
                 message = t("task.error.description_invalid");
                 break;
               case "date_invalid":
-                message =t("task.error.date_invalid");
+                message = t("task.error.date_invalid");
                 break;
               case "duree_invalid":
-                message =t("task.error.duree_invalid");
+                message = t("task.error.duree_invalid");
                 break;
               case "marge_invalid":
-                message =t("task.error.marge_invalid");
+                message = t("task.error.marge_invalid");
                 break;
               case "budget_invalid":
-                message =t("task.error.budget_invalid");
+                message = t("task.error.budget_invalid");
                 break;
               case "qualite_invalid":
-                message =t("task.error.qualite_invalid");
+                message = t("task.error.qualite_invalid");
                 break;
               case "difficulte_invalid":
-                message =t("task.error.difficulte_invalid");
+                message = t("task.error.difficulte_invalid");
                 break;
             }
             break;
@@ -423,8 +422,8 @@ const useTasks = () => {
             message = t("task.error.bad_request");
             break;
           }
-          default : {
-            message = t("task.error.unexpected") ;
+          default: {
+            message = t("task.error.unexpected");
           }
         }
       }
@@ -433,7 +432,6 @@ const useTasks = () => {
     }
     return { message, result: false }
   };
-
   const getTasksByProjectID = async (projectID: any) => {
     setIsLoading(true);
     console.log("try to get tasks ... ")
@@ -722,7 +720,76 @@ const useTasks = () => {
     return false;
   };
 
+  const addAssignResource = async (formData: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const response = await fetch("/api/tache/add/ressource", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      toast.success(t("task.ressource.crud.addSuccess"));
+      return response;
+    } catch (err) {
+      toast.error(t("toast.server_error"))
+    }
+    return null;
+  }
+
+  const editAssignResource = async (formData: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const response = await fetch("/api/tache/edit/ressource", {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      toast.success(t("task.ressource.crud.editSuccess"));
+      return response;
+    } catch (err) {
+      toast.error(t("toast.server_error"))
+    }
+    return null;
+  }
+
+  const deleteAssignResource = async (formData: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const response = await fetch("/api/tache/delete/ressource", {
+        method: "DELETE",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      toast.success(t("task.ressource.crud.deleteSuccess"));
+      return response;
+    } catch (err) {
+      toast.error(t("toast.server_error"))
+    }
+    return null;
+  }
+
   return {
+    deleteAssignResource ,
+    editAssignResource,
+    addAssignResource,
     getTasksCanBePrecedente,
     isLoading,
     formatDurationReact,
