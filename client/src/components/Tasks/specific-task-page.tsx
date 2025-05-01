@@ -1,24 +1,19 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { format, parseISO, isValid } from "date-fns";
-import _ from "lodash";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useTranslation } from "react-i18next";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Clock,
-  ArrowLeft,
-  CheckCircle2,
-  AlertCircle,
-  Circle,
-} from "lucide-react";
-import useTasks from "@/hooks/useTasks";
-import TaskDependecies from "./ٍspecific-task-components/task-dependecies";
-import SpecificTaskDetails from "./ٍspecific-task-components/spec-task-details";
-import SpecificTaskMainTabs from "./ٍspecific-task-components/spec-main-tabs";
-import SpecificTaskHeader from "./ٍspecific-task-components/spec-task-header";
+import { useEffect, useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import { format, parseISO, isValid } from "date-fns"
+import _ from "lodash"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { useTranslation } from "react-i18next"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Clock, ArrowLeft, CheckCircle2, AlertCircle, Circle } from 'lucide-react'
+import useTasks from "@/hooks/useTasks"
+import TaskDependecies from "./ٍspecific-task-components/task-dependecies"
+import SpecificTaskDetails from "./ٍspecific-task-components/spec-task-details"
+import SpecificTaskMainTabs from "./ٍspecific-task-components/spec-main-tabs"
+import SpecificTaskHeader from "./ٍspecific-task-components/spec-task-header"
+import SpecificRessourcesTask from "./ٍspecific-task-components/spec-ress-task"
 
 export default function SpecificTaskPage() {
   const navigate = useNavigate();
@@ -412,6 +407,12 @@ export default function SpecificTaskPage() {
           checkIfAssigneeTask={checkIfAssigneeTask}
         />
       </div>
+
+      <SpecificRessourcesTask       
+        task= {task}
+        setTask= {setTask}
+      />
+      
       <TaskDependecies
         key="spec-dependencies"
         task={task}

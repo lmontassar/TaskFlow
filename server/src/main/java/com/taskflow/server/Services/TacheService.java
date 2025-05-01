@@ -3,8 +3,13 @@ package com.taskflow.server.Services;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.taskflow.server.Entities.AffectationRessource;
 import com.taskflow.server.Entities.Collaborator;
+import com.taskflow.server.Entities.MaterialResource;
+import com.taskflow.server.Entities.NecessaryRessource;
 import com.taskflow.server.Entities.Project;
+import com.taskflow.server.Entities.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -201,4 +206,28 @@ public class TacheService {
                 .orElse(null);
     }
 
+    public Tache addNecessaryRessource(NecessaryRessource NewRess,Tache tache){
+        tache.addNecessaryRessource(NewRess);
+        return tacheRep.save(tache);
+    }
+
+    public void removeNecessaryRessource(Tache task,NecessaryRessource ress) {
+        task.deleteNecessaryRessource(ress);
+        tacheRep.save(task);
+    }
+
+    public int qteAvailableMaterialRess(Tache t , MaterialResource ress,LocalDateTime dateDebut,LocalDateTime dateFin) {
+        List<Tache> tasks = tacheRep.getAllByProject(t.getProject());
+        int qteDisponible = ress.getQte() ;
+        for(Tache task : tasks ) {
+            for( AffectationRessource r : task.getRessources()) {
+                if( !r.getRess().equals(ress) ) continue; 
+                if( !(r.getDateFin().isBefore(dateDebut) || r.getDateDebut().isAfter(dateFin)) ) {
+                        qteDisponible -= (int) r.getQte() ;
+                        if( qteDisponible == 0 ) return 0;
+                    } 
+            }
+        }
+        return qteDisponible;
+    }
 }

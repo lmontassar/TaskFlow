@@ -18,6 +18,7 @@ import DurationInput from "@/components/ui/divided-duration-input"
 import { TasksSearch } from "../../ui/TasksSearch"
 import { useTranslation } from "react-i18next"
 import useTasks from "../../../hooks/useTasks"
+import { toLocalISOString } from "../../../lib/utils"
 
 export default function SpecificTaskDetails(
     {
@@ -178,7 +179,7 @@ export default function SpecificTaskDetails(
                         <Calendar
                           mode="single"
                           selected={editedTask.dateDebut ? parseISO(editedTask.dateDebut) : undefined}
-                          onSelect={(date:any) => handleTaskUpdate("dateDebut", date ? date.toISOString() : undefined)}
+                          onSelect={(date:any) => handleTaskUpdate("dateDebut", date ? toLocalISOString(date) : undefined)}
                           initialFocus
                         />
                       </PopoverContent>
@@ -201,7 +202,7 @@ export default function SpecificTaskDetails(
                         <Calendar
                           mode="single"
                           selected={editedTask.dateFinEstime ? parseISO(editedTask.dateFinEstime) : undefined}
-                          onSelect={(date:any) => handleTaskUpdate("dateFinEstime", date ? date.toISOString() : undefined)}
+                          onSelect={(date:any) => handleTaskUpdate("dateFinEstime", date ? toLocalISOString(date) : undefined)}
                           initialFocus
                         />
                       </PopoverContent>

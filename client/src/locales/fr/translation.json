@@ -410,7 +410,6 @@
     "add_success": "Ressource ajoutée avec succès !",
     "update_success": "Ressource mise à jour avec succès !",
     "delete_success": "Ressource supprimée avec succès !",
-
     "delete_confirmation": {
       "title": "Supprimer la ressource",
       "message": "Êtes-vous sûr de vouloir supprimer cette ressource ?",
@@ -514,6 +513,156 @@
     }
   },
   "task": {
+    "global_resource": {
+      "title": "Ressources de la tâche",
+      "Energetic": "Énergétique",
+      "Temporal": "Temporaire",
+      "Material": "Matériel",
+      "delete_title": "Êtes-vous sûr de vouloir supprimer ceci ?",
+      "delete_description": "Cette ressource nécessaire sera supprimée définitivement."
+    },
+    "chart_material": {
+      "material_resources_timeline": "Chronologie des Ressources Matérielles",
+      "no_resources": "Aucune ressource avec des dates planifiées disponibles. Veuillez attribuer des dates de début et de fin à vos ressources.",
+      "tooltip": "Survolez les barres de ressources pour voir des informations détaillées",
+      "view_mode": "Mode d'affichage",
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois",
+      "type": "Type",
+      "category": "Catégorie",
+      "quantity": "Quantité",
+      "unit": "Unité",
+      "cost": "Coût",
+      "start": "Début",
+      "end": "Fin",
+      "notes": "Notes"
+    },
+    "chart_energetic": {
+      "title": "Allocation des ressources énergétiques",
+      "description": "Pourcentage d'utilisation de la consommation des ressources",
+      "assigned": "Assigné",
+      "maximum": "Maximum",
+      "available": "Disponible",
+      "utilization_percentage": "Taux d'utilisation %",
+      "no_energetic_resources": "Aucune ressource énergétique assignée à cette tâche",
+      "trending_up": "En hausse de",
+      "trending_down": "En baisse de",
+      "this_month": "ce mois-ci",
+      "assigned_capacity": "de la capacité totale de consommation est actuellement assignée"
+    },
+    "ressource": {
+      "crud": {
+        "addSuccess": "Ressource assignée avec succès !",
+        "editSuccess": "Ressource mise à jour avec succès !",
+        "deleteSuccess": "Ressource supprimée avec succès !"
+      },
+      "invalid_quantity": "Veuillez entrer une quantité valide",
+      "select_dates": "Veuillez sélectionner les dates de début et de fin",
+      "invalid_dates": "La date de fin doit être après la date de début",
+      "invalid_consumption": "Veuillez entrer une valeur de consommation valide",
+      "general_error": "Une erreur s'est produite. Veuillez réessayer.",
+      "success_assigned": "{{resource}} assigné avec succès à la tâche",
+      "insufficient_resources": "Ressources insuffisantes disponibles. Maximum disponible : {{availableAmount}}",
+      "assign_failed": "Échec de l'assignation de la ressource. Veuillez réessayer.",
+      "success_updated": "{{resource}} mis à jour avec succès",
+      "resource_not_found": "Ressource introuvable. Elle a peut-être été supprimée.",
+      "update_failed": "Échec de la mise à jour de la ressource. Veuillez réessayer.",
+      "success_removed": "{{resource}} supprimé avec succès",
+      "delete_failed": "Échec de la suppression de la ressource. Veuillez réessayer.",
+      "title": "Ressources",
+      "assign_description": "Assignez des ressources à cette tâche en fonction des ressources disponibles de votre projet",
+      "tabs": {
+        "assigned": "Ressources assignées",
+        "available": "Ressources disponibles",
+        "statistic": "Allocation énergétique",
+        "timeline": "Chronologie matérielle"
+      },
+      "filters": {
+        "all_types": "Tous les types",
+        "material": "Matériel",
+        "temporal": "Temporel",
+        "energetic": "Énergétique"
+      },
+      "table": {
+        "name": "Nom",
+        "type": "Type",
+        "category": "Catégorie",
+        "available": "Disponible",
+        "unit_cost": "Coût unitaire"
+      },
+      "dialog": {
+        "assign_title": "Assigner {{resource}}",
+        "type": "Type",
+        "category": "Catégorie",
+        "quantity": "Quantité ({{unit}})",
+        "edit": "Modifier {{resource}}",
+        "consumption": "Consommation ({{unit}})",
+        "end_date": "Date de fin"
+      },
+      "available": "Disponible",
+      "no_matching_resources": "Aucune ressource trouvée correspondant à vos critères",
+      "consumption": "Consommation ({{unit}})",
+      "available_consumption": "Disponible",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "select_date": "Sélectionner la date",
+      "assigning": "Assignation...",
+      "assign_resource": "Assigner la ressource",
+      "cancel": "Annuler",
+      "no_resources_assigned": "Aucune ressource assignée à cette tâche pour l'instant",
+      "table2": {
+        "resource": "Ressource",
+        "type": "Type",
+        "details": "Détails",
+        "period": "Période",
+        "actions": "Actions"
+      },
+      "updating": "Mise à jour...",
+      "update_resource": "Mettre à jour la ressource",
+      "alert": {
+        "are_you_sure": "Êtes-vous sûr ?",
+        "remove_resource": "Cela supprimera {{resource}} de cette tâche. Cette action est irréversible."
+      },
+      "deleting": "Suppression...",
+      "delete": "Supprimer"
+    },
+    "necessary_ressource": {
+      "crud": {
+        "addSuccess": "Ressource nécessaire ajoutée avec succès !",
+        "addFail": "Échec de l'ajout de la ressource nécessaire.",
+        "error403": "Vous n'avez pas la permission d'effectuer cette action.",
+        "error416": "Données de ressource invalides.",
+        "error400": "Requête incorrecte. Veuillez vérifier vos informations.",
+        "editSuccess": "Ressource nécessaire mise à jour avec succès !",
+        "editFail": "Échec de la mise à jour de la ressource nécessaire.",
+        "deleteSuccess": "Ressource nécessaire supprimée avec succès !",
+        "deleteFail": "Échec de la suppression de la ressource nécessaire.",
+        "deleting": "Suppression..."
+      },
+      "title": "Ressources Nécessaires",
+      "add": "Ajouter une Ressource",
+      "description": "Gérer les ressources nécessaires pour cette tâche",
+      "no_resources": "Aucune ressource ajoutée pour le moment",
+      "name": "Nom",
+      "type": "Type",
+      "category": "Catégorie",
+      "details": "Détails",
+      "actions": "Actions",
+      "edit_resource": "Modifier la Ressource",
+      "add_resource": "Ajouter une Ressource",
+      "dialog_description": "Remplissez les détails pour cette ressource",
+      "name_placeholder": "Entrez le nom de la ressource",
+      "select_type": "Sélectionnez le type",
+      "select_category": "Sélectionnez la catégorie",
+      "total_consumption": "Consommation Totale",
+      "consumption_placeholder": "ex. 500 kWh",
+      "qte": "Quantité",
+      "qte_placeholder": "ex. 10 unités",
+      "update": "Mettre à jour",
+      "save": "Enregistrer",
+      "consumption": "Consommation"
+    },
     "update_success": "Tâche mise à jour avec succès !",
     "error": {
       "nom_tache_invalid": "Nom de tâche invalide.",

@@ -8,16 +8,22 @@ import java.util.regex.Pattern;
 
 import com.taskflow.server.Entities.Attachment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.taskflow.server.Config.JWT;
+import com.taskflow.server.Entities.AffectationRessource;
+import com.taskflow.server.Entities.EnergeticResource;
+import com.taskflow.server.Entities.MaterialResource;
 import com.taskflow.server.Entities.Project;
+import com.taskflow.server.Entities.Resource;
 import com.taskflow.server.Entities.Tache;
+import com.taskflow.server.Entities.TemporalResource;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Services.ProjectService;
+import com.taskflow.server.Services.ResourceService;
 import com.taskflow.server.Services.TacheService;
 import com.taskflow.server.Services.UserService;
 
@@ -44,6 +50,9 @@ public class TacheController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ResourceService resourceService;
 
     @Autowired
     private JWT myJWT;
@@ -404,7 +413,7 @@ public class TacheController {
                 return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
-      
+
             return ResponseEntity.badRequest().build();
         }
     }
@@ -543,14 +552,19 @@ public class TacheController {
                     && task.getDateFinEstime().isBefore(task.getDateDebut()))
                 return ResponseEntity.status(416).body("date_invalid");
 
-            if (task.getDuree() < 0 ) return ResponseEntity.status(416).body("duree_invalid");
-            if (task.getMarge() < 0 ) return ResponseEntity.status(416).body("marge_invalid");
-            if (task.getBudgetEstime() < 0 ) return ResponseEntity.status(416).body("budget_invalid");
-            if ( task.getQualite() > 5 || task.getQualite() < 0 ) return ResponseEntity.status(416).body("qualite_invalid");
-            if ( task.getDifficulte() == null ) return ResponseEntity.status(416).body("difficulte_invalid");
-            
-                // nomTache;
-                oldTask.setNomTache(task.getNomTache());
+            if (task.getDuree() < 0)
+                return ResponseEntity.status(416).body("duree_invalid");
+            if (task.getMarge() < 0)
+                return ResponseEntity.status(416).body("marge_invalid");
+            if (task.getBudgetEstime() < 0)
+                return ResponseEntity.status(416).body("budget_invalid");
+            if (task.getQualite() > 5 || task.getQualite() < 0)
+                return ResponseEntity.status(416).body("qualite_invalid");
+            if (task.getDifficulte() == null)
+                return ResponseEntity.status(416).body("difficulte_invalid");
+
+            // nomTache;
+            oldTask.setNomTache(task.getNomTache());
             // description;
             oldTask.setDescription(task.getDescription());
             // budgetEstime;
@@ -682,6 +696,204 @@ public class TacheController {
             return ResponseEntity.ok(EditedTask);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/add/ressource")
+    public ResponseEntity<?> AddRecource(
+            @RequestParam String taskID,
+            @RequestParam String ressourceID,
+            @RequestParam(required = false) Integer qte,
+            @RequestParam(required = false) Float consommation,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateDebut,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFin,
+            @RequestHeader("Authorization") String token) {
+        try {
+            Resource ressource = resourceService.getById(ressourceID);
+            Tache t = tacheSer.findTacheById(taskID);
+            switch (ressource.getType()) {
+                case "Temporal": {
+                    if (qte == null)
+                        return ResponseEntity.badRequest().build();
+                    TemporalResource ress = (TemporalResource) ressource;
+                    if (ress.getQte() < qte)
+                        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ress.getQte());
+                    ress.setQte(ress.getQte() - qte);
+                    resourceService.update(ress);
+
+                    AffectationRessource affRess = new AffectationRessource();
+                    affRess.setRess(ressource);
+                    affRess.setQte(qte);
+                    t.addRessource(affRess);
+                    break;
+                }
+                case "Energetic": {
+                    if (consommation == null)
+                        return ResponseEntity.badRequest().build();
+                    EnergeticResource ress = (EnergeticResource) ressource;
+                    if ((ress.getConsommationMax() - ress.getConsommationTotale()) < consommation)
+                        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                                .body(ress.getConsommationMax() - ress.getConsommationTotale());
+                    ress.setConsommationTotale(ress.getConsommationTotale() + consommation);
+                    resourceService.update(ress);
+                    AffectationRessource affRess = new AffectationRessource();
+                    affRess.setRess(ressource);
+                    affRess.setConsommation(consommation);
+                    t.addRessource(affRess);
+                    break;
+                }
+                case "Material": {
+                    if (qte == null || dateDebut == null || dateFin == null)
+                        return ResponseEntity.badRequest().build();
+                    MaterialResource ress = (MaterialResource) ressource;
+                    int qteAvailable = tacheSer.qteAvailableMaterialRess(t, ress, dateDebut, dateFin);
+                    if (qteAvailable < qte)
+                        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(qteAvailable);
+                    AffectationRessource affRess = new AffectationRessource();
+                    affRess.setRess(ressource);
+                    affRess.setQte(qte);
+                    affRess.setDateDebut(dateDebut);
+                    affRess.setDateFin(dateFin);
+                    t.addRessource(affRess);
+                    break;
+                }
+            }
+            Tache updatedTask = tacheSer.update(t);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedTask);
+
+        } catch (Exception err) {
+            return ResponseEntity.ok().build();
+        }
+    }
+
+    @PutMapping("/edit/ressource")
+    public ResponseEntity<?> EditRessource(
+            @RequestParam String taskID,
+            @RequestParam String ressourceID,
+            @RequestParam(required = false) Integer qte,
+            @RequestParam(required = false) Float consommation,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateDebut,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFin,
+            @RequestHeader("Authorization") String token) {
+        try {
+            Tache t = tacheSer.findTacheById(taskID);
+            Resource ressource = resourceService.getById(ressourceID);
+            AffectationRessource affRess = t.getRessources().stream()
+                    .filter(a -> a.getRess().getId().equals(ressourceID))
+                    .findFirst()
+                    .orElse(null);
+
+            if (affRess == null)
+                return ResponseEntity.notFound().build();
+
+            switch (ressource.getType()) {
+                case "Temporal": {
+                    if (qte == null)
+                        return ResponseEntity.badRequest().build();
+                    TemporalResource ress = (TemporalResource) ressource;
+
+                    int currentQte = (int) affRess.getQte();
+                    int delta = qte - currentQte;
+
+                    if (ress.getQte() < delta)
+                        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ress.getQte());
+
+                    ress.setQte(ress.getQte() - delta);
+                    affRess.setQte(qte);
+                    resourceService.update(ress);
+                    break;
+                }
+                case "Energetic": {
+                    if (consommation == null)
+                        return ResponseEntity.badRequest().build();
+                    EnergeticResource ress = (EnergeticResource) ressource;
+
+                    float delta = consommation - affRess.getConsommation();
+
+                    if ((ress.getConsommationMax() - ress.getConsommationTotale()) < delta)
+                        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                                .body(ress.getConsommationMax() - ress.getConsommationTotale());
+
+                    ress.setConsommationTotale(ress.getConsommationTotale() + delta);
+                    affRess.setConsommation(consommation);
+                    resourceService.update(ress);
+                    break;
+                }
+                case "Material": {
+                    if (qte == null || dateDebut == null || dateFin == null)
+                        return ResponseEntity.badRequest().build();
+                    MaterialResource ress = (MaterialResource) ressource;
+                    t.getRessources().remove(affRess);
+                    int qteAvailable = tacheSer.qteAvailableMaterialRess(t, ress, dateDebut, dateFin);
+                    if (qteAvailable < qte)
+                        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(qteAvailable);
+                    affRess.setQte(qte);
+                    affRess.setDateDebut(dateDebut);
+                    affRess.setDateFin(dateFin);
+                    t.addRessource(affRess);
+                    break;
+                }
+            }
+
+            Tache updated = tacheSer.update(t);
+            return ResponseEntity.ok(updated);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error updating resource: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/ressource")
+    public ResponseEntity<?> deleteRessource(
+            @RequestParam String taskID,
+            @RequestParam String ressourceID,
+            @RequestParam(required = false)  LocalDateTime dateDebut,
+            @RequestParam(required = false)  LocalDateTime dateFin,
+            @RequestHeader("Authorization") String token) {
+        try {
+            Tache t = tacheSer.findTacheById(taskID);
+            Resource ressource = resourceService.getById(ressourceID);
+
+            if (ressource == null)
+                return ResponseEntity.notFound().build();
+            AffectationRessource affRess = t.getRessources().stream()
+                    .filter(a -> {
+                        if ( a.getRess().getType().equals("Material") && "Material".equals(ressource.getType()) ) {
+                            return a.getRess().getId().equals(ressource.getId())
+                                    && a.getDateDebut().isEqual(dateDebut)
+                                    && a.getDateFin().isEqual(dateFin);
+                        }
+                        return a.getRess().getId().equals(ressourceID);
+                    })
+                    .findFirst()
+                    .orElse(null);
+            if (affRess == null)
+                return ResponseEntity.notFound().build();
+            switch (ressource.getType()) {
+                case "Temporal": {
+                    TemporalResource ress = (TemporalResource) ressource;
+                    ress.setQte(ress.getQte() + affRess.getQte());
+                    resourceService.update(ress);
+                    break;
+                }
+                case "Energetic": {
+                    EnergeticResource ress = (EnergeticResource) ressource;
+                    ress.setConsommationTotale(ress.getConsommationTotale() - affRess.getConsommation());
+                    resourceService.update(ress);
+                    break;
+                }
+                case "Material": {
+                    break;
+                }
+            }
+
+            // Supprimer de la tâche
+            t.getRessources().remove(affRess);
+            Tache updatedTask = tacheSer.update(t);
+            return ResponseEntity.ok(updatedTask);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error deleting resource: " + e.getMessage());
         }
     }
 

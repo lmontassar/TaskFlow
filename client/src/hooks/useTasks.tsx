@@ -473,7 +473,6 @@ const useTasks = () => {
     }
     return { message, result: false };
   };
-
   const getTasksByProjectID = async (projectID: any) => {
     setIsLoading(true);
     console.log("try to get tasks ... ");
@@ -778,7 +777,76 @@ const useTasks = () => {
     return false;
   };
 
+  const addAssignResource = async (formData: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const response = await fetch("/api/tache/add/ressource", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      toast.success(t("task.ressource.crud.addSuccess"));
+      return response;
+    } catch (err) {
+      toast.error(t("toast.server_error"))
+    }
+    return null;
+  }
+
+  const editAssignResource = async (formData: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const response = await fetch("/api/tache/edit/ressource", {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      toast.success(t("task.ressource.crud.editSuccess"));
+      return response;
+    } catch (err) {
+      toast.error(t("toast.server_error"))
+    }
+    return null;
+  }
+
+  const deleteAssignResource = async (formData: any) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const response = await fetch("/api/tache/delete/ressource", {
+        method: "DELETE",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      toast.success(t("task.ressource.crud.deleteSuccess"));
+      return response;
+    } catch (err) {
+      toast.error(t("toast.server_error"))
+    }
+    return null;
+  }
+
   return {
+    deleteAssignResource ,
+    editAssignResource,
+    addAssignResource,
     getTasksCanBePrecedente,
     isLoading,
     formatDurationReact,

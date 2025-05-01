@@ -29,34 +29,29 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  CalendarIcon,
-  CheckCircle2,
-  Clock,
-  MoreHorizontal,
-  Trash2,
-  X,
-  Edit,
-  StarIcon,
-} from "lucide-react";
-import { format, parseISO } from "date-fns";
-import type { Task } from "./tasks-interface";
-import _ from "lodash";
-import { Input } from "../ui/input";
+} from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { CalendarIcon, CheckCircle2, Clock, MoreHorizontal, Trash2, X, Edit, StarIcon } from "lucide-react"
+import { format, parseISO } from "date-fns"
+import type { Task } from "./tasks-interface"
+import _ from "lodash"
+import { Input } from "../ui/input"
 
-import DurationInput from "../ui/divided-duration-input";
-import { UserSearch } from "../ui/assigneeSearch";
-import useTasks from "../../hooks/useTasks";
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import DurationInput from "../ui/divided-duration-input"
+import { UserSearch } from "../ui/assigneeSearch"
+import useTasks from "../../hooks/useTasks"
+import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
+import { toLocalISOString } from "../../lib/utils"
+
+
+
+
+
+
+
 import { AttachmentsTab } from "../attachments/attachments-tab";
 
 interface TaskDetailsProps {
@@ -507,17 +502,8 @@ export function TaskDetails({
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={
-                        editedTask.dateDebut
-                          ? parseISO(editedTask.dateDebut)
-                          : undefined
-                      }
-                      onSelect={(date) =>
-                        handleTaskUpdate(
-                          "dateDebut",
-                          date ? date.toISOString() : undefined
-                        )
-                      }
+                      selected={editedTask.dateDebut ? parseISO(editedTask.dateDebut) : undefined}
+                      onSelect={(date:any) => handleTaskUpdate("dateDebut", date ? toLocalISOString(date) : undefined)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -547,17 +533,8 @@ export function TaskDetails({
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={
-                        editedTask.dateFinEstime
-                          ? parseISO(editedTask.dateFinEstime)
-                          : undefined
-                      }
-                      onSelect={(date) =>
-                        handleTaskUpdate(
-                          "dateFinEstime",
-                          date ? date.toISOString() : undefined
-                        )
-                      }
+                      selected={editedTask.dateFinEstime ? parseISO(editedTask.dateFinEstime) : undefined}
+                      onSelect={(date:any) => handleTaskUpdate("dateFinEstime", date ?  toLocalISOString(date) : undefined)}
                       initialFocus
                     />
                   </PopoverContent>
