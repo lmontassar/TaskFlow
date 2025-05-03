@@ -9,8 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Document(collection = "projects")
 @AllArgsConstructor
@@ -33,7 +35,7 @@ public class Project {
     private Date dateFinEstime;
     private Set<Collaborator> listeCollaborateur;
     @DBRef
-    private Set<Resource> listeRessource;
+    private Set<Resource> listeRessource ;
     private Status status;
     @DBRef
     private User createur;

@@ -58,7 +58,7 @@ export default function SpecificRessourcesTask({ task, setTask }: Props) {
 
   const uniqueCategories = useMemo(() => {
     const map = new Map<string, Set<string>>()
-    task?.project.listeRessource.forEach((resource: any) => {
+    task?.project?.listeRessource.forEach((resource: any) => {
       if (resource.type && resource.categorie) {
         if (!map.has(resource.type)) {
           map.set(resource.type, new Set())

@@ -37,10 +37,16 @@ public class ProjectService {
 
         p.setCreateur(u);
 
+
+
         Set<Collaborator> set = new HashSet<>();
 
         // Set the collaborators for the project
         p.setListeCollaborateur(set);
+
+        Set<Resource> set2 = new HashSet<>();
+
+        p.setListeRessource(set2);
 
         // Save the project to the database
         return projectRepository.save(p);  // Assuming projectRepository is already defined and injected

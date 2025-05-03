@@ -105,10 +105,7 @@ public class UserController {
                                     @RequestParam("phoneNumber") String phoneNumber,
                                     @RequestParam("title") String title,
                                     @RequestParam(value = "image", required = false) MultipartFile image) {
-        
         try {
-           
-
             // Validate email format
             if ( (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) 
             
@@ -143,7 +140,7 @@ public class UserController {
             user.setTitle(title);
             user.setTwoFactorAuth(false);
             user.setPassword(password);
-            user.setCreationDate(new Date());
+            user.setCreationDate(LocalDateTime.now());
             if(phoneNumber != ""){
                 user.setPhoneNumber(phoneNumber);
             }
@@ -152,6 +149,9 @@ public class UserController {
                 user.setAvatar(saveUserImage(image));
             }
 
+            System.out.println(user.getEmail());
+            System.out.println(user.getPassword());
+            System.out.println(user.getPhoneNumber());
             User newUser = userService.createUser(user);
             if (newUser == null ) return ResponseEntity.status(409).build();
 
@@ -184,7 +184,7 @@ public class UserController {
             userInfo.setNom(authentication.getNom());
             userInfo.setPrenom(authentication.getPrenom());
             userInfo.setAvatar(authentication.getImage());
-            userInfo.setCreationDate(new Date());
+            userInfo.setCreationDate(LocalDateTime.now());
             User user = userService.findOrCreateUser(userInfo);
             String jwtToken = myJWT.generateToken(user);
             LoginResponce loginResponse = new LoginResponce(jwtToken, user);
@@ -257,12 +257,12 @@ public class UserController {
                     fullName = "";
                 }
                 String[] nameParts = fullName.split(" ", 2);  // Split into first and last name
-
+                
                 userInfo.setNom(nameParts[0]);                      // First name
                 userInfo.setPrenom(nameParts.length > 1 ? nameParts[1] : "");
 
                 userInfo.setAvatar((String) userData.getOrDefault("avatar_url", ""));
-                userInfo.setCreationDate(new Date());
+                userInfo.setCreationDate(LocalDateTime.now());
                 User user = userService.findOrCreateUser(userInfo);
 
                 String jwtToken = myJWT.generateToken(user);
@@ -279,7 +279,6 @@ public class UserController {
         return userService.findByEmail(user.getEmail())
                 .map(u -> {
                     if (userService.validatePassword(user.getPassword(), u.getPassword())) {
-                        
                         String jwt ;
                         if(u.getTwoFactorAuth()){
                             jwt = myJWT.generateTwoFactoAuthToken(u);
@@ -358,6 +357,7 @@ public class UserController {
         ) {
             
         try {
+            System.out.println(email);
             return userService.findByEmail(email)
             .map(u->{
                 OTPVser.setCode(u.getEmail());

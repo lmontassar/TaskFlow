@@ -163,7 +163,7 @@ const getUser = async () =>{
           // Map region to location if it exists
           location: userData.region || defaultUserData.location,
           twoFactorAuth : userData.twoFactorAuth !== null ? userData.twoFactorAuth : null,
-          avatar: userData.avatar.indexOf("avatar") == 0 ? "/api/user/avatar/"+userData.avatar :  userData.avatar,
+          avatar:   userData.avatar,
 
           // Map creationDate to joinDate if it exists
           joinDate: userData.creationDate

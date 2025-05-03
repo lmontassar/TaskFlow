@@ -76,7 +76,7 @@ public class Tache {
         return ressources.remove(r);
     }
 
-    private List<Attachment> attachments;
+    private List<Attachment> attachments = new ArrayList<>();
 
     @DBRef
     @JsonIgnoreProperties({ "parent", "precedentes", "paralleles", "project" })
@@ -84,7 +84,7 @@ public class Tache {
 
     @DBRef
     @JsonIgnoreProperties({ "parent", "precedentes", "paralleles", "project" })
-    private List<Tache> precedentes;
+    private List<Tache> precedentes= new ArrayList<>();
 
     public boolean addPrecedente(Tache t) {
         for (Tache task : precedentes)
@@ -127,7 +127,7 @@ public class Tache {
     }
 
     @DBRef
-    private List<User> assignee;
+    private List<User> assignee = new ArrayList<>();
     @DBRef
     private User rapporteur;
 

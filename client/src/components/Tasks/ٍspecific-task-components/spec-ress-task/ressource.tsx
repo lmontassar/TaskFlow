@@ -212,7 +212,7 @@ export default function RessourceSpecifiTask({ task, setTask }: Props) {
         } else if (response.status === 406) {
             // Not acceptable - resource limit exceeded
             const availableAmount = await response.text()
-            setError(t("task.ressource.insufficient_resources", `Not enough resources available. Maximum available: ${availableAmount}`));
+            setError(t("task.ressource.insufficient_resources",{availableAmount:availableAmount}));
         } else {
             setError(t("task.ressource.assign_failed", "Failed to assign resource. Please try again."));
         }

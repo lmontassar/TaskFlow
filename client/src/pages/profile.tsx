@@ -129,7 +129,7 @@ export default function Profile() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center p-6">
             <span className="text-3xl font-bold">{userData?.stats.teams}</span>
-            <span className="text-sm text-muted-foreground">Teams</span>
+            <span className="text-sm text-muted-foreground">Open tasks</span>
           </CardContent>
         </Card>
       </div>
@@ -143,7 +143,6 @@ export default function Profile() {
         <TabsList className="mb-8">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="projects">Projects</TabsTrigger>
-          <TabsTrigger value="teams">Teams</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -157,10 +156,6 @@ export default function Profile() {
                 <CardContent>
                   <p className="mb-6">{userData?.bio}</p>
                   <div className="grid gap-4">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{userData?.location}</span>
-                    </div>
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground" />
                       <span>{userData?.email}</span>
@@ -224,29 +219,7 @@ export default function Profile() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="teams">
-          <Card>
-            <CardHeader>
-              <CardTitle>Teams</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {userData?.teams.map((team) => (
-                  <div key={team.id} className="rounded-lg border p-4">
-                    <div className="mb-2 flex items-center justify-between">
-                      <h3 className="font-semibold">{team.name}</h3>
-                      <Badge variant="outline">{team.role}</Badge>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Users className="h-4 w-4" />
-                      <span>{team.members} members</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+      
       </Tabs>
 
       {/* Edit Profile Dialog */}
@@ -395,24 +368,7 @@ export default function Profile() {
                 </Select>
               </div>
 
-              <div className="grid gap-3">
-                <Label htmlFor="timeFormat">Time Format</Label>
-                <Select
-                  className="w-1/2 max-w-full"
-                  value={settingsForm.timeFormat}
-                  onValueChange={(value) =>
-                    handleSettingsChange("timeFormat", value)
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select time format" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="12h">12-hour (AM/PM)</SelectItem>
-                    <SelectItem value="24h">24-hour</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              
             </div>
 
             <div className="space-y-4 mt-2">

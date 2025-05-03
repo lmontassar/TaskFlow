@@ -2,14 +2,17 @@ package com.taskflow.server.Entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+
 public class User {
     @Id
     private String id;
@@ -21,7 +24,7 @@ public class User {
     private String title;
     private String avatar;
     private String region;
-    private Date creationDate;
+    private LocalDateTime creationDate;
     private String bio;
     private Boolean activation;
     private Boolean twoFactorAuth;

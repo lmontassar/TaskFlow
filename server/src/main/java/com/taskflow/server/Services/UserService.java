@@ -40,8 +40,6 @@ public class UserService {
             return null;
         }
 
-        
-
         if( !user.getPhoneNumber().equals("") )
             if ( userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
                 return null;

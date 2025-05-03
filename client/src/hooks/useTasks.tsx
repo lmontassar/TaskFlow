@@ -791,7 +791,8 @@ const useTasks = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      toast.success(t("task.ressource.crud.addSuccess"));
+      if (response.ok)
+        toast.success(t("task.ressource.crud.addSuccess"));
       return response;
     } catch (err) {
       toast.error(t("toast.server_error"))

@@ -82,7 +82,7 @@ const useNessasaryRess = () => {
                 },
                 body: data,
             });
-
+            
             if (res.ok) {
                 toast.success(t("task.necessary_ressource.crud.editSuccess"));
                 setIsLoading(false);
@@ -128,7 +128,6 @@ const useNessasaryRess = () => {
                 },
                 body: data,
             });
-    
             if (res.ok) {
                 toast.success(t("task.necessary_ressource.crud.deleteSuccess"), { id: toastId });
                 return true;
@@ -151,13 +150,6 @@ const useNessasaryRess = () => {
         return false;
     };
     return { AddNecessaryRessource ,EdiNecessaryRessource ,deleteNecessaryRessource }
-
 }
-
-
-
-
-
-
 
 export default useNessasaryRess;
