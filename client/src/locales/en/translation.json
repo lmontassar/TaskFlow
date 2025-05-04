@@ -129,7 +129,20 @@
     "server": "Oops! Something went wrong"
   },
   "project": {
+    "NOT_STARTED": "Not Started",
+    "IN_PROGRESS": "In Progress",
+    "COMPLETED": "Completed",
+    "CANCELED": "Canceled",
+    "addCollaborator": "Add Members",
+    "editProject": "Edit Project",
     "creation_form": {
+      "timeline": "Timeline",
+      "start_date": "Start Date",
+      "estimated_end_date": "Estimated End Date",
+      "members": "Members",
+      "progress": "Progress",
+      "cancel": "Cancel",
+      "save": "Save",
       "title": "Create a project",
       "name": "Project name",
       "name_placeholder": "Enter your project name",
@@ -147,7 +160,7 @@
     }
   },
   "tasks": {
-    "attachments":{
+    "attachments": {
       "drag_and_drop": "Drag files to upload",
       "or": "or",
       "browse_your_device": "Browse your device",
@@ -673,6 +686,27 @@
       "difficulte_invalid": "Difficulty is required.",
       "bad_request": "Bad request.",
       "unexpected": "An unexpected error occurred."
+    }
+  },
+  "member": {
+    "title": "Members",
+    "search": "Search members...",
+    "name": "Name",
+    "lastname": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "role": {
+      "title": "Role",
+      "project_owner": "Project Owner",
+      "employee": "Employee"
+    },
+    "no_members": "No members found",
+    "delete": {
+      "title": "Delete",
+      "description": "Are you sure you want to delete this member?",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "success": "Member deleted successfully!"
     }
   }
 }

@@ -1,6 +1,8 @@
 import { use, useEffect, useRef, useState } from "react";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 function useProject() {
   const [project, setProject] = useState<any | null>(null);
@@ -35,6 +37,7 @@ function useProject() {
       setIsLoading(false);
     }
   };
+  const { t } = useTranslation();
   useEffect(() => {
     getProject();
   }, []);
@@ -123,7 +126,8 @@ function useProject() {
       if (res.ok) {
         console.log("changed");
         const data = await res.json();
-        setProject(data); // Update the project state with the new data
+        toast.success(t("member.delete.success"));
+        setProject(data);
         return project;
       } else {
         console.log("noo way");

@@ -9,7 +9,7 @@ import { ProjectDiscussions } from "@/components/projects/project-tabs/project-d
 import { ProjectMembers } from "./project-tabs/project-members";
 import { ProjectResources } from "./project-tabs/project-resources";
 
-export function ProjectTabs({ projects }: any) {
+export function ProjectTabs({ projects, isLoading, setProject }: any) {
   const [activeTab, setActiveTab] = useState("tasks");
 
   return (
@@ -28,7 +28,11 @@ export function ProjectTabs({ projects }: any) {
         <ProjectTimeline />
       </TabsContent>
       <TabsContent value="members" className="mt-6">
-        <ProjectMembers />
+        <ProjectMembers
+          project={projects}
+          isLoading={isLoading}
+          setProject={setProject}
+        />
       </TabsContent>
       <TabsContent value="resources" className="mt-6">
         <ProjectResources project={projects} />
