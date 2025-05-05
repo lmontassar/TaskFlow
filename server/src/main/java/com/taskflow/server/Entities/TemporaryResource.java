@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TemporalResource extends Resource {
+public class TemporaryResource extends Resource {
     private String unitMeasure;
     private int qte;
 }
