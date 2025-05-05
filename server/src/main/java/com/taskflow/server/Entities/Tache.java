@@ -51,6 +51,7 @@ public class Tache {
 
     public boolean addRessource(AffectationRessource affRess) {
         for (AffectationRessource ar : ressources) {
+            System.out.println(ar.getRess().getId() + "-sdklfjvgh-" + affRess.getRess().getId());
             if (ar.equals(affRess)) {
                 switch (affRess.getRess().getType()) {
                     case "Temporal": {
@@ -62,7 +63,6 @@ public class Tache {
                         return true;
                     }
                     case "Material": {
-                        
                         ar.setQte(ar.getQte() + affRess.getQte());
                         return true;
                     }
@@ -72,6 +72,7 @@ public class Tache {
         }
         return ressources.add(affRess);
     }
+
     public boolean deleteRessource(AffectationRessource r) {
         return ressources.remove(r);
     }
@@ -84,7 +85,7 @@ public class Tache {
 
     @DBRef
     @JsonIgnoreProperties({ "parent", "precedentes", "paralleles", "project" })
-    private List<Tache> precedentes= new ArrayList<>();
+    private List<Tache> precedentes = new ArrayList<>();
 
     public boolean addPrecedente(Tache t) {
         for (Tache task : precedentes)
@@ -130,6 +131,30 @@ public class Tache {
     private List<User> assignee = new ArrayList<>();
     @DBRef
     private User rapporteur;
+
+    public LocalDateTime getFirstDateDebutForMatRessource() {
+        LocalDateTime  earliest= null;
+        for (AffectationRessource r : ressources) {
+            if (r.getRess().getType().equals("Material")) {
+                if (earliest == null || r.getDateDebut().isBefore(earliest)) {
+                    earliest = r.getDateDebut();
+                }
+            }
+        }
+        return earliest;
+    }
+    public LocalDateTime getLastDateFinForMatRessource() {
+        LocalDateTime latest = null;
+        for (AffectationRessource r : ressources) {
+            if (r.getRess().getType().equals("Material")) {
+                if (latest == null || r.getDateFin().isAfter(latest)) {
+                    latest = r.getDateFin();
+                }
+            }
+        }
+        return latest;
+    }
+    
 
     @Override
     public boolean equals(Object o) {

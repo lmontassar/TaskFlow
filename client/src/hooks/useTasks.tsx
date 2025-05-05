@@ -431,32 +431,7 @@ const useTasks = () => {
         switch (res.status) {
           case 416: {
             const errorText = await res.text();
-            switch (errorText) {
-              case "nom_tache_invalid":
-                message = t("task.error.nom_tache_invalid");
-                break;
-              case "description_invalid":
-                message = t("task.error.description_invalid");
-                break;
-              case "date_invalid":
-                message = t("task.error.date_invalid");
-                break;
-              case "duree_invalid":
-                message = t("task.error.duree_invalid");
-                break;
-              case "marge_invalid":
-                message = t("task.error.marge_invalid");
-                break;
-              case "budget_invalid":
-                message = t("task.error.budget_invalid");
-                break;
-              case "qualite_invalid":
-                message = t("task.error.qualite_invalid");
-                break;
-              case "difficulte_invalid":
-                message = t("task.error.difficulte_invalid");
-                break;
-            }
+            message = t(`task.error.${errorText}`);
             break;
           }
           case 400: {
@@ -814,7 +789,8 @@ const useTasks = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      toast.success(t("task.ressource.crud.editSuccess"));
+      if (response.ok)
+        toast.success(t("task.ressource.crud.editSuccess"));
       return response;
     } catch (err) {
       toast.error(t("toast.server_error"))
@@ -845,7 +821,7 @@ const useTasks = () => {
   }
 
   return {
-    deleteAssignResource ,
+    deleteAssignResource,
     editAssignResource,
     addAssignResource,
     getTasksCanBePrecedente,

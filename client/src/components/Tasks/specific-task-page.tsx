@@ -411,6 +411,7 @@ export default function SpecificTaskPage() {
       <SpecificRessourcesTask       
         task= {task}
         setTask= {setTask}
+        canEdit={canEdit}
       />
       
       <TaskDependecies

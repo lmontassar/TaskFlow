@@ -34,9 +34,15 @@ interface TaskData {
     ressources: Resource[]
 }
 
+interface Props {
+    task: TaskData,
+    canEdit: any
+}
+
+
 // Custom tooltip component
 
-export default function TaskResourceStatisticMaterial({ task }: { task: TaskData }) {
+export default function TaskResourceStatisticMaterial({ task, canEdit }: Props) {
     const [ganttTasks, setGanttTasks] = useState<Task[]>([])
     const [hasResources, setHasResources] = useState(false)
     const [loading, setLoading] = useState(true)

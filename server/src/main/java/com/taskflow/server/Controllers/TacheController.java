@@ -552,6 +552,20 @@ public class TacheController {
                     && task.getDateFinEstime().isBefore(task.getDateDebut()))
                 return ResponseEntity.status(416).body("date_invalid");
 
+            if (task.getDateDebut() != null) {
+                LocalDateTime earliest = oldTask.getFirstDateDebutForMatRessource();
+                System.out.println("earliest: " + earliest);
+
+                if (earliest != null && task.getDateDebut().isAfter(earliest))
+                    return ResponseEntity.status(416).body("date_dabut_invalid");
+            }
+            if (task.getDateFinEstime() != null) {
+                LocalDateTime latest = oldTask.getLastDateFinForMatRessource();
+                System.out.println("latest: " + latest);
+                if (latest != null && task.getDateFinEstime().isBefore(latest))
+                    return ResponseEntity.status(416).body("date_fin_invalid");
+            }
+
             if (task.getDuree() < 0)
                 return ResponseEntity.status(416).body("duree_invalid");
             if (task.getMarge() < 0)
@@ -585,7 +599,7 @@ public class TacheController {
             return ResponseEntity.ok().body(newTask);
 
         } catch (Exception err) {
-
+            System.out.println(err.getMessage() + "ftghjghj");
             return ResponseEntity.badRequest().build();
         }
     }
@@ -730,6 +744,7 @@ public class TacheController {
                 case "Energetic": {
                     if (consommation == null)
                         return ResponseEntity.badRequest().build();
+
                     EnergeticResource ress = (EnergeticResource) ressource;
                     if ((ress.getConsommationMax() - ress.getConsommationTotale()) < consommation)
                         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
@@ -745,6 +760,13 @@ public class TacheController {
                 case "Material": {
                     if (qte == null || dateDebut == null || dateFin == null)
                         return ResponseEntity.badRequest().build();
+                    System.out.println("c1: "+t.getDateDebut().isAfter(dateDebut));
+                    System.out.println("c3: "+t.getDateFinEstime().isBefore(dateFin));
+                    if ((t.getDateDebut() != null && t.getDateDebut().isAfter(dateDebut))
+                            || (t.getDateFinEstime() != null && t.getDateFinEstime().isBefore(dateFin))) {
+                        return ResponseEntity.status(416).build();
+                    }
+
                     MaterialResource ress = (MaterialResource) ressource;
                     int qteAvailable = tacheSer.qteAvailableMaterialRess(t, ress, dateDebut, dateFin);
                     if (qteAvailable < qte)
@@ -782,7 +804,6 @@ public class TacheController {
                     .filter(a -> a.getRess().getId().equals(ressourceID))
                     .findFirst()
                     .orElse(null);
-
             if (affRess == null)
                 return ResponseEntity.notFound().build();
 
@@ -794,8 +815,7 @@ public class TacheController {
 
                     int currentQte = (int) affRess.getQte();
                     int delta = qte - currentQte;
-
-                    if (ress.getQte() < delta)
+                    if ((ress.getQte() + affRess.getQte()) < delta)
                         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ress.getQte());
 
                     ress.setQte(ress.getQte() - delta);
@@ -810,11 +830,12 @@ public class TacheController {
 
                     float delta = consommation - affRess.getConsommation();
 
-                    if ((ress.getConsommationMax() - ress.getConsommationTotale()) < delta)
+                    if (((ress.getConsommationMax() - ress.getConsommationTotale())
+                            + affRess.getConsommation()) < delta)
                         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                                 .body(ress.getConsommationMax() - ress.getConsommationTotale());
-
                     ress.setConsommationTotale(ress.getConsommationTotale() + delta);
+
                     affRess.setConsommation(consommation);
                     resourceService.update(ress);
                     break;
@@ -822,10 +843,14 @@ public class TacheController {
                 case "Material": {
                     if (qte == null || dateDebut == null || dateFin == null)
                         return ResponseEntity.badRequest().build();
+                    if ((t.getDateDebut() != null && t.getDateDebut().isAfter(dateDebut))
+                            || (t.getDateFinEstime() != null && t.getDateFinEstime().isBefore(dateFin))) {
+                        return ResponseEntity.status(416).build();
+                    }
                     MaterialResource ress = (MaterialResource) ressource;
                     t.getRessources().remove(affRess);
                     int qteAvailable = tacheSer.qteAvailableMaterialRess(t, ress, dateDebut, dateFin);
-                    if (qteAvailable < qte)
+                    if ((qteAvailable + affRess.getQte()) < qte)
                         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(qteAvailable);
                     affRess.setQte(qte);
                     affRess.setDateDebut(dateDebut);
@@ -839,6 +864,7 @@ public class TacheController {
             return ResponseEntity.ok(updated);
 
         } catch (Exception e) {
+
             return ResponseEntity.internalServerError().body("Error updating resource: " + e.getMessage());
         }
     }
@@ -847,8 +873,8 @@ public class TacheController {
     public ResponseEntity<?> deleteRessource(
             @RequestParam String taskID,
             @RequestParam String ressourceID,
-            @RequestParam(required = false)  LocalDateTime dateDebut,
-            @RequestParam(required = false)  LocalDateTime dateFin,
+            @RequestParam(required = false) LocalDateTime dateDebut,
+            @RequestParam(required = false) LocalDateTime dateFin,
             @RequestHeader("Authorization") String token) {
         try {
             Tache t = tacheSer.findTacheById(taskID);
@@ -858,7 +884,7 @@ public class TacheController {
                 return ResponseEntity.notFound().build();
             AffectationRessource affRess = t.getRessources().stream()
                     .filter(a -> {
-                        if ( a.getRess().getType().equals("Material") && "Material".equals(ressource.getType()) ) {
+                        if (a.getRess().getType().equals("Material") && "Material".equals(ressource.getType())) {
                             return a.getRess().getId().equals(ressource.getId())
                                     && a.getDateDebut().isEqual(dateDebut)
                                     && a.getDateFin().isEqual(dateFin);

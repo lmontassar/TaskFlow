@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AffectationRessource {
-
+    
     @DBRef
     private Resource ress;
     private int qte;
@@ -26,11 +26,11 @@ public class AffectationRessource {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        AffectationRessource ress = (AffectationRessource) o;
-        if (ress.getRess().getType() .equals("Material")  && this.getRess().getType() .equals("Material") ) {
-            return this.getRess().equals(ress.getRess())
-                    && this.getDateDebut().isEqual(ress.getDateDebut()) && this.getDateFin().isEqual(ress.getDateFin());
+        AffectationRessource ress1 = (AffectationRessource) o;
+        if (ress1.getRess().getType() .equals("Material")  && this.getRess().getType() .equals("Material") ) {
+            return this.getRess().equals(ress1.getRess())
+                    && this.getDateDebut().isEqual(ress1.getDateDebut()) && this.getDateFin().isEqual(ress1.getDateFin());
         }
-        return this.getRess().equals(ress.getRess());
+        return this.getRess().getId().equals(ress1.getRess().getId());
     }
 }

@@ -12,11 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar } from "@/components/ui/calendar"
 
-import { Popover, PopoverTrigger } from "@/components/ui/popover"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
-
-const { PopoverContent } = PopoverPrimitive
-
+import { PopoverContent, Popover, PopoverTrigger } from "@/components/ui/popover"
 import { Search, Plus, CalendarIcon, Zap, Clock, Box, Filter, Pencil, Trash2, Database } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -41,9 +37,10 @@ import TaskResourceStatisticMaterial from "./spec-task-charts-material"
 interface Props {
     task: any
     setTask: (task: any) => void
+    canEdit: any
 }
 
-export default function RessourceSpecifiTask({ task, setTask }: Props) {
+export default function RessourceSpecifiTask({ task, setTask, canEdit }: Props) {
     // States for resource management
     const [resources, setResources] = useState<any[]>([])
     const [filteredResources, setFilteredResources] = useState<any[]>([])
@@ -209,6 +206,14 @@ export default function RessourceSpecifiTask({ task, setTask }: Props) {
             setAssignedResources(updatedTask.ressources || [])
             setSuccess(t("task.ressource.success_assigned", {resource : selectedResource.nom} ));
             resetForm()
+        } else if (response.status === 416){
+            setError(
+                t('task.ressource.assigned_data_invalid', {
+                  dateD: format(new Date(task.dateDebut), 'yyyy-MM-dd'),
+                  dateF: format(new Date(task.dateFinEstime), 'yyyy-MM-dd'),
+                })
+              );
+
         } else if (response.status === 406) {
             // Not acceptable - resource limit exceeded
             const availableAmount = await response.text()
@@ -286,6 +291,14 @@ export default function RessourceSpecifiTask({ task, setTask }: Props) {
             // Not acceptable - resource limit exceeded
             const availableAmount = await response.text()
             setError(t("task.ressource.insufficient_resources", `Not enough resources available. Maximum available: ${availableAmount}`));
+        }else if (response.status === 416){
+            setError(
+                t('task.ressource.assigned_data_invalid', {
+                  dateD: format(new Date(task.dateDebut), 'yyyy-MM-dd'),
+                  dateF: format(new Date(task.dateFinEstime), 'yyyy-MM-dd'),
+                })
+              );
+
         } else if (response.status === 404) {
             setError(t("task.ressource.resource_not_found", "Resource not found. It may have been deleted."));
         } else {
@@ -412,6 +425,7 @@ export default function RessourceSpecifiTask({ task, setTask }: Props) {
                         <div>
                             <TaskResourceStatisticMaterial
                                 task={task}
+                                canEdit={ canEdit}
                             />
                         </div>
                     </TabsContent>
@@ -586,9 +600,7 @@ export default function RessourceSpecifiTask({ task, setTask }: Props) {
                                                             <PopoverContent
                                                                 side="bottom"
                                                                 align="start"
-                                                                className={cn(
-                                                                    " bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden"
-                                                                    , "w-auto p-0")}
+                                                                className="w-auto p-0"
                                                             >
                                                                 <Calendar
                                                                     mode="single"
@@ -622,9 +634,7 @@ export default function RessourceSpecifiTask({ task, setTask }: Props) {
                                                             <PopoverContent
                                                                 side="bottom"
                                                                 align="start"
-                                                                className={cn(
-                                                                    "w-auto p-0 bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden"
-                                                                    , "w-auto p-0")}
+                                                                className="w-auto p-0"
                                                             >
                                                                 <Calendar
                                                                     mode="single"
@@ -799,9 +809,7 @@ export default function RessourceSpecifiTask({ task, setTask }: Props) {
                                                 <PopoverContent
                                                     side="bottom"
                                                     align="start"
-                                                    className={cn(
-                                                        "w-auto p-0 bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden"
-                                                        , "w-auto p-0")}
+                                                    className="w-auto p-0"
                                                 >
                                                     <Calendar
                                                         mode="single"
@@ -836,9 +844,7 @@ export default function RessourceSpecifiTask({ task, setTask }: Props) {
                                                 <PopoverContent
                                                     side="bottom"
                                                     align="start"
-                                                    className={cn(
-                                                        "w-auto p-0 bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden"
-                                                        , "w-auto p-0")}
+                                                   className="w-auto p-0"
                                                 >
                                                     <Calendar
                                                         mode="single"

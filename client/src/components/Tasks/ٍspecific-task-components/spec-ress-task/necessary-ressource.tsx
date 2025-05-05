@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next"
 
 export default function NecessaryRessource(
     {
+        canEdit,
         handleAddResource,
         resources,
         RESOURCE_TYPE_ICONS,
@@ -50,10 +51,13 @@ export default function NecessaryRessource(
                             {t("task.necessary_ressource.title", "Necessary Resources")}
                         </CardTitle>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleAddResource} className="bg-white hover:bg-blue-50">
-                        <Plus className="h-4 w-4 mr-1" />
-                        {t("task.necessary_ressource.add", "Add Resource")}
-                    </Button>
+                    {canEdit && (
+                        <Button variant="outline" size="sm" onClick={handleAddResource} className="bg-white hover:bg-blue-50">
+                            <Plus className="h-4 w-4 mr-1" />
+                            {t("task.necessary_ressource.add", "Add Resource")}
+                        </Button>
+                    )}
+
                 </div>
                 <CardDescription>
                     {t("task.necessary_ressource.description", "Manage resources needed for this task")}
@@ -75,9 +79,11 @@ export default function NecessaryRessource(
                                         <TableHead>{t("task.necessary_ressource.type", "Type")}</TableHead>
                                         <TableHead>{t("task.necessary_ressource.category", "Category")}</TableHead>
                                         <TableHead>{t("task.necessary_ressource.details", "Details")}</TableHead>
-                                        <TableHead className="text-right">
-                                            {t("task.necessary_ressource.actions", "Actions")}
-                                        </TableHead>
+                                        {canEdit && (
+                                            <TableHead className="text-right">
+                                                {/* {t("task.necessary_ressource.actions", "Actions")} */}
+                                            </TableHead>
+                                        )}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -96,16 +102,19 @@ export default function NecessaryRessource(
                                                     ? `${t("task.necessary_ressource.consumption", "Consumption")}: ${resource.qte}`
                                                     : `${t("task.necessary_ressource.qte", "Quantity")}: ${resource.qte}`}
                                             </TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleEditResource(resource)}>
-                                                        <Pencil className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDeleteResource(resource.id)}>
-                                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
+                                            {canEdit && (
+                                                <TableCell className="text-right">
+
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button variant="ghost" size="icon" onClick={() => handleEditResource(resource)}>
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteResource(resource.id)}>
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            )}
                                         </TableRow>
                                     ))}
                                 </TableBody>

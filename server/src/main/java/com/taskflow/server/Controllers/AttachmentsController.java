@@ -1,10 +1,8 @@
 package com.taskflow.server.Controllers;
-
 import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.Attachment;
 import com.taskflow.server.Entities.Tache;
 import com.taskflow.server.Entities.User;
-import com.taskflow.server.Repositories.TacheRepository;
 import com.taskflow.server.Services.TacheService;
 import com.taskflow.server.Services.UserService;
 import io.jsonwebtoken.io.IOException;
@@ -16,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

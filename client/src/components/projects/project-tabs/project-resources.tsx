@@ -822,6 +822,7 @@ export function ProjectResources({ project }: { project: any }) {
       </Dialog>
 
       {/* Edit Resource Dialog */}
+      
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

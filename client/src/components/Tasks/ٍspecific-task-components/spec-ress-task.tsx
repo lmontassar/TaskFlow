@@ -27,10 +27,11 @@ import RessourceSpecifiTask from "./spec-ress-task/ressource"
 interface Props {
   task: any
   setTask: (task: any) => void
+  canEdit: any
 }
 
 
-export default function SpecificRessourcesTask({ task, setTask }: Props) {
+export default function SpecificRessourcesTask({ task, setTask, canEdit }: Props) {
   const { t } = useTranslation()
   const [resources, setResources] = useState<any>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -46,9 +47,9 @@ export default function SpecificRessourcesTask({ task, setTask }: Props) {
   //   MATERIAL: t("task.global_resource.material", "Material"),
   // }
   const RESOURCE_TYPES = {
-    ENERGETIC:  "Energetic",
+    ENERGETIC: "Energetic",
     TEMPORARY: "Temporal",
-    MATERIAL:  "Material",
+    MATERIAL: "Material",
   }
   const RESOURCE_TYPE_ICONS = {
     [RESOURCE_TYPES.ENERGETIC]: <Database className="h-4 w-4" />,
@@ -172,8 +173,10 @@ export default function SpecificRessourcesTask({ task, setTask }: Props) {
           <RessourceSpecifiTask
             task={task}
             setTask={setTask}
+            canEdit={canEdit}
           />
           <NecessaryRessource
+            canEdit={canEdit}
             handleAddResource={handleAddResource}
             resources={resources}
             RESOURCE_TYPE_ICONS={RESOURCE_TYPE_ICONS}

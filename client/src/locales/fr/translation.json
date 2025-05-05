@@ -557,6 +557,7 @@
         "editSuccess": "Ressource mise à jour avec succès !",
         "deleteSuccess": "Ressource supprimée avec succès !"
       },
+      "assigned_data_invalid": "Échec de l'ajout ! L'affectation doit être comprise entre [{{dateD}} - {{dateF}}]",
       "invalid_quantity": "Veuillez entrer une quantité valide",
       "select_dates": "Veuillez sélectionner les dates de début et de fin",
       "invalid_dates": "La date de fin doit être après la date de début",
@@ -674,7 +675,9 @@
       "qualite_invalid": "La qualité doit être comprise entre 0 et 5.",
       "difficulte_invalid": "La difficulté est requise.",
       "bad_request": "Requête incorrecte.",
-      "unexpected": "Une erreur inattendue est survenue."
+      "unexpected": "Une erreur inattendue est survenue.",
+      "date_dabut_invalid": "La date de début de la tâche ne peut pas être postérieure à la première date de début des ressources matérielles.",
+      "date_fin_invalid" :"La date de fin de la tâche ne peut pas être antérieure à la dernière date de fin des ressources matérielles."
     }
   }
 }

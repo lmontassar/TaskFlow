@@ -555,6 +555,7 @@
         "editSuccess": "Resource updated successfully!",
         "deleteSuccess": "Resource deleted successfully!"
       },
+      "assigned_data_invalid": "Failed to add! The assignment must be between [{{dateD}} - {{dateF}}]",
       "invalid_quantity": "Please enter a valid quantity",
       "select_dates": "Please select start and end dates",
       "invalid_dates": "End date must be after start date",
@@ -672,7 +673,9 @@
       "qualite_invalid": "Quality must be between 0 and 5.",
       "difficulte_invalid": "Difficulty is required.",
       "bad_request": "Bad request.",
-      "unexpected": "An unexpected error occurred."
+      "unexpected": "An unexpected error occurred.",
+      "date_dabut_invalid": "The task start date cannot be after the earliest material resource start date.",
+      "date_fin_invalid":"The task end date cannot be before the latest material resource end date."
     }
   }
 }
