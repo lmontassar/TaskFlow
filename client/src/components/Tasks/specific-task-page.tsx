@@ -1,19 +1,27 @@
-import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { format, parseISO, isValid } from "date-fns"
-import _ from "lodash"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { useTranslation } from "react-i18next"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Clock, ArrowLeft, CheckCircle2, AlertCircle, Circle } from 'lucide-react'
-import useTasks from "@/hooks/useTasks"
-import TaskDependecies from "./ٍspecific-task-components/task-dependecies"
-import SpecificTaskDetails from "./ٍspecific-task-components/spec-task-details"
-import SpecificTaskMainTabs from "./ٍspecific-task-components/spec-main-tabs"
-import SpecificTaskHeader from "./ٍspecific-task-components/spec-task-header"
-import SpecificRessourcesTask from "./ٍspecific-task-components/spec-ress-task"
+import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { format, parseISO, isValid } from "date-fns";
+import _ from "lodash";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Clock,
+  ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+  Circle,
+} from "lucide-react";
+import useTasks from "@/hooks/useTasks";
+import TaskDependecies from "./ٍspecific-task-components/task-dependecies";
+import SpecificTaskDetails from "./ٍspecific-task-components/spec-task-details";
+import SpecificTaskMainTabs from "./ٍspecific-task-components/spec-main-tabs";
+import SpecificTaskHeader from "./ٍspecific-task-components/spec-task-header";
+import SpecificRessourcesTask from "./ٍspecific-task-components/spec-ress-task";
+import { Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 export default function SpecificTaskPage() {
   const navigate = useNavigate();
@@ -36,6 +44,9 @@ export default function SpecificTaskPage() {
   const [status, setStatus] = useState(null);
   const [editError, setEditError] = useState("");
   const { t } = useTranslation();
+  const token = localStorage.getItem("authToken") || "";
+
+  const clientRef = useRef<any>(null);
   const {
     getTasksCanBePrecedente,
     AddPrecTask,
@@ -88,7 +99,54 @@ export default function SpecificTaskPage() {
       fetchTask();
     }
   }, [taskId]);
+  useEffect(() => {
+    if (!taskId || clientRef.current) return; // prevent duplicate connections
 
+    const socket = new SockJS("/api/ws");
+    const client = Stomp.over(socket);
+
+    client.connect(
+      { Authorization: `Bearer ${token}` },
+      () => {
+        console.log("Task WebSocket connected :", taskId);
+        client.subscribe(`/topic/tasks/${taskId}`, async (message) => {
+          const t = JSON.parse(message.body);
+          console.log("Received task update:", t);
+
+          setTask(t);
+          setEditedTask(t);
+          setDuration(t.duree);
+          setMarge(t.marge);
+          const subTasks = await GetSubTasks(taskId);
+          setSubTasks(subTasks);
+          let updatedTasksToHide = [
+            ...subTasks,
+            t,
+
+            ...(t?.precedentes || []),
+            ...(t?.paralleles || []),
+          ];
+          if (t?.parent != null)
+            updatedTasksToHide = [...updatedTasksToHide, t?.parent];
+          setTasksToHide(updatedTasksToHide);
+        });
+      },
+      (error: any) => {
+        console.error("Projects WebSocket error:", error);
+      }
+    );
+
+    clientRef.current = client;
+
+    return () => {
+      if (clientRef.current) {
+        clientRef.current.disconnect(() => {
+          console.log("WebSocket disconnected");
+        });
+        clientRef.current = null;
+      }
+    };
+  }, [taskId, token]);
   const handleRemoveAssignee = async () => {
     if (!task) return;
 
@@ -408,12 +466,8 @@ export default function SpecificTaskPage() {
         />
       </div>
 
-      <SpecificRessourcesTask       
-        task= {task}
-        setTask= {setTask}
-        canEdit={canEdit}
-      />
-      
+      <SpecificRessourcesTask task={task} setTask={setTask} canEdit={canEdit} />
+
       <TaskDependecies
         key="spec-dependencies"
         task={task}
