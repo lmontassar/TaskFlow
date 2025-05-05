@@ -2,16 +2,16 @@ import { Button } from "./button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
 
 interface Props {
-    confirmDelete : any,
+    confirmDelete: any,
     setConfirmDelete: any,
-    FunctionToDO:any,
-    Title : any,
-    Description : any,
+    FunctionToDO: any,
+    Title: any,
+    Description: any,
     CancelText: any
     ConfirmText: any
 }
 
-export default function ConfirmAlert( { 
+export default function ConfirmAlert({
     confirmDelete,
     setConfirmDelete,
     FunctionToDO,
@@ -19,25 +19,29 @@ export default function ConfirmAlert( {
     Description,
     CancelText,
     ConfirmText
- }: Props ){
+}: Props) {
     return (
         <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
             <DialogContent>
                 <DialogHeader>
-                <DialogTitle>
-                    {Title}
-                </DialogTitle>
-                <DialogDescription>
-                    {Description}
-                </DialogDescription>
+                    <DialogTitle>
+                        {Title}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {Description}
+                    </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                <Button variant="outline" onClick={() => setConfirmDelete(false)}>
-                    {CancelText}
-                </Button>
-                <Button variant="destructive" onClick={FunctionToDO}>
-                    {ConfirmText}
-                </Button>
+                    <Button variant="outline" onClick={() => setConfirmDelete(false)}>
+                        {CancelText}
+                    </Button>
+                    <Button variant="destructive"
+                        onClick={() => {
+                            FunctionToDO();
+                            setConfirmDelete(false);
+                        }}>
+                        {ConfirmText}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

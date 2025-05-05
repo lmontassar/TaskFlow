@@ -1,19 +1,20 @@
-import {Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import _ from "lodash"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Edit, Trash2, ArrowLeft, MoreHorizontal } from 'lucide-react'
 import { DropdownMenuSeparator } from "../../ui/dropdown-menu"
 import ConfirmAlert from "../../ui/confirm_alert"
 import { useTranslation } from "react-i18next"
 import useTasks from "../../../hooks/useTasks"
+import React from "react"
 
 export default function SpecificTaskHeader(
     {
@@ -41,16 +42,20 @@ export default function SpecificTaskHeader(
 ) {
     const {
         checkIfCreatorOfProject
-      } = useTasks();
-    const {t} = useTranslation();
+    } = useTasks();
+    const { t } = useTranslation();
+    const [menuOpen, setMenuOpen] = React.useState(false);
+
     return (
         <>
-            <ConfirmAlert key="delete-task" confirmDelete={confirmDelete} setConfirmDelete={setConfirmDelete} FunctionToDO={deleteTask}
-                Title={t("tasks.specific.delete_confirm.title", "Are you sure you want to delete this task?")}
-                Description={t("tasks.specific.delete_confirm.description",
-                    "This action cannot be undone. This will permanently delete the task and all associated data.",)}
-                CancelText={t("common.cancel")} ConfirmText={t("common.delete")}
-            />
+            { confirmDelete && (
+                <ConfirmAlert key="delete-task" confirmDelete={confirmDelete} setConfirmDelete={setConfirmDelete} FunctionToDO={deleteTask}
+                    Title={t("tasks.specific.delete_confirm.title", "Are you sure you want to delete this task?")}
+                    Description={t("tasks.specific.delete_confirm.description",
+                        "This action cannot be undone. This will permanently delete the task and all associated data.",)}
+                    CancelText={t("common.cancel")} ConfirmText={t("common.delete")}
+                />
+            )}
 
             {(assigneeToDelete) && (
                 <ConfirmAlert key="delete-assigne" confirmDelete={assigneeToDelete} setConfirmDelete={setAssigneeToDelete} FunctionToDO={handleRemoveAssignee}
@@ -128,7 +133,7 @@ export default function SpecificTaskHeader(
                 </div>
                 {canEdit && (
                     <div className="flex items-center gap-2">
-                        <DropdownMenu>
+                        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon">
                                     <MoreHorizontal className="h-5 w-5" />
@@ -146,7 +151,10 @@ export default function SpecificTaskHeader(
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                     className="text-destructive focus:text-destructive cursor-pointer"
-                                    onClick={() => setConfirmDelete(true)}
+                                    onClick={() => {
+                                        setMenuOpen(false);     
+                                        setConfirmDelete(true); 
+                                      }}
                                     disabled={!checkIfCreatorOfProject(task.project)}
                                 >
                                     <Trash2 className="mr-2 h-4 w-4" />

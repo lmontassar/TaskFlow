@@ -26,7 +26,6 @@ public class Resource {
 
     @Override
     public boolean equals(Object o) {
-        System.out.println("hlayem");
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resource resource = (Resource ) o;
