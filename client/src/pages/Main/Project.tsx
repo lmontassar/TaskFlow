@@ -37,7 +37,11 @@ export default function ProjectPage() {
         isProjectEditing={isProjectEditing}
         setIsProjectEditing={setIsProjectEditing}
       />
-      <ProjectTabs projects={project} setProject={setProject} />
+      <ProjectTabs
+        projects={project}
+        setProject={setProject}
+        isLoading={isLoading}
+      />
     </>
   );
 }

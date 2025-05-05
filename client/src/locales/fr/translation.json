@@ -130,7 +130,20 @@
     "server": "Oups! Un problème est survenu"
   },
   "project": {
+    "NOT_STARTED": "Non Commencé",
+    "IN_PROGRESS": "En Cours",
+    "COMPLETED": "Terminé",
+    "CANCELED": "Annulé",
+    "addCollaborator": "Ajouter des Membres",
+    "editProject": "Modifier le Projet",
     "creation_form": {
+      "timeline": "Chronologie",
+      "start_date": "Date de Début",
+      "estimated_end_date": "Date de Fin Estimée",
+      "members": "Collaborateurs",
+      "progress": "Progrès",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
       "title": "Créer un projet",
       "name": "Nom du projet",
       "name_placeholder": "Entrez le nom de votre projet",
@@ -148,7 +161,7 @@
     }
   },
   "tasks": {
-    "attachments":{
+    "attachments": {
       "drag_and_drop": "Glisser-déposer des fichiers ici",
       "or": "ou",
       "browse_your_device": "Parcourir votre appareil",
@@ -159,7 +172,6 @@
       "upload_error": "Erreur de téléchargement",
       "delete_success": "Pièce jointe supprimée avec succès",
       "delete_error": "Erreur lors de la suppression de la pièce jointe"
-    
     },
     "taskSearch": {
       "selectPlaceholder": "Sélectionnez une tâche...",
@@ -678,6 +690,27 @@
       "unexpected": "Une erreur inattendue est survenue.",
       "date_dabut_invalid": "La date de début de la tâche ne peut pas être postérieure à la première date de début des ressources matérielles.",
       "date_fin_invalid" :"La date de fin de la tâche ne peut pas être antérieure à la dernière date de fin des ressources matérielles."
+    }
+  },
+  "member": {
+    "title": "Membres",
+    "search": "Rechercher des membres...",
+    "name": "Nom",
+    "lastname": "Nom de famille",
+    "email": "Email",
+    "phone": "Téléphone",
+    "no_members": "Aucun membre trouvé",
+    "role": {
+      "title": "Rôle",
+      "project_owner": "Propriétaire du projet",
+      "employee": "Employé"
+    },
+    "delete": {
+      "title": "Supprimer le membre",
+      "description": "Êtes-vous sûr de vouloir supprimer ce membre ?",
+      "cancel": "Annuler",
+      "confirm": "Supprimer",
+      "success": "Membre supprimé avec succès !"
     }
   }
 }

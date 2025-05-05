@@ -6,14 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -29,20 +21,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import {
   Plus,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  DollarSign,
   Users,
   Laptop,
   Briefcase,
@@ -50,12 +31,13 @@ import {
   Clock,
   Search,
   Filter,
-  PlusIcon,
-  DoorOpen,
-  Eye,
 } from "lucide-react";
 import useResources from "../../../hooks/useResources";
 import { useTranslation } from "react-i18next";
+import AddResource from "../../AddResource";
+import ResourceDetail from "../../ResourceDetail";
+import EditResource from "../../EditResource";
+import ResourcesTable from "../../ResourcesTable";
 
 interface Resource {
   id: string;
@@ -103,10 +85,10 @@ export function ProjectResources({ project }: { project: any }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string | null>(null);
   const [formData, setFormData] =
-  useState<typeof initialFormData>(initialFormData);
+    useState<typeof initialFormData>(initialFormData);
 
   useEffect(() => {
-    setResources( project.listeRessource || []);
+    setResources(project.listeRessource || []);
   }, [project.listeRessource]);
   // Get unique categories using a Set
   const uniqueCategories = useMemo(() => {
@@ -119,7 +101,6 @@ export function ProjectResources({ project }: { project: any }) {
     return Array.from(categoriesSet);
   }, [resources]);
 
-  
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const { createResource, editResource, deleteResource } = useResources();
 
@@ -205,8 +186,6 @@ export function ProjectResources({ project }: { project: any }) {
     try {
       const newResource = await createResource(resourceData);
       if (newResource) {
-        await setResources((prev) => [...prev, newResource]);
-
         setIsAddDialogOpen(false);
         resetForm();
       }
@@ -402,700 +381,51 @@ export function ProjectResources({ project }: { project: any }) {
               <span className="font-medium">${totalCost.toLocaleString()}</span>
             </div>
           </div>
-
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("resource.resource")}</TableHead>
-                  <TableHead>{t("resource.type")}</TableHead>
-
-                  <TableHead>{t("resource.cost_per_unit")}</TableHead>
-                  <TableHead>{t("resource.total_cost")}</TableHead>
-                  <TableHead>{t("resource.status")}</TableHead>
-                  <TableHead className="w-20"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredResources.length > 0 ? (
-                  filteredResources.map((resource) => (
-                    <TableRow
-                      key={resource.id}
-                      onDoubleClick={() => openDialog(resource)}
-                    >
-                      <TableCell>
-                        <div>
-                          <div className="font-medium truncate max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap">
-                            {resource.nom}
-                          </div>
-                          {resource.notes && (
-                            <div className="text-xs text-muted-foreground truncate max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap">
-                              {resource.notes}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {getTypeIcon(resource.type)}
-                          <span className="capitalize">{resource.type}</span>
-                        </div>
-                      </TableCell>
-
-                      <TableCell>
-                        ${resource.coutUnitaire.toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        $
-                        {(
-                          resource.qte * resource.coutUnitaire ||
-                          resource?.consommationMax * resource.coutUnitaire
-                        ).toLocaleString()}
-                      </TableCell>
-                      <TableCell>{getStatusBadge(resource.status)}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => openDialog(resource)}
-                            >
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => openEditDialog(resource)}
-                            >
-                              <Edit className="mr-2 h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => openDeleteDialog(resource)}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                      {t("resource.no_resources")}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          {/* Resources Table */}
+          <ResourcesTable
+            filteredResources={filteredResources}
+            t={t}
+            openDialog={openDialog}
+            openEditDialog={openEditDialog}
+            openDeleteDialog={openDeleteDialog}
+            getTypeIcon={getTypeIcon}
+            getStatusBadge={getStatusBadge}
+          />
         </CardContent>
       </Card>
       {/* Open Resource Dialog */}
       {isOpenDialog && (
-        <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="text-2xl truncate max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap">
-                {currentResource?.nom}
-              </DialogTitle>
-              <DialogDescription className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  {getTypeIcon(currentResource?.type)}
-                  <span className="capitalize">{currentResource?.type}</span>
-                </div>
-                <span className="text-muted-foreground">•</span>
-                {getStatusBadge(currentResource?.status)}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="rounded-md border">
-                <div className="grid grid-cols-2 gap-4 p-4 sm:grid-cols-3">
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Resource ID
-                    </h4>
-                    <p
-                      className="mt-1 truncate max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap"
-                      title={currentResource?.id}
-                    >
-                      {currentResource?.id}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Type
-                    </h4>
-                    <p className="mt-1 flex items-center gap-1 capitalize">
-                      {getTypeIcon(currentResource?.type)}
-                      {currentResource?.type}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Status
-                    </h4>
-                    <p className="mt-1">
-                      {getStatusBadge(currentResource?.status)}
-                    </p>
-                  </div>
-                  {currentResource.type == "Material" && (
-                    <div>
-                      <h4 className="text-sm font-medium text-muted-foreground">
-                        {t("resource.allocated_quantity")}
-                      </h4>
-                      <p className="mt-1">
-                        {currentResource?.qteDisponibilite}{" "}
-                        {currentResource?.unitMeasure}
-                      </p>
-                    </div>
-                  )}
-                  {currentResource.type == "Energetic" ? (
-                    <>
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground">
-                          {t("resource.add_resource_form.maximum_consumption")}
-                        </h4>
-                        <p className="mt-1">
-                          {currentResource?.consommationMax}{" "}
-                          {currentResource?.unitMeasure}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground">
-                          {t("resource.add_resource_form.total_consumption")}
-                        </h4>
-                        <p className="mt-1">
-                          {currentResource?.consommationTotale}{" "}
-                          {currentResource?.unitMeasure}
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <div>
-                      <h4 className="text-sm font-medium text-muted-foreground">
-                        {t("resource.quantity")}
-                      </h4>
-                      <p className="mt-1">
-                        {currentResource?.qte ||
-                          currentResource?.consommationMax}{" "}
-                        {currentResource?.unitMeasure}
-                      </p>
-                    </div>
-                  )}
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Cost Per Unit
-                    </h4>
-                    <p className="mt-1">
-                      ${currentResource?.coutUnitaire.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Total Cost
-                    </h4>
-                    <p className="mt-1 font-medium">
-                      $
-                      {(
-                        (currentResource?.qte ||
-                          currentResource?.consommationMax) *
-                        currentResource?.coutUnitaire
-                      ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {currentResource.notes && (
-                <div className="rounded-md border p-4">
-                  <h3 className="font-medium mb-2">Notes</h3>
-                  <p className="break-words whitespace-pre-wrap text-sm max-w-[calc(var(--container-md)-5rem)]">
-                    {currentResource.notes}
-                  </p>
-                </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+        <ResourceDetail
+          currentResource={currentResource}
+          isOpenDialog={isOpenDialog}
+          setIsOpenDialog={setIsOpenDialog}
+          t={t}
+          getTypeIcon={getTypeIcon}
+          getStatusBadge={getStatusBadge}
+        />
       )}
       {/* Add Resource Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t("resource.add_resource_form.title")}</DialogTitle>
-            <DialogDescription>
-              {t("resource.add_resource_form.description")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="mb-2" htmlFor="categorie">
-                  {t("resource.add_resource_form.categorie")}
-                </Label>
-                <Select
-                  value={formData.categorie}
-                  onValueChange={(value) =>
-                    handleSelectChange("categorie", value)
-                  }
-                >
-                  <SelectTrigger id="categorie">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {uniqueCategories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="other">
-                      <div className="flex items-center">
-                        <PlusIcon className="mr-2 h-4 w-4" />
-                        {t("resource.add_resource_form.add_new_categorie")}
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {formData.categorie === "other" && (
-                <div>
-                  <Label className="mb-2" htmlFor="newcategorie">
-                    {t("resource.add_resource_form.new_categorie")}
-                  </Label>
-                  <Input
-                    id="newcategorie"
-                    name="newcategorie"
-                    value={formData.newcategorie}
-                    onChange={handleInputChange}
-                    placeholder="Enter new category"
-                  />
-                </div>
-              )}
-              <div className="col-span-2">
-                <Label className="mb-2" htmlFor="nom">
-                  {t("resource.name")}
-                </Label>
-                <Input
-                  id="nom"
-                  name="nom"
-                  value={formData.nom}
-                  onChange={handleInputChange}
-                  placeholder={t("resource.add_resource_form.name_placeholder")}
-                />
-              </div>
-              <div>
-                <Label className="mb-2" htmlFor="type">
-                  {t("resource.type")}
-                </Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => handleSelectChange("type", value)}
-                  disabled={
-                    formData.categorie !== "other" && formData.categorie !== ""
-                  }
-                >
-                  <SelectTrigger id="type">
-                    <SelectValue
-                      placeholder={t(
-                        "resource.add_resource_form.type_placeholder"
-                      )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Temporal">
-                      {t("resource.temporal")}
-                    </SelectItem>
-                    <SelectItem value="Material">
-                      {t("resource.material")}
-                    </SelectItem>
-                    <SelectItem value="Energetic">
-                      {t("resource.energetic")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {formData.type !== "Energetic" && (
-                <div>
-                  <Label className="mb-2" htmlFor="qte">
-                    {t("resource.quantity")}
-                  </Label>
-                  <Input
-                    id="qte"
-                    name="qte"
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={formData.qte}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              )}
-              {formData.type === "Energetic" && (
-                <div>
-                  <Label className="mb-2" htmlFor="consommationMax">
-                    {t("resource.add_resource_form.maximum_consumption")}
-                  </Label>
-                  <Input
-                    id="consommationMax"
-                    name="consommationMax"
-                    value={formData.consommationMax}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 10, 20, 30"
-                    type="number"
-                    min="0"
-                  />
-                </div>
-              )}
-              <div className="col-span-2">
-                {(formData.type === "Temporal" ||
-                  formData.type === "Energetic") && (
-                  <>
-                    <Label className="mb-2" htmlFor="unitMeasure">
-                      {t("resource.add_resource_form.unit")}
-                    </Label>
-                    <Input
-                      id="unitMeasure"
-                      name="unitMeasure"
-                      value={formData.unitMeasure}
-                      onChange={handleInputChange}
-                      placeholder="e.g., hours, licenses, kWh"
-                    />
-                  </>
-                )}
-              </div>
-
-              <div className={"col-span-2"}>
-                <Label className="mb-2" htmlFor="coutUnitaire">
-                  {t("resource.cost_per_unit")} ($)
-                </Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="coutUnitaire"
-                    name="coutUnitaire"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="pl-8"
-                    value={formData.coutUnitaire}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <div className="col-span-2">
-                <Label className="mb-2" htmlFor="notes">
-                  {t("resource.add_resource_form.notes_optional")}
-                </Label>
-                <Input
-                  id="notes"
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleInputChange}
-                  placeholder={t(
-                    "resource.add_resource_form.notes_placeholder"
-                  )}
-                />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddResource}>Add Resource</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
+      <AddResource
+        formData={formData}
+        isAddDialogOpen={isAddDialogOpen}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        handleAddResource={handleAddResource}
+        handleSelectChange={handleSelectChange}
+        uniqueCategories={uniqueCategories}
+        handleInputChange={handleInputChange}
+        t={t}
+      />
       {/* Edit Resource Dialog */}
-      
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {t("resource.add_resource_form.edit_title")}
-            </DialogTitle>
-            <DialogDescription>
-              {t("resource.add_resource_form.edit_description")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="mb-2" htmlFor="edit-categorie">
-                  {t("resource.add_resource_form.categorie")}
-                </Label>
-                <Select
-                  value={formData.categorie}
-                  onValueChange={(value) =>
-                    handleSelectChange("categorie", value)
-                  }
-                >
-                  <SelectTrigger id="edit-categorie">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {uniqueCategories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="other">
-                      <div className="flex items-center">
-                        <PlusIcon className="mr-2 h-4 w-4" />
-                        {t("resource.add_resource_form.new_categorie")}
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {formData.categorie === "other" && (
-                <div>
-                  <Label className="mb-2" htmlFor="edit-newcategorie">
-                    {t("resource.add_resource_form.new_categorie")}
-                  </Label>
-                  <Input
-                    id="edit-newcategorie"
-                    name="newcategorie"
-                    value={formData.newcategorie}
-                    onChange={handleInputChange}
-                    placeholder={t(
-                      "resource.add_resource_form.new_categorie_placeholder"
-                    )}
-                  />
-                </div>
-              )}
-              <div className="col-span-2">
-                <Label className="mb-2" htmlFor="edit-nom">
-                  {t("resource.name")}
-                </Label>
-                <Input
-                  id="edit-nom"
-                  name="nom"
-                  className={formData.nom ? "" : "border-destructive"}
-                  value={formData.nom}
-                  onChange={handleInputChange}
-                  placeholder={t("resource.add_resource_form.name_placeholder")}
-                />
-              </div>
-              <div>
-                <Label className="mb-2" htmlFor="edit-type">
-                  {t("resource.type")}
-                </Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => handleSelectChange("type", value)}
-                  disabled={
-                    formData.categorie !== "other" && formData.categorie !== ""
-                  }
-                >
-                  <SelectTrigger id="edit-type">
-                    <SelectValue
-                      placeholder={t(
-                        "resource.add_resource_form.type_placeholder"
-                      )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Temporal">
-                      {t("resource.temporal")}
-                    </SelectItem>
-                    <SelectItem value="Material">
-                      {t("resource.material")}
-                    </SelectItem>
-                    <SelectItem value="Energetic">
-                      {t("resource.energetic")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="mb-2" htmlFor="edit-status">
-                  {t("resource.status")}
-                </Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => handleSelectChange("status", value)}
-                >
-                  <SelectTrigger id="edit-status">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="AVAILABLE">
-                      {t("resource.available")}
-                    </SelectItem>
-                    <SelectItem value="ALLOCATED">
-                      {t("resource.allocated")}
-                    </SelectItem>
-                    <SelectItem value="PENDING">
-                      {t("resource.pending")}
-                    </SelectItem>
-                    <SelectItem value="UNAVAILABLE">
-                      {t("resource.unavailable")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {formData.type !== "Energetic" && (
-                <div>
-                  <Label className="mb-2" htmlFor="edit-qte">
-                    {t("resource.quantity")}
-                  </Label>
-                  <Input
-                    id="edit-qte"
-                    className={formData.qte ? "" : "border-destructive"}
-                    name="qte"
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={formData.qte}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              )}
-              {formData.type === "Energetic" && (
-                <>
-                  <div>
-                    <Label className="mb-2" htmlFor="edit-consommationMax">
-                      {t("resource.add_resource_form.maximum_consumption")}
-                    </Label>
-                    <Input
-                      id="edit-consommationMax"
-                      name="consommationMax"
-                      value={formData.consommationMax}
-                      className={
-                        formData.consommationMax ? "" : "border-destructive"
-                      }
-                      onChange={handleInputChange}
-                      placeholder="e.g., 10, 20, 30"
-                      type="number"
-                      min="0"
-                    />
-                  </div>
-                  <div>
-                    <Label className="mb-2" htmlFor="edit-consommationTotale">
-                      {t("resource.add_resource_form.total_consumption")}
-                    </Label>
-                    <Input
-                      id="edit-consommationTotale"
-                      name="consommationTotale"
-                      value={formData.consommationTotale}
-                      className={
-                        formData.consommationTotale ? "" : "border-destructive"
-                      }
-                      onChange={handleInputChange}
-                      placeholder="e.g., 10, 20, 30"
-                      type="number"
-                      min="0"
-                    />
-                  </div>
-                </>
-              )}
-              <div>
-                {formData.type === "Temporal" ||
-                formData.type === "Energetic" ? (
-                  <>
-                    <Label className="mb-2" htmlFor="edit-unitMeasure">
-                      {t("resource.add_resource_form.unit")}
-                    </Label>
-                    <Input
-                      id="edit-unitMeasure"
-                      className={
-                        formData.unitMeasure ? "" : "border-destructive"
-                      }
-                      name="unitMeasure"
-                      value={formData.unitMeasure}
-                      onChange={handleInputChange}
-                      placeholder="e.g., hours, licenses, units"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Label className="mb-2" htmlFor="edit-qteDisponibilite">
-                      {t("resource.add_resource_form.available_quantity")}
-                    </Label>
-                    <Input
-                      id="edit-qteDisponibilite"
-                      name="qteDisponibilite"
-                      className={
-                        formData.qteDisponibilite ? "" : "border-destructive"
-                      }
-                      value={formData.qteDisponibilite}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 100, 50, 25"
-                      type="number"
-                      min="0"
-                    />
-                  </>
-                )}
-              </div>
-              <div
-                className={
-                  formData.type === "Material" ? "col-span-1" : "col-span-2"
-                }
-              >
-                <Label className="mb-2" htmlFor="edit-coutUnitaire">
-                  {t("resource.cost_per_unit")} ($)
-                </Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="edit-coutUnitaire"
-                    unitMeasure
-                    name="coutUnitaire"
-                    className={`pl-8  ${
-                      formData.coutUnitaire ? "" : "border-destructive"
-                    }`}
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={formData.coutUnitaire}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <div className="col-span-2">
-                <Label className="mb-2" htmlFor="edit-notes">
-                  {t("resource.add_resource_form.notes_optional")}
-                </Label>
-                <Input
-                  id="edit-notes"
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleInputChange}
-                  placeholder={t(
-                    "resource.add_resource_form.notes_placeholder"
-                  )}
-                />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsEditDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleEditResource}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditResource
+        formData={formData}
+        isEditDialogOpen={isEditDialogOpen}
+        setIsEditDialogOpen={setIsEditDialogOpen}
+        handleEditResource={handleEditResource}
+        handleSelectChange={handleSelectChange}
+        uniqueCategories={uniqueCategories}
+        handleInputChange={handleInputChange}
+        t={t}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

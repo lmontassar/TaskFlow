@@ -143,7 +143,7 @@ export function ProjectOverview({
             {/* Description */}
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-muted-foreground">
-                Description
+                {t("project.creation_form.description")}
               </h3>
               <p>{projects?.description || "No description"}</p>
             </div>
@@ -151,12 +151,12 @@ export function ProjectOverview({
             {/* Timeline */}
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-muted-foreground">
-                Timeline
+                {t("project.creation_form.timeline")}
               </h3>
               <div className="flex items-center gap-2 text-sm">
                 <CalendarDays className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  Start:{" "}
+                  {t("project.creation_form.start_date")}:{" "}
                   {projects?.dateDebut
                     ? new Date(projects.dateDebut).toLocaleDateString()
                     : "N/A"}
@@ -165,7 +165,7 @@ export function ProjectOverview({
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  Due:{" "}
+                  {t("project.creation_form.estimated_end_date")}:{" "}
                   {projects?.dateFinEstime
                     ? new Date(projects.dateFinEstime).toLocaleDateString()
                     : "N/A"}
@@ -176,7 +176,7 @@ export function ProjectOverview({
             {/* Members */}
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-muted-foreground">
-                Members
+                {t("project.creation_form.members")}
               </h3>
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-2">
@@ -208,7 +208,7 @@ export function ProjectOverview({
             {/* Progress */}
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-muted-foreground">
-                Progress
+                {t("project.creation_form.progress")}
               </h3>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -235,7 +235,7 @@ export function ProjectOverview({
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-muted-foreground">
-                  Project Name
+                  {t("project.creation_form.project_name")}
                 </h3>
                 <Input
                   type="text"
@@ -249,7 +249,7 @@ export function ProjectOverview({
 
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-muted-foreground">
-                  Description
+                  {t("project.creation_form.description")}
                 </h3>
                 <Textarea03
                   helperText={t(
@@ -284,7 +284,7 @@ export function ProjectOverview({
               {/* Date Range */}
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-muted-foreground">
-                  Timeline
+                  {t("project.creation_form.timeline")}
                 </h3>
                 {/* Start Date */}
                 <div className="flex items-center gap-2 text-sm">
@@ -361,9 +361,11 @@ export function ProjectOverview({
 
             <div className="mt-6 flex items-center justify-end gap-4">
               <Button variant="outline" onClick={handleCancel}>
-                Cancel
+                {t("project.creation_form.cancel")}
               </Button>
-              <Button onClick={handleSubmit}>Save</Button>
+              <Button onClick={handleSubmit}>
+                {t("project.creation_form.save")}
+              </Button>
             </div>
           </>
         )}

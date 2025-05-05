@@ -6,6 +6,7 @@ import useGetProject from "../../hooks/useGetProjects";
 import SearchForm from "../comp-333";
 import hasPermission from "../../utils/authz";
 import useGetUser from "../../hooks/useGetUser";
+import { useTranslation } from "react-i18next";
 
 export function ProjectHeader({
   projects,
@@ -14,7 +15,7 @@ export function ProjectHeader({
   setIsProjectEditing,
 }: any) {
   // In a real app, you would fetch the project data based on the ID
-
+  const { t } = useTranslation();
   const { user } = useGetUser();
   let isAllowedToAddCollaborator = false;
   let role = "memeber";
@@ -31,7 +32,7 @@ export function ProjectHeader({
           <h1 className="text-2xl font-bold tracking-tight">{projects?.nom}</h1>
         </div>
         <div className="flex items-center gap-2">
-          {projects?.tags.map((tag) => (
+          {projects?.tags.map((tag: any) => (
             <Badge
               variant="outline"
               className="bg-blue-50 text-blue-700 border-blue-200"
@@ -40,7 +41,7 @@ export function ProjectHeader({
             </Badge>
           ))}
 
-          <Badge variant="default">{projects?.status}</Badge>
+          <Badge variant="default">{t(`project.${projects?.status}`)}</Badge>
         </div>
       </div>
 
@@ -48,7 +49,7 @@ export function ProjectHeader({
         <div className="flex items-center gap-2">
           <SearchForm project={projects} setProject={setProjects}>
             <Plus className="mr-2 h-4 w-4" />
-            Add Members
+            {t("project.addCollaborator")}
           </SearchForm>
 
           <Button
@@ -59,7 +60,7 @@ export function ProjectHeader({
             }}
           >
             <Edit className="mr-2 h-4 w-4" />
-            Edit
+            {t("project.editProject")}
           </Button>
         </div>
       )}
