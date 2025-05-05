@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -85,6 +85,7 @@ export function TaskDetails({
   const [task, setTask] = useState(taskToEdit);
   const [editError, setEditError] = useState("");
   const { t } = useTranslation();
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   useEffect(() => {
     setTask(allTasks.filter((t) => t.id == taskToEdit.id)[0]);
@@ -267,7 +268,7 @@ export function TaskDetails({
         </div>
 
         <div className="flex items-center gap-2">
-          <DropdownMenu>
+          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <MoreHorizontal className="h-5 w-5" />
@@ -287,8 +288,10 @@ export function TaskDetails({
               <DropdownMenuItem
                 disabled={!checkIfCreatorOfProject(task.project)}
                 className="text-destructive focus:text-destructive"
-                onClick={() =>
+                onClick={() => {
                   setConfirmDelete(checkIfCreatorOfProject(task.project))
+                  setMenuOpen(false);
+                }
                 }
               >
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -503,7 +506,7 @@ export function TaskDetails({
                     <Calendar
                       mode="single"
                       selected={editedTask.dateDebut ? parseISO(editedTask.dateDebut) : undefined}
-                      onSelect={(date:any) => handleTaskUpdate("dateDebut", date ? toLocalISOString(date) : undefined)}
+                      onSelect={(date: any) => handleTaskUpdate("dateDebut", date ? toLocalISOString(date) : undefined)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -534,7 +537,7 @@ export function TaskDetails({
                     <Calendar
                       mode="single"
                       selected={editedTask.dateFinEstime ? parseISO(editedTask.dateFinEstime) : undefined}
-                      onSelect={(date:any) => handleTaskUpdate("dateFinEstime", date ?  toLocalISOString(date) : undefined)}
+                      onSelect={(date: any) => handleTaskUpdate("dateFinEstime", date ? toLocalISOString(date) : undefined)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -602,19 +605,18 @@ export function TaskDetails({
                         {Array.from({ length: 5 }).map((_, i) => (
                           <StarIcon
                             key={i}
-                            className={`h-4 w-4 ${
-                              i < (task.qualite || 0)
+                            className={`h-4 w-4 ${i < (task.qualite || 0)
                                 ? "text-blue-500 fill-blue-500"
                                 : "text-muted-foreground"
-                            }`}
+                              }`}
                           />
                         ))}
                       </>
                     )) || (
-                      <span className="text-sm">
-                        {t("tasks.details.qualit.zero", "Not Rated")}
-                      </span>
-                    )}
+                        <span className="text-sm">
+                          {t("tasks.details.qualit.zero", "Not Rated")}
+                        </span>
+                      )}
                   </div>
                 </div>
                 {task.budgetEstime != 0 && (
@@ -703,10 +705,10 @@ export function TaskDetails({
                   </TabsTrigger>
                   {(checkIfCreatorOfProject(task?.project) ||
                     checkIfAssigneeTask(task)) && (
-                    <TabsTrigger value="attachments" className="flex-1">
-                      {t("tasks.specific.tabs.attachments", "Attachments")}
-                    </TabsTrigger>
-                  )}
+                      <TabsTrigger value="attachments" className="flex-1">
+                        {t("tasks.specific.tabs.attachments", "Attachments")}
+                      </TabsTrigger>
+                    )}
                 </TabsList>
                 {/* <TabsContent value="comments" className="space-y-4 pt-4">
                   {task.comments.length > 0 ? (
@@ -821,10 +823,10 @@ export function TaskDetails({
 
                 {(checkIfCreatorOfProject(task?.project) ||
                   checkIfAssigneeTask(task)) && (
-                  <TabsContent value="attachments" className="pt-2">
-                    <AttachmentsTab task={task} />
-                  </TabsContent>
-                )}
+                    <TabsContent value="attachments" className="pt-2">
+                      <AttachmentsTab task={task} />
+                    </TabsContent>
+                  )}
               </Tabs>
             </div>
           )}

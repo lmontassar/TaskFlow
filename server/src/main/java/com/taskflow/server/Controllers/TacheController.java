@@ -413,7 +413,7 @@ public class TacheController {
                 return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
-
+            System.out.println(e); 
             return ResponseEntity.badRequest().build();
         }
     }
