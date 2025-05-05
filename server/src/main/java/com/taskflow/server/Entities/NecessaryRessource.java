@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 public class NecessaryRessource {
     public static enum typeRess {
-        Temporal, Material, Energetic
+        Temporary, Material, Energetic
     }
 
     @Id

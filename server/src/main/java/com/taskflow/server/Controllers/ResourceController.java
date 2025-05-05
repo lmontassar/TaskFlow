@@ -45,22 +45,22 @@ public class ResourceController {
         float coutUnitaire = ((Number) requestBody.get("coutUnitaire")).floatValue();
 
         switch (type) {
-            case "Temporal": {
+            case "Temporary": {
                 String unitMesure = (String) requestBody.get("unitMeasure");
                 int qte = ((Number) requestBody.get("qte")).intValue();
 
-                TemporalResource temporalResource = new TemporalResource();
-                temporalResource.setNom(resourceName);
-                temporalResource.setType(type);
-                temporalResource.setCategorie(categorie);
-                temporalResource.setCoutUnitaire(coutUnitaire);
-                temporalResource.setUnitMeasure(unitMesure);
+                TemporaryResource temporaryResource = new TemporaryResource();
+                temporaryResource.setNom(resourceName);
+                temporaryResource.setType(type);
+                temporaryResource.setCategorie(categorie);
+                temporaryResource.setCoutUnitaire(coutUnitaire);
+                temporaryResource.setUnitMeasure(unitMesure);
 
-                temporalResource.setQte(qte);
-                temporalResource.setStatus(Resource.Status.AVAILABLE);
-                temporalResource.setNotes(note);
+                temporaryResource.setQte(qte);
+                temporaryResource.setStatus(Resource.Status.AVAILABLE);
+                temporaryResource.setNotes(note);
 
-                TemporalResource saved = resourceService.createTemporalResource(temporalResource);
+                TemporaryResource saved = resourceService.createTemporaryResource(temporaryResource);
                 Project result = projectService.addResource(project, saved);
                 resourceService.sendSocket(result);
                 return (result != null && saved != null)
@@ -152,8 +152,8 @@ public class ResourceController {
         float coutUnitaire = ((Number) requestBody.get("coutUnitaire")).floatValue();
 
         switch (type) {
-            case "Temporal": {
-                TemporalResource res = (TemporalResource) existing;
+            case "Temporary": {
+                TemporaryResource res = (TemporaryResource) existing;
                 res.setNom(resourceName);
                 res.setNotes(note);
                 res.setStatus(status);
@@ -161,7 +161,7 @@ public class ResourceController {
                 res.setCoutUnitaire(coutUnitaire);
                 res.setQte(((Number) requestBody.get("qte")).intValue());
                 res.setUnitMeasure((String) requestBody.get("unitMeasure"));
-                TemporalResource result = resourceService.createTemporalResource(res);
+                TemporaryResource result = resourceService.createTemporaryResource(res);
                 Project Updatedproject = projectService.getProjectById(projectId);
                 resourceService.sendSocket(Updatedproject);
 

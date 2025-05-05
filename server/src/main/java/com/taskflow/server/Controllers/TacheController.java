@@ -20,7 +20,7 @@ import com.taskflow.server.Entities.MaterialResource;
 import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.Resource;
 import com.taskflow.server.Entities.Tache;
-import com.taskflow.server.Entities.TemporalResource;
+import com.taskflow.server.Entities.TemporaryResource;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Services.ProjectService;
 import com.taskflow.server.Services.ResourceService;
@@ -726,10 +726,10 @@ public class TacheController {
             Resource ressource = resourceService.getById(ressourceID);
             Tache t = tacheSer.findTacheById(taskID);
             switch (ressource.getType()) {
-                case "Temporal": {
+                case "Temporary": {
                     if (qte == null)
                         return ResponseEntity.badRequest().build();
-                    TemporalResource ress = (TemporalResource) ressource;
+                    TemporaryResource ress = (TemporaryResource) ressource;
                     if (ress.getQte() < qte)
                         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ress.getQte());
                     ress.setQte(ress.getQte() - qte);
@@ -808,10 +808,10 @@ public class TacheController {
                 return ResponseEntity.notFound().build();
 
             switch (ressource.getType()) {
-                case "Temporal": {
+                case "Temporary": {
                     if (qte == null)
                         return ResponseEntity.badRequest().build();
-                    TemporalResource ress = (TemporalResource) ressource;
+                    TemporaryResource ress = (TemporaryResource) ressource;
 
                     int currentQte = (int) affRess.getQte();
                     int delta = qte - currentQte;
@@ -896,8 +896,8 @@ public class TacheController {
             if (affRess == null)
                 return ResponseEntity.notFound().build();
             switch (ressource.getType()) {
-                case "Temporal": {
-                    TemporalResource ress = (TemporalResource) ressource;
+                case "Temporary": {
+                    TemporaryResource ress = (TemporaryResource) ressource;
                     ress.setQte(ress.getQte() + affRess.getQte());
                     resourceService.update(ress);
                     break;

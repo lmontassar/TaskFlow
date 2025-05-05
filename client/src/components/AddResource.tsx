@@ -112,8 +112,8 @@ function AddResource({
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Temporal">
-                    {t("resource.temporal")}
+                  <SelectItem value="Temporary">
+                    {t("resource.temporary")}
                   </SelectItem>
                   <SelectItem value="Material">
                     {t("resource.material")}
@@ -158,7 +158,7 @@ function AddResource({
               </div>
             )}
             <div className="col-span-2">
-              {(formData.type === "Temporal" ||
+              {(formData.type === "Temporary" ||
                 formData.type === "Energetic") && (
                 <>
                   <Label className="mb-2" htmlFor="unitMeasure">

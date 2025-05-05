@@ -98,37 +98,6 @@ function EditResource({
               />
             </div>
             <div>
-              <Label className="mb-2" htmlFor="edit-type">
-                {t("resource.type")}
-              </Label>
-              <Select
-                value={formData.type}
-                onValueChange={(value) => handleSelectChange("type", value)}
-                disabled={
-                  formData.categorie !== "other" && formData.categorie !== ""
-                }
-              >
-                <SelectTrigger id="edit-type">
-                  <SelectValue
-                    placeholder={t(
-                      "resource.add_resource_form.type_placeholder"
-                    )}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Temporal">
-                    {t("resource.temporal")}
-                  </SelectItem>
-                  <SelectItem value="Material">
-                    {t("resource.material")}
-                  </SelectItem>
-                  <SelectItem value="Energetic">
-                    {t("resource.energetic")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
               <Label className="mb-2" htmlFor="edit-status">
                 {t("resource.status")}
               </Label>
@@ -212,7 +181,8 @@ function EditResource({
               </>
             )}
             <div>
-              {formData.type === "Temporal" || formData.type === "Energetic" ? (
+              {formData.type === "Temporary" ||
+              formData.type === "Energetic" ? (
                 <>
                   <Label className="mb-2" htmlFor="edit-unitMeasure">
                     {t("resource.add_resource_form.unit")}

@@ -54,7 +54,7 @@ public class Tache {
             System.out.println(ar.getRess().getId() + "-sdklfjvgh-" + affRess.getRess().getId());
             if (ar.equals(affRess)) {
                 switch (affRess.getRess().getType()) {
-                    case "Temporal": {
+                    case "Temporary": {
                         ar.setQte(ar.getQte() + affRess.getQte());
                         return true;
                     }

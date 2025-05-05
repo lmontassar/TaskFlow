@@ -20,8 +20,8 @@ public class ResourceService {
                 project
         );
     }
-    public TemporalResource createTemporalResource(TemporalResource temporalResource){
-        return resourceRepository.save(temporalResource);
+    public TemporaryResource createTemporaryResource(TemporaryResource temporaryResource){
+        return resourceRepository.save(temporaryResource);
     }
 
     public EnergeticResource createEnergeticResource(EnergeticResource energeticResource){

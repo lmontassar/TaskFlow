@@ -161,7 +161,7 @@ export function ProjectResources({ project }: { project: any }) {
   };
   const validateForm = () => {
     const requiredFields = ["nom", "type", "coutUnitaire"];
-    if (formData.type === "Temporal" || formData.type === "Energetic") {
+    if (formData.type === "Temporary" || formData.type === "Energetic") {
       requiredFields.push("unitMeasure");
     } else if (formData.type === "Material") {
       requiredFields.push("qteDisponibilite");
@@ -362,7 +362,8 @@ export function ProjectResources({ project }: { project: any }) {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => setFilterType("human")}>
-                    {t("resource.temporal")} {filterType === "temporal" && "✓"}
+                    {t("resource.temporary")}{" "}
+                    {filterType === "temporary" && "✓"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setFilterType("equipment")}>
                     {t("resource.energetic")}{" "}
