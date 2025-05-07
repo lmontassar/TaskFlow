@@ -93,7 +93,7 @@ export function AIChatInput({ onSendMessage, isProcessing }: AIChatInputProps) {
       <div className="flex items-end gap-2">
         <div className="relative flex-1">
           <Textarea
-            placeholder="Message AI assistant..."
+            placeholder="✧˖° Message AI assistant... ✧˖°"
             className="min-h-[80px] resize-none pr-12"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -101,20 +101,6 @@ export function AIChatInput({ onSendMessage, isProcessing }: AIChatInputProps) {
             onPasteCapture={handlePasteCapture}
             disabled={isProcessing}
           />
-          <div className="absolute bottom-2 right-2 flex items-center gap-1">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>AI Suggestions</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
         </div>
 
         <div className="flex items-center gap-2">
