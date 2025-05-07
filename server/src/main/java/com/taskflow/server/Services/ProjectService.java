@@ -59,15 +59,14 @@ public class ProjectService {
         LocalDateTime projectEndDate = project.getDateFinEstime().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
-
         // Get first and last task dates as LocalDateTime
         LocalDateTime firstTask = tacheService.getFirstDate(project);
         LocalDateTime lastTask = tacheService.getLastDate(project);
         // Check if the project's date range includes the first and last task dates
         if (projectStartDate.isBefore(firstTask) && projectEndDate.isAfter(lastTask)) {
+
             return projectRepository.save(project);
         }
-
         return null;
     }
 
@@ -117,6 +116,7 @@ public class ProjectService {
                 messagingTemplate.convertAndSend(
                         "/topic/projects/" + p.getId(),
                         p);
+
                 return projectRepository.save(p);
             }
         }

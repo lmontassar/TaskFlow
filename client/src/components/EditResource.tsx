@@ -230,7 +230,7 @@ function EditResource({
                 <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="edit-coutUnitaire"
-                  name="unitMeasure"
+                  name="coutUnitaire"
                   className={`pl-8  ${
                     formData.coutUnitaire ? "" : "border-destructive"
                   }`}

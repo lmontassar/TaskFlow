@@ -171,7 +171,6 @@ public class ProjectController {
         try {
             // Validate the token and extract the userId from it
             String userId = myJWT.extractUserId(token);
-            System.out.println("Token validated, extracted userId: " + projectUpdateRequest);
 
             // Fetch project details from the request
             String projectID = projectUpdateRequest.getId();
@@ -185,7 +184,6 @@ public class ProjectController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not authorized to update this project");
             }
 
-            System.out.println("Project found: " + project.getNom());
 
             // Prepare the updated project fields from the request body
             String nom = projectUpdateRequest.getNom();
