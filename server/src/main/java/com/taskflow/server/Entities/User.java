@@ -8,6 +8,8 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Document(collection = "users")
 @Data
 @AllArgsConstructor
@@ -17,6 +19,7 @@ public class User {
     @Id
     private String id;
     private String email;
+    @JsonIgnore
     private String password;
     private String phoneNumber;
     private String nom;
@@ -28,7 +31,6 @@ public class User {
     private String bio;
     private Boolean activation;
     private Boolean twoFactorAuth;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -36,5 +38,4 @@ public class User {
         User user = (User) o;
         return this.id.equals(user.getId());
     }
-
 }

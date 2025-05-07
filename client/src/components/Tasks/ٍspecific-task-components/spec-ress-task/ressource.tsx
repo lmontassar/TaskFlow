@@ -613,7 +613,9 @@ export default function RessourceSpecifiTask({
                       <TableHead>
                         {t("task.ressource.table.unit_cost", "Unit Cost")}
                       </TableHead>
-                      <TableHead></TableHead>
+                      {canEdit &&(
+                        <TableHead></TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -654,16 +656,20 @@ export default function RessourceSpecifiTask({
                             : `${resource.qte} ${resource.unitMeasure}`}
                         </TableCell>
                         <TableCell>{resource.coutUnitaire}</TableCell>
-                        <TableCell>
+                        {canEdit &&(
+                          <TableCell>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleSelectResource(resource)}
                           >
                             <Plus className="h-4 w-4 mr-1" />
-                            Select
+                              {t("task.ressource.assign")}
                           </Button>
                         </TableCell>
+                        )}
+                        
+                      
                       </TableRow>
                     ))}
                   </TableBody>
@@ -899,7 +905,9 @@ export default function RessourceSpecifiTask({
                       <TableHead>
                         {t("task.ressource.table2.period", "Period")}
                       </TableHead>
-                      <TableHead className="text-right"></TableHead>
+                      { canEdit && ( 
+                        <TableHead className="text-right"></TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -948,6 +956,7 @@ export default function RessourceSpecifiTask({
                             <span className="text-muted-foreground">N/A</span>
                           )}
                         </TableCell>
+                        { canEdit && ( 
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button
@@ -968,6 +977,7 @@ export default function RessourceSpecifiTask({
                             </Button>
                           </div>
                         </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>

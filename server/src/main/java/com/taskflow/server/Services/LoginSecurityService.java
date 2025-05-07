@@ -16,8 +16,10 @@ public class LoginSecurityService {
     private LoginSecurityRepository loginSecurityRepository;
     @Autowired
     private EmailService emailService;
+    
     @Autowired
     private UserService userService;
+
     private static final int MAX_ATTEMPTS = 5;
     private static final long LOCK_TIME_THRESHOLD = 15; // Lock time in minutes
 

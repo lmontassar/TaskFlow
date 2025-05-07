@@ -161,7 +161,8 @@ function EditResource({
                     min="0"
                   />
                 </div>
-                <div>
+                
+                {/* <div>
                   <Label className="mb-2" htmlFor="edit-consommationTotale">
                     {t("resource.add_resource_form.total_consumption")}
                   </Label>
@@ -177,7 +178,8 @@ function EditResource({
                     type="number"
                     min="0"
                   />
-                </div>
+                </div> */}
+                
               </>
             )}
             <div>

@@ -1,8 +1,11 @@
 package com.taskflow.server.Controllers;
+
 import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.Attachment;
+import com.taskflow.server.Entities.Message;
 import com.taskflow.server.Entities.Tache;
 import com.taskflow.server.Entities.User;
+import com.taskflow.server.Services.MessageService;
 import com.taskflow.server.Services.TacheService;
 import com.taskflow.server.Services.UserService;
 import io.jsonwebtoken.io.IOException;
@@ -36,20 +39,100 @@ public class AttachmentsController {
     private JWT myJWT;
     @Autowired
     private UserService userService;
+    @Autowired
+    MessageService MsgService;
 
-    private final String UPLOAD_DIR ="upload/attachments/";
+    private final String UPLOAD_DIR = "upload/attachments/";
     private final Path baseUploadPath = Paths.get(UPLOAD_DIR).toAbsolutePath().normalize();
-    @PostMapping("/add/{tacheId}")
-    public ResponseEntity<?> uploadAttachment(@PathVariable String tacheId,
-                                              @RequestParam("file") MultipartFile file,@RequestHeader("Authorization") String token) {
+
+    @PostMapping("/add/message/{MessageID}")
+    public ResponseEntity<?> uploadMessageAttachment(
+            @PathVariable String MessageID,
+            @RequestParam("file") MultipartFile file,
+            @RequestHeader("Authorization") String token) {
         try {
             User user = userService.findById(myJWT.extractUserId(token));
-            if(user==null){
+            if (user == null) {
+                return ResponseEntity.status(403).build();
+            }
+            Message message = MsgService.findById(MessageID);
+            if (!message.getUser().getId().equals(user.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+            Path taskFolderPath = baseUploadPath.resolve(message.getId());
+            Files.createDirectories(taskFolderPath);
+            String fileName = file.getOriginalFilename();
+            Path filePath = taskFolderPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            Attachment attachment = new Attachment();
+            attachment.setId(UUID.randomUUID().toString());
+            attachment.setName(fileName);
+            attachment.setSize(file.getSize());
+            attachment.setType(file.getContentType());
+            attachment.setCreatedAt(new Date());
+            attachment.setUrl(message.getId() + "/" + fileName);
+            message.getAttachments().add(attachment);
+            MsgService.update(message);
+            return ResponseEntity.ok(attachment);
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not upload file");
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/message/{messageId}")
+    public ResponseEntity<?> deleteMessageAttachment(
+            @PathVariable String messageId,
+            @RequestBody List<String> attachments,
+            @RequestHeader("Authorization") String token) {
+        try {
+            User user = userService.findById(myJWT.extractUserId(token));
+            if (user == null) {
+                return ResponseEntity.status(403).build();
+            }
+            Message message = MsgService.findById(messageId);
+            if (message == null) {
+                return ResponseEntity.status(404).build();
+            }
+            if (!message.getUser().getId().equals(user.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+            System.out.println(attachments);
+            for (String attachmentID : attachments) {
+
+                Optional<Attachment> attachmentOpt = message.getAttachments()
+                        .stream()
+                        .filter(att -> att.getId().equals(attachmentID))
+                        .findFirst();
+                if (attachmentOpt.isPresent()) {
+                    Attachment attachment = attachmentOpt.get();
+                    Path filePath = baseUploadPath
+                            .resolve(attachment.getUrl())
+                            .normalize();
+                    Files.deleteIfExists(filePath);
+                    MsgService.removeAttachement(message, attachment);
+                }
+
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Failed to delete attachment.");
+        }
+    }
+
+    @PostMapping("/add/{tacheId}")
+    public ResponseEntity<?> uploadAttachment(@PathVariable String tacheId,
+            @RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) {
+        try {
+            User user = userService.findById(myJWT.extractUserId(token));
+            if (user == null) {
                 return ResponseEntity.status(403).build();
             }
 
             Tache tache = tacheService.findTacheById(tacheId);
-            if(!tacheService.isCreateur(user,tache)&&!tacheService.IsUserExistInAsignee(user,tache)){
+            if (!tacheService.isCreateur(user, tache) && !tacheService.IsUserExistInAsignee(user, tache)) {
                 return ResponseEntity.status(403).build();
             }
             // Create directory uploads/{tacheId}/ if not exists
@@ -66,7 +149,7 @@ public class AttachmentsController {
             attachment.setSize(file.getSize());
             attachment.setType(file.getContentType());
             attachment.setCreatedAt(new Date());
-            attachment.setUrl(tacheId+"/"+fileName);
+            attachment.setUrl(tacheId + "/" + fileName);
 
             if (tache.getAttachments() == null) {
                 tache.setAttachments(new ArrayList<>());
@@ -82,23 +165,22 @@ public class AttachmentsController {
             throw new RuntimeException(e);
         }
     }
+
     @GetMapping("/file/{tacheId}/{filename}")
     public ResponseEntity<Resource> getFile(
             @PathVariable String tacheId,
             @RequestHeader("Authorization") String token,
-            @PathVariable String filename
-    ) throws IOException, java.io.IOException {
+            @PathVariable String filename) throws IOException, java.io.IOException {
         User user = userService.findById(myJWT.extractUserId(token));
-        if(user==null){
+        if (user == null) {
             return ResponseEntity.status(403).build();
         }
 
         Tache tache = tacheService.findTacheById(tacheId);
-        if(!tacheService.isCreateur(user,tache)&&!tacheService.IsUserExistInAsignee(user,tache)){
+        if (!tacheService.isCreateur(user, tache) && !tacheService.IsUserExistInAsignee(user, tache)) {
             return ResponseEntity.status(403).build();
         }
         Path filePath = Paths.get(UPLOAD_DIR).resolve(tacheId).resolve(filename).normalize();
-        System.out.println("Requested file path: " + filePath);
 
         Resource resource;
         try {
@@ -123,18 +205,18 @@ public class AttachmentsController {
                 .body(resource);
     }
 
-
     @DeleteMapping("/file/{tacheId}/{fileId}")
-    public ResponseEntity<?> deleteAttachment(@PathVariable String tacheId, @PathVariable String fileId,@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> deleteAttachment(@PathVariable String tacheId, @PathVariable String fileId,
+            @RequestHeader("Authorization") String token) {
         try {
 
             User user = userService.findById(myJWT.extractUserId(token));
-            if(user==null){
+            if (user == null) {
                 return ResponseEntity.status(403).build();
             }
 
             Tache tache = tacheService.findTacheById(tacheId);
-            if(!tacheService.isCreateur(user,tache)&&!tacheService.IsUserExistInAsignee(user,tache)){
+            if (!tacheService.isCreateur(user, tache) && !tacheService.IsUserExistInAsignee(user, tache)) {
                 return ResponseEntity.status(403).build();
             }
             if (tache != null) {
@@ -151,7 +233,6 @@ public class AttachmentsController {
                     Path filePath = Paths.get(UPLOAD_DIR + tacheId + "/").resolve(filename).normalize();
                     Files.deleteIfExists(filePath);
 
-
                     tache.getAttachments().remove(attachment);
                     tacheService.update(tache);
 
@@ -167,6 +248,5 @@ public class AttachmentsController {
             return ResponseEntity.status(500).body("Failed to delete attachment.");
         }
     }
-
 
 }
