@@ -25,6 +25,7 @@ import ProtectedLoginRoutes from "./utils/protectedloginroutes";
 import { Toaster } from "./components/ui/sonner";
 import { NotificationProvider } from "./utils/NotificationContext";
 import Loading from "./components/ui/loading";
+import AskAI from "./pages/Main/AskAI";
 
 export type UserType = {
   id: string;
@@ -76,6 +77,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="inbox" element={<Inbox />} />
+                  <Route path="ask-ai" element={<AskAI />} />
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="projects/:id" element={<ProjectPage />} />
                   <Route path="profile" element={<Profile />} />
