@@ -100,7 +100,7 @@ export function MessageInput({ onSendMessage, replyTo, onCancelReply }: MessageI
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type your message..."
-            className="min-h-[100px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="min-h-[100px] max-h-[100px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none overflow-y-auto scroll-smooth"
           />
 
           {attachments.length > 0 && (

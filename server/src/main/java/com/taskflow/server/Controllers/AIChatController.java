@@ -25,8 +25,6 @@ import java.util.*;
 public class AIChatController {
     @Autowired
     private AIChatService aiChatService;
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private JWT myJWT;
