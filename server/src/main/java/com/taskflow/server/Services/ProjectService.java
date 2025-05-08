@@ -26,6 +26,7 @@ public class ProjectService {
 
     @Autowired
     public TacheService tacheService;
+
     public Project createProject(Project p, User u) {
         // Ensure user is valid
         if (u == null) {
@@ -37,8 +38,6 @@ public class ProjectService {
 
         p.setCreateur(u);
 
-
-
         Set<Collaborator> set = new HashSet<>();
 
         // Set the collaborators for the project
@@ -49,8 +48,9 @@ public class ProjectService {
         p.setListeRessource(set2);
 
         // Save the project to the database
-        return projectRepository.save(p);  // Assuming projectRepository is already defined and injected
+        return projectRepository.save(p); // Assuming projectRepository is already defined and injected
     }
+
     public Project updateProject(Project project) {
         // Convert project dates to LocalDateTime
         LocalDateTime projectStartDate = project.getDateDebut().toInstant()
@@ -69,11 +69,16 @@ public class ProjectService {
         }
         return null;
     }
-    public Project addCollaborator(Project p,Collaborator c)
-    {
+
+    public Project UpdateChat(Project project) {
+        Project oldP = getProjectById(project.getId());
+        oldP.setMessages(project.getMessages());
+        return projectRepository.save(oldP);
+    }
+
+    public Project addCollaborator(Project p, Collaborator c) {
         User user = c.getUser();
-        if(user != null)
-        {
+        if (user != null) {
             Set<Collaborator> collab = p.getListeCollaborateur();
             c.setRole("Member");
             collab.add(c);
@@ -82,6 +87,7 @@ public class ProjectService {
         }
         return null;
     }
+
     public Project addResource(Project p, Resource resource) {
         if (p != null) {
             Set<Resource> resources = p.getListeRessource();
@@ -107,21 +113,23 @@ public class ProjectService {
             if (c != null) {
                 collab.remove(c);
                 p.setListeCollaborateur(collab);
+                messagingTemplate.convertAndSend(
+                        "/topic/projects/" + p.getId(),
+                        p);
 
                 return projectRepository.save(p);
             }
         }
         return null;
     }
-    public Project getMyProject(String userId,String projectId) {
+
+    public Project getMyProject(String userId, String projectId) {
         return projectRepository.findAll().stream()
                 .filter(project -> {
-                    boolean isProject = project.getId() !=null && project.getId().equals(projectId);
+                    boolean isProject = project.getId() != null && project.getId().equals(projectId);
                     boolean isCollaborator = project.getListeCollaborateur().stream()
-                            .anyMatch(collaborator ->
-                                    collaborator.getUser() != null &&
-                                            userId.equals(collaborator.getUser().getId())
-                            );
+                            .anyMatch(collaborator -> collaborator.getUser() != null &&
+                                    userId.equals(collaborator.getUser().getId()));
 
                     boolean isCreator = project.getCreateur() != null &&
                             project.getCreateur().getId() != null &&
@@ -132,14 +140,13 @@ public class ProjectService {
                 .findFirst()
                 .orElse(null);
     }
+
     public Project getMyProjects(String userId) {
         return projectRepository.findAll().stream()
                 .filter(project -> {
                     boolean isCollaborator = project.getListeCollaborateur().stream()
-                            .anyMatch(collaborator ->
-                                    collaborator.getUser() != null &&
-                                            userId.equals(collaborator.getUser().getId())
-                            );
+                            .anyMatch(collaborator -> collaborator.getUser() != null &&
+                                    userId.equals(collaborator.getUser().getId()));
 
                     boolean isCreator = project.getCreateur() != null &&
                             project.getCreateur().getId() != null &&
@@ -151,26 +158,25 @@ public class ProjectService {
                 .orElse(null);
     }
 
-    public Boolean isCollaborator(User u , Project p){
-        for (Collaborator members: p.getListeCollaborateur()) {
-            if( u.equals( members.getUser() ) ) {
+    public Boolean isCollaborator(User u, Project p) {
+        for (Collaborator members : p.getListeCollaborateur()) {
+            if (u.equals(members.getUser())) {
                 return true;
             }
-        } return false;
+        }
+        return false;
     }
 
-    public Boolean isCreator(String user,Project project){
+    public Boolean isCreator(String user, Project project) {
         return project.getCreateur().getId().equals(user);
     }
 
     public List<Project> getAllMyProjects(String userId) {
-        return  projectRepository.findAll().stream()
+        return projectRepository.findAll().stream()
                 .filter(project -> {
                     boolean isCollaborator = project.getListeCollaborateur().stream()
-                            .anyMatch(collaborator ->
-                                    collaborator.getUser() != null &&
-                                            userId.equals(collaborator.getUser().getId())
-                            );
+                            .anyMatch(collaborator -> collaborator.getUser() != null &&
+                                    userId.equals(collaborator.getUser().getId()));
 
                     boolean isCreator = project.getCreateur() != null &&
                             project.getCreateur().getId() != null &&
@@ -179,13 +185,15 @@ public class ProjectService {
                     return (isCollaborator || isCreator);
                 }).collect(Collectors.toList());
     }
-    public Project getProjectById(String id){
+
+    public Project getProjectById(String id) {
         Project project = projectRepository.getProjectById(id);
         if (project == null) {
             throw new RuntimeException("Project not found with ID: " + id);
         }
         return project;
     }
+
     public void removeResource(Project project, Resource resource) {
         project.getListeRessource().remove(resource);
         projectRepository.save(project);

@@ -99,6 +99,7 @@ export default function SpecificTaskPage() {
       fetchTask();
     }
   }, [taskId]);
+
   useEffect(() => {
     if (!taskId || clientRef.current) return; // prevent duplicate connections
 
@@ -147,6 +148,8 @@ export default function SpecificTaskPage() {
       }
     };
   }, [taskId, token]);
+
+  
   const handleRemoveAssignee = async () => {
     if (!task) return;
 

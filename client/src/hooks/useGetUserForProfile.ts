@@ -115,8 +115,8 @@ const useGetUserForProfile = () => {
     ],
   }
 
-  
-const getUser = async () =>{
+
+  const getUser = async () => {
     const abortController = new AbortController()
     const signal = abortController.signal
 
@@ -151,7 +151,7 @@ const getUser = async () =>{
           throw new Error("Failed to fetch user data")
         }
 
-        const userData:{avatar:String} | any = await response.json()
+        const userData: { avatar: String } | any = await response.json()
 
         // Merge the API data with default data for missing fields
         const mergedData = {
@@ -162,16 +162,16 @@ const getUser = async () =>{
           phone: userData.phoneNumber || defaultUserData.phone,
           // Map region to location if it exists
           location: userData.region || defaultUserData.location,
-          twoFactorAuth : userData.twoFactorAuth !== null ? userData.twoFactorAuth : null,
-          avatar:   userData.avatar,
+          twoFactorAuth: userData.twoFactorAuth !== null ? userData.twoFactorAuth : null,
+          avatar: userData.avatar,
 
           // Map creationDate to joinDate if it exists
           joinDate: userData.creationDate
             ? new Date(userData.creationDate).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
             : defaultUserData.joinDate,
         }
 
@@ -194,18 +194,18 @@ const getUser = async () =>{
     return () => {
       abortController.abort()
     }
-}
+  }
 
-  useEffect( () => {
+  useEffect(() => {
     getUser();
   }, [])
 
-  const refreshUser = async ()=>{
+  const refreshUser = async () => {
     await getUser();
   }
 
 
-  return { user, setUser, loading, error , refreshUser }
+  return { user, setUser, loading, error, refreshUser }
 }
 
 

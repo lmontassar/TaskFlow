@@ -564,6 +564,7 @@
       "assigned_capacity": "de la capacité totale de consommation est actuellement assignée"
     },
     "ressource": {
+      "assign": "Assigner",
       "crud": {
         "addSuccess": "Ressource assignée avec succès !",
         "editSuccess": "Ressource mise à jour avec succès !",
