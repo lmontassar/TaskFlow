@@ -1,10 +1,11 @@
 import { ProjectHeader } from "@/components/projects/project-header";
 import { ProjectOverview } from "@/components/projects/project-overview";
 import { ProjectTabs } from "@/components/projects/project-tabs";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useGetProjectById from "../../hooks/useGetProjectById";
 import useProject from "../../hooks/useProject";
 import { useEffect, useState } from "react";
+import { MessageCircle } from "lucide-react";
 
 export default function ProjectPage() {
   const navigate = useNavigate();
@@ -42,6 +43,12 @@ export default function ProjectPage() {
         setProject={setProject}
         isLoading={isLoading}
       />
+      <div className="fixed bottom-4 right-4 z-999 bg-primary rounded-full shadow-xl p-1 transition-transform duration-300 ease-in-out hover:scale-105">
+        <Link to={`/ask-ai/${id}`} className="flex items-center gap-2 p-2">
+          <MessageCircle className="text-white" />
+          <h1 className="text-xl font-bold text-white">Ask AI</h1>
+        </Link>
+      </div>
     </>
   );
 }

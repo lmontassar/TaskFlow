@@ -16,6 +16,8 @@ import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import type { ChatMessage } from "./ai-chat-interface";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface AIChatMessagesProps {
   messages: ChatMessage[];
@@ -76,19 +78,22 @@ export default function AIChatMessages({
 
   return (
     <div className="flex-1 p-4 space-y-4 overflow-y-scroll px-4 py-2 scroll-smooth">
-      {messages.map((message) => {
+      {messages?.map((message) => {
         if (message.role === "system") {
           return (
             <div
               key={message.id}
               className="mx-auto max-w-2xl rounded-lg bg-muted/50 p-4 text-center"
             >
-              <p
+              {/* <p
                 className="text-sm text-muted-foreground"
                 dangerouslySetInnerHTML={{
-                  __html: formatMessageContent(message.content),
+                  __html: formatMessageContent(),
                 }}
-              />
+              /> */}
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {message.content}
+              </ReactMarkdown>
             </div>
           );
         }
@@ -133,9 +138,6 @@ export default function AIChatMessages({
                 <span className="font-medium">
                   {message.role === "user" ? "You" : "AI Assistant"}
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  {format(message.timestamp, "h:mm a")}
-                </span>
               </div>
 
               <div
@@ -148,12 +150,9 @@ export default function AIChatMessages({
               >
                 {message.isLoading ? (
                   <>
-                    <div
-                      className="whitespace-pre-wrap break-words text-sm"
-                      dangerouslySetInnerHTML={{
-                        __html: formatMessageContent(message.content),
-                      }}
-                    />
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {message.content}
+                    </ReactMarkdown>
                     <div className="mt-1 flex items-center gap-1">
                       <div className="h-2 w-2 animate-pulse rounded-full bg-current"></div>
                       <div className="h-2 w-2 animate-pulse rounded-full bg-current animation-delay-200"></div>
@@ -161,12 +160,9 @@ export default function AIChatMessages({
                     </div>
                   </>
                 ) : (
-                  <div
-                    className="whitespace-pre-wrap break-words text-sm"
-                    dangerouslySetInnerHTML={{
-                      __html: formatMessageContent(message.content),
-                    }}
-                  />
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {message.content}
+                  </ReactMarkdown>
                 )}
               </div>
 

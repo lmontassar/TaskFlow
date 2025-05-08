@@ -45,7 +45,7 @@ export function AIChatSidebar({
   }
 
   const filteredSessions = sessions.filter((session) =>
-    session.title.toLowerCase().includes(searchQuery.toLowerCase())
+    session.title?.toLowerCase()?.includes(searchQuery.toLowerCase())
   );
 
   return (
