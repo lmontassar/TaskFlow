@@ -102,6 +102,7 @@ export function AttachmentPreview({
         fetchImage();
       }
     }
+    
 
     return () => {
       if (imageUrl) {

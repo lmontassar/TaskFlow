@@ -34,12 +34,14 @@ interface AttachmentItemProps {
   attachment: Attachment;
   onRemove: (id: string) => void;
   onPreview?: (attachment: Attachment) => void;
+  hideRemove?: boolean
 }
 
 export function AttachmentItem({
   attachment,
   onRemove,
   onPreview,
+  hideRemove = false
 }: AttachmentItemProps) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -218,15 +220,18 @@ export function AttachmentItem({
                 <Eye className="h-4 w-4" />
               </Button>
             )}
+            {hideRemove == false &&
+              (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onRemove(attachment.id)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onRemove(attachment.id)}
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
           </>
         )}
       </div>

@@ -13,13 +13,16 @@ import {
   Download,
   Eye,
 } from "lucide-react";
+import { AttachmentItem } from "../attachments/attachment-item";
+import { AttachmentPreview } from "../attachments/attachment-preview";
+import { useState } from "react";
 
 interface AttachmentListProps {
   attachments: any[]
 }
 
 export function AttachmentList({ attachments }: AttachmentListProps) {
-  const getFileIcon = (type : any) => {
+  const getFileIcon = (type: any) => {
     if (type.startsWith("image/")) {
       return <ImageIcon className="h-6 w-6 text-blue-500" />;
     } else if (
@@ -70,7 +73,7 @@ export function AttachmentList({ attachments }: AttachmentListProps) {
   //   }
   // }
 
-  
+
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
@@ -84,23 +87,45 @@ export function AttachmentList({ attachments }: AttachmentListProps) {
     );
   };
 
+  const onRemove = () => { }
+    const handlePreviewAttachment = (attachment: Attachment) => {
+      setPreviewAttachment(attachment);
+      setIsPreviewOpen(true);
+    };
+  const token = localStorage.getItem("authToken");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewAttachment, setPreviewAttachment] = useState<any>()
+
+
   return (
     <div className="space-y-2">
       {attachments.map((attachment) => (
-        <a
-          key={attachment.id}
-          href={attachment.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center p-2 border rounded-md hover:bg-gray-50 transition-colors"
-        >
-          <div className="mr-2 text-gray-500">{getFileIcon(attachment.type)}</div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium truncate">{attachment.name}</div>
-            <div className="text-xs text-gray-500">{formatFileSize(attachment.size)}</div>
-          </div>
-        </a>
+        <AttachmentItem
+          attachment={attachment}
+          onRemove={onRemove}
+          onPreview={handlePreviewAttachment}
+          hideRemove={true}
+        />
+        // <a
+        //   key={attachment.id}
+        //   href={attachment.url}
+        //   target="_blank"
+        //   rel="noopener noreferrer"
+        //   className="flex items-center p-2 border rounded-md hover:bg-gray-50 transition-colors"
+        // >
+        //   <div className="mr-2 text-gray-500">{getFileIcon(attachment.type)}</div>
+        //   <div className="flex-1 min-w-0">
+        //     <div className="text-sm font-medium truncate">{attachment.name}</div>
+        //     <div className="text-xs text-gray-500">{formatFileSize(attachment.size)}</div>
+        //   </div>
+        // </a>
       ))}
+      <AttachmentPreview
+        attachment={previewAttachment}
+        open={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        token={token || ""}
+      />
     </div>
   )
 }

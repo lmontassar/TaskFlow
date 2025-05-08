@@ -177,9 +177,11 @@ public class AttachmentsController {
         }
 
         Tache tache = tacheService.findTacheById(tacheId);
-        if (!tacheService.isCreateur(user, tache) && !tacheService.IsUserExistInAsignee(user, tache)) {
+        Message message = MsgService.findById(tacheId);
+        if ( tache != null && !tacheService.isCreateur(user, tache) && !tacheService.IsUserExistInAsignee(user, tache)) {
             return ResponseEntity.status(403).build();
         }
+        if (tache == null && message == null ) return ResponseEntity.status(404).build();
         Path filePath = Paths.get(UPLOAD_DIR).resolve(tacheId).resolve(filename).normalize();
 
         Resource resource;

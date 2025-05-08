@@ -4,7 +4,6 @@ import { toast } from "sonner";
 const useChat = () => {
     const { t } = useTranslation();
 
-
     const getToken = () => {
         const token = localStorage.getItem("authToken");
         return token;
@@ -151,10 +150,7 @@ const useChat = () => {
         }
 
     };
-
-
-
-
+    
     return {
         DeleteMessage,
         DeleteFile,
