@@ -15,11 +15,9 @@ export default function ChatPage({ project }: any) {
   const [replyTo, setReplyTo] = useState<any | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { addMessage, uploadFile, EditMessage, DeleteFile, DeleteMessage } = useChat();
-  const { user, setUser, loading, error, refreshUser } = useGetUserForProfile();
+  const { user } = useGetUserForProfile();
   // Scroll to bottom when messages change
   const token = localStorage.getItem("authToken") || "";
-
-
 
   useEffect(() => {
     setMessages(project.messages);
@@ -53,6 +51,11 @@ export default function ChatPage({ project }: any) {
       return [...prevMessages, message];
     });
   };
+
+  const handleRemoveMessage = (messageID:any)=> {
+    setMessages((prevMessages) => { return prevMessages?.filter((msg) => msg.id != messageID) })
+  }
+
   useEffect(() => {
     if (!project || clientRef.current) return;
     const socket = new SockJS("/api/ws");
@@ -64,6 +67,10 @@ export default function ChatPage({ project }: any) {
           const msg = JSON.parse(message.body);
           handleAddMessage(msg);
         });
+        client.subscribe(`/topic/message/delete/${project.id}`, async (message) => {
+          const messageID = message.body;
+          handleRemoveMessage(messageID);
+        });
 
       },
       (error: any) => {
@@ -71,6 +78,8 @@ export default function ChatPage({ project }: any) {
       }
     )
   }, [project?.id])
+
+
 
 
 
@@ -111,6 +120,7 @@ export default function ChatPage({ project }: any) {
       ),
     )
   }
+
 
   const handleDeleteMessage = async (id: string) => {
     await DeleteMessage(id);
