@@ -28,6 +28,7 @@ public class Project {
         IN_PROGRESS,
         COMPLETED;
     }
+
     @Id
     private String id;
     private String nom;
@@ -39,7 +40,7 @@ public class Project {
     private Date dateFinEstime;
     private Set<Collaborator> listeCollaborateur;
     @DBRef
-    private Set<Resource> listeRessource ;
+    private Set<Resource> listeRessource;
     private Status status;
     @DBRef
     private User createur;
@@ -49,19 +50,41 @@ public class Project {
 
     @DBRef
     private List<Message> messages = new ArrayList<>();
-    public boolean addMessages(Message m ) {
-        if(messages.contains(m)) return false;
+
+    public boolean addMessages(Message m) {
+        if (messages.contains(m))
+            return false;
         return messages.add(m);
     }
-    public boolean deleteMessages(Message m ) {
+
+    public boolean deleteMessages(Message m) {
         return messages.remove(m);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Project project = (Project ) o;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Project project = (Project) o;
         return this.id.equals(project.getId());
     }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id='" + id + '\'' +
+                ", nom='" + nom + '\'' +
+                ", description='" + description + '\'' +
+                ", budgetEstime=" + budgetEstime +
+                ", dateDebut=" + dateDebut +
+                ", dateFinEstime=" + dateFinEstime +
+                ", status=" + status +
+                ", dateCreation=" + dateCreation +
+                ", tags=" + tags +
+                ", createurId=" + (createur != null ? createur : null) +
+                '}';
+    }
+
 }
