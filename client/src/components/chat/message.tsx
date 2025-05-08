@@ -65,7 +65,7 @@ export function Message({ message, isOwn, referencedMessage, onEdit, onDelete, o
   return (
     <div className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4 max-w-full`}>
       <div className={`max-w-[80%] ${isOwn ? "order-2" : "order-1"}`}>
-        <div className="flex justify-end items-center mb-2">
+        <div className={`flex ${isOwn ? "justify-end" : "justify-start"} items-center mb-2`}>
           {!isOwn && (
             <Avatar className="h-8 w-8 mr-2">
               <AvatarImage src={message.user.avatar || "/placeholder.svg"} alt={message.user.nom} />
