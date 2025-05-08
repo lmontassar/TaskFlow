@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { formatDistanceToNow } from "date-fns"
+import { formatDistanceToNow, isSameDay, isSameMonth, format } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
@@ -51,7 +51,16 @@ export function Message({ message, isOwn, referencedMessage, onEdit, onDelete, o
     setEditAttachments(editAttachments.filter((att) => att.id !== attachmentId))
   }
 
-  const timeAgo = formatDistanceToNow(message.createdAt, { addSuffix: true })
+  // const timeAgo = formatDistanceToNow(message.createdAt, { addSuffix: true })
+  const createdDate = new Date(message.createdAt)
+  const displayTime = isSameDay(createdDate, new Date())
+    // ─── Today: time only ─────────────────────────────────────────────
+    ? format(createdDate, "h:mm a")
+    // ─── Same month, different day: weekday + time ──────────────────
+    : isSameMonth(createdDate, new Date())
+      ? format(createdDate, "EEEE h:mm a")
+      // ─── Different month: full month/day/year + time ───────────────
+      : format(createdDate, "MMMM d, yyyy, h:mm a")
 
   return (
     <div className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4 max-w-full`}>
@@ -68,7 +77,7 @@ export function Message({ message, isOwn, referencedMessage, onEdit, onDelete, o
           )}
           <div className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}>
             <span className="text-sm font-medium">{isOwn ? "You" : `${message.user.prenom} ${message.user.nom}`}</span>
-            <span className="text-xs text-gray-500">{timeAgo}</span>
+            <span className="text-xs text-gray-500">{displayTime}</span>
           </div>
           {isOwn && (
             <Avatar className="h-8 w-8 ml-2">
