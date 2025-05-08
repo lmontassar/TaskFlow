@@ -44,9 +44,10 @@ export default function ProjectPage() {
         isLoading={isLoading}
       />
       {!isLoading && (
-        <div className="fixed bottom-4 left-4 z-999 bg-primary rounded-full shadow-xl p-1 transition-transform duration-300 ease-in-out hover:scale-105 hover:content-[ASK-AI]">
+        <div className="fixed bottom-4 left-4 z-999 bg-primary rounded-full shadow-xl p-1 transition-transform duration-300 ease-in-out hover:scale-105">
           <Link to={`/ask-ai/${id}`} className="flex items-center gap-2 p-2">
             <Sparkles className="text-white" />
+            <h1 className="text-xl font-bold text-white">Ask AI</h1>
           </Link>
         </div>
       )}
