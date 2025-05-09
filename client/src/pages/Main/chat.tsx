@@ -58,7 +58,7 @@ export default function ChatPage({ project }: any) {
 
   useEffect(() => {
     if (!project || clientRef.current) return;
-    const socket = new SockJS("/api/ws");
+    const socket = new SockJS("/ws");
     const client = Stomp.over(socket);
     client.connect(
       { Authorization: `Bearer ${token}` },
@@ -71,7 +71,6 @@ export default function ChatPage({ project }: any) {
           const messageID = message.body;
           handleRemoveMessage(messageID);
         });
-
       },
       (error: any) => {
         console.error("Projects WebSocket error:", error);

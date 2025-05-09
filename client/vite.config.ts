@@ -8,6 +8,12 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": "http://localhost:8089/",
+      "/ws": {
+        target: "http://localhost:8089",
+        ws: true,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ws/, "/api/ws"),
+      },
     },
   },
   define: {

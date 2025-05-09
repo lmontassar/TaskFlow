@@ -55,7 +55,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!user?.id || clientRef.current) return; // prevent duplicate connections
 
-    const socket = new SockJS("/api/ws");
+    const socket = new SockJS("/ws");
     const client = Stomp.over(socket);
 
     client.connect(
