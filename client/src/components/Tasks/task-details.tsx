@@ -97,7 +97,9 @@ export function TaskDetails({
   const [editError, setEditError] = useState("");
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const { comments, addComment } = useTaskComment(task.id);
+  const { comments, addComment, deleteComment, editComment } = useTaskComment(
+    task.id
+  );
   useEffect(() => {
     setTask(allTasks.filter((t) => t.id == taskToEdit.id)[0]);
   }, [allTasks, taskToEdit]);
@@ -140,6 +142,12 @@ export function TaskDetails({
   const handleAddComment = async (commentText: any, setCommentText: any) => {
     await addComment(commentText);
     setCommentText("");
+  };
+  const handleDeleteComment = async (commentId: any) => {
+    await deleteComment(commentId);
+  };
+  const handleEditComment = async (editingId: any, editingContent: any) => {
+    await editComment(editingId, editingContent);
   };
 
   const formatDate = (dateString?: string) => {
@@ -724,6 +732,8 @@ export function TaskDetails({
                   <TaskComments
                     comments={comments}
                     handleAddComment={handleAddComment}
+                    handleDeleteComment={handleDeleteComment}
+                    handleEditComment={handleEditComment}
                   />
                 </TabsContent>
                 <TabsContent value="assignees" className="pt-2">
