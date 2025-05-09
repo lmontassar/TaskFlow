@@ -59,6 +59,19 @@ public class TaskCommentController {
         }
         return ResponseEntity.ok().body(taskCommentList);
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editComment(@RequestHeader("Authorization") String token, @PathVariable String id,@RequestBody Map<String,Object> requestBody){
+        if(id.trim().isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        String content = (String) requestBody.get("content");
+        String userId= myJWT.extractUserId(token);
+        TaskComment taskCommentList = taskCommentService.editComment(id,userId,content);
+        if(taskCommentList==null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(taskCommentList);
+    }
 
 
 }

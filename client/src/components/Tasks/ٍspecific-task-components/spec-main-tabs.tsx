@@ -28,7 +28,9 @@ export default function SpecificTaskMainTabs({
   checkIfAssigneeTask,
 }: any) {
   const { t } = useTranslation();
-  const { comments, addComment, deleteComment } = useTaskComment(task.id);
+  const { comments, addComment, deleteComment, editComment } = useTaskComment(
+    task.id
+  );
 
   const handleAddComment = async (commentText: any, setCommentText: any) => {
     await addComment(commentText);
@@ -36,6 +38,9 @@ export default function SpecificTaskMainTabs({
   };
   const handleDeleteComment = async (commentId: any) => {
     await deleteComment(commentId);
+  };
+  const handleEditComment = async (editingId: any, editingContent: any) => {
+    await editComment(editingId, editingContent);
   };
   return (
     <Card className="basis-full lg:basis-[calc(30%-1rem)] grow lg:grow-0">
@@ -114,6 +119,7 @@ export default function SpecificTaskMainTabs({
             comments={comments}
             handleAddComment={handleAddComment}
             handleDeleteComment={handleDeleteComment}
+            handleEditComment={handleEditComment}
           />
         </TabsContent>
         {(checkIfCreatorOfProject(task?.project) ||

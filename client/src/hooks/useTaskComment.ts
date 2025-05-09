@@ -103,7 +103,25 @@ const useTaskComment = (taskId: string) => {
       setLoading(false);
     }
   };
-
+  const editComment = async (commentId: string, content: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/task-comment/${commentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content }),
+      });
+      if (!response.ok) throw new Error("Failed to edit comment");
+    } catch (err: any) {
+      handleError(err, "Failed to edit comment");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     if (taskId) fetchComments();
   }, [taskId]);
@@ -117,6 +135,7 @@ const useTaskComment = (taskId: string) => {
     error,
     fetchComments,
     addComment,
+    editComment,
     deleteComment,
   };
 };

@@ -47,9 +47,7 @@ public class TaskCommentService {
         return taskCommentRepository.findAllByTaskOrderByCreatedAtDesc(tache);
     }
     public List<TaskComment> deleteComment(String commentId,String userID){
-        System.out.println("Data "+commentId + " "+ userID);
         TaskComment taskComment = getById(commentId);
-        System.out.println(taskComment);
         if(taskComment == null){
             return null;
         }
@@ -57,6 +55,19 @@ public class TaskCommentService {
         if(taskComment.getUser().getId().equals(userID)){
             taskCommentRepository.deleteById(commentId);
             return getTaskCommentByTask(taskId);
+        }
+        return null;
+    }
+    public TaskComment editComment(String commentId,String userID,String content){
+        TaskComment taskComment = getById(commentId);
+        if(taskComment == null){
+            return null;
+        }
+        if(taskComment.getUser().getId().equals(userID)){
+            if(!content.isEmpty()){
+                taskComment.setContent(content);
+                return taskCommentRepository.save(taskComment);
+            }
         }
         return null;
     }

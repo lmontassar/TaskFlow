@@ -15,6 +15,8 @@ function TaskComments({
 }: any) {
   const [commentText, setCommentText] = useState("");
   const { user } = useContext(Context);
+  console.log(user?.id, "user id in task comments");
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
 
@@ -120,7 +122,7 @@ function TaskComments({
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground whitespace-pre-line">
+                  <p className="text-sm text-muted-foreground whitespace-pre-line break-words overflow-hidden">
                     {comment.content}
                   </p>
                 )}
