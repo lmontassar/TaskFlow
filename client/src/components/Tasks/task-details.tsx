@@ -137,8 +137,9 @@ export function TaskDetails({
     setIsEditing(false);
   };
 
-  const handleAddComment = async (commentText: string, setCommentText: any) => {
+  const handleAddComment = async (commentText: any, setCommentText: any) => {
     await addComment(commentText);
+    setCommentText("");
   };
 
   const formatDate = (dateString?: string) => {

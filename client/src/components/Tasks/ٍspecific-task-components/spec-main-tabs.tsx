@@ -28,11 +28,14 @@ export default function SpecificTaskMainTabs({
   checkIfAssigneeTask,
 }: any) {
   const { t } = useTranslation();
-  const { comments, addComment } = useTaskComment(task.id);
+  const { comments, addComment, deleteComment } = useTaskComment(task.id);
 
   const handleAddComment = async (commentText: any, setCommentText: any) => {
     await addComment(commentText);
     setCommentText("");
+  };
+  const handleDeleteComment = async (commentId: any) => {
+    await deleteComment(commentId);
   };
   return (
     <Card className="basis-full lg:basis-[calc(30%-1rem)] grow lg:grow-0">
@@ -110,6 +113,7 @@ export default function SpecificTaskMainTabs({
           <TaskComments
             comments={comments}
             handleAddComment={handleAddComment}
+            handleDeleteComment={handleDeleteComment}
           />
         </TabsContent>
         {(checkIfCreatorOfProject(task?.project) ||

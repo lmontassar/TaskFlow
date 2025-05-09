@@ -19,9 +19,15 @@ const useTaskComment = (taskId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/taskComments?taskId=${taskId}`);
+      const response = await fetch(`/api/task-comment/${taskId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch comments");
-      const data: TaskComment[] = await response.json();
+      const data: any[] = await response.json();
       setComments(data);
     } catch (err: any) {
       handleError(err, "Failed to fetch comments");
@@ -33,7 +39,7 @@ const useTaskComment = (taskId: string) => {
   const setupWebSocket = () => {
     if (!taskId || clientRef.current) return;
 
-    const socket = new SockJS("/api/ws");
+    const socket = new SockJS("/ws");
     const client = Stomp.over(socket);
 
     client.connect(
@@ -63,7 +69,7 @@ const useTaskComment = (taskId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/taskComments", {
+      const response = await fetch("/api/task-comment/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,8 +78,6 @@ const useTaskComment = (taskId: string) => {
         body: JSON.stringify({ content, taskId }),
       });
       if (!response.ok) throw new Error("Failed to add comment");
-      const data: any = await response.json();
-      setComments((prev) => [...prev, data]);
     } catch (err: any) {
       handleError(err, "Failed to add comment");
     } finally {
@@ -85,11 +89,14 @@ const useTaskComment = (taskId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/taskComments/${commentId}`, {
+      const response = await fetch(`/api/task-comment/${commentId}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) throw new Error("Failed to delete comment");
-      setComments((prev) => prev.filter((comment) => comment.id !== commentId));
     } catch (err: any) {
       handleError(err, "Failed to delete comment");
     } finally {
