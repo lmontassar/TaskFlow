@@ -15,6 +15,8 @@ import { Trash2 } from "lucide-react";
 
 import { UserSearch } from "@/components/ui/assigneeSearch";
 import { AttachmentsTab } from "@/components/attachments/attachments-tab";
+import TaskComments from "../task-comments";
+import useTaskComment from "../../../hooks/useTaskComment";
 
 export default function SpecificTaskMainTabs({
   canEdit,
@@ -26,6 +28,12 @@ export default function SpecificTaskMainTabs({
   checkIfAssigneeTask,
 }: any) {
   const { t } = useTranslation();
+  const { comments, addComment } = useTaskComment(task.id);
+
+  const handleAddComment = async (commentText: any, setCommentText: any) => {
+    await addComment(commentText);
+    setCommentText("");
+  };
   return (
     <Card className="basis-full lg:basis-[calc(30%-1rem)] grow lg:grow-0">
       <Tabs defaultValue="assignees" className="ml-2 mr-2">
@@ -99,13 +107,10 @@ export default function SpecificTaskMainTabs({
         </TabsContent>
 
         <TabsContent value="comments" className="mt-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center py-6 text-muted-foreground">
-                Comments feature coming soon
-              </div>
-            </CardContent>
-          </Card>
+          <TaskComments
+            comments={comments}
+            handleAddComment={handleAddComment}
+          />
         </TabsContent>
         {(checkIfCreatorOfProject(task?.project) ||
           checkIfAssigneeTask(task)) && (
