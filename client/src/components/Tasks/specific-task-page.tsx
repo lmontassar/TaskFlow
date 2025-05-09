@@ -103,7 +103,7 @@ export default function SpecificTaskPage() {
   useEffect(() => {
     if (!taskId || clientRef.current) return; // prevent duplicate connections
 
-    const socket = new SockJS("/api/ws");
+    const socket = new SockJS("/ws");
     const client = Stomp.over(socket);
 
     client.connect(
