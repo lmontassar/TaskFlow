@@ -140,3 +140,275 @@
 }
 
 
+/* Gantt Chart Styles */
+.gantt-container {
+  position: relative;
+  font-family: var(--font-sans);
+}
+
+/* Task bar styles based on difficulty */
+.gantt .bar-wrapper.task-hard .bar {
+  fill: #ef4444; /* Red for hard tasks */
+  stroke: #b91c1c;
+}
+
+.gantt .bar-wrapper.task-normal .bar {
+  fill: #3b82f6; /* Blue for normal tasks */
+  stroke: #1d4ed8;
+}
+
+.gantt .bar-wrapper.task-easy .bar {
+  fill: #22c55e; /* Green for easy tasks */
+  stroke: #15803d;
+}
+
+/* Progress bar styles */
+.gantt .bar-wrapper .bar-progress {
+  fill: rgba(0, 0, 0, 0.2);
+}
+
+/* Handle styles */
+.gantt .handle {
+  fill: #64748b;
+  cursor: ew-resize;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.gantt .bar-wrapper:hover .handle {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Arrow styles for dependencies */
+.gantt .arrow {
+  stroke: #64748b;
+  stroke-width: 2;
+}
+
+/* Grid styles */
+.gantt .grid-background {
+  fill: #f8fafc;
+}
+
+.gantt .grid-row {
+  fill: #ffffff;
+}
+
+.gantt .grid-row:nth-child(even) {
+  fill: #f1f5f9;
+}
+
+.gantt .row-line {
+  stroke: #e2e8f0;
+}
+
+.gantt .tick {
+  stroke: #cbd5e1;
+}
+
+.gantt .today-highlight {
+  fill: rgba(249, 115, 22, 0.15); /* Light orange for today */
+}
+
+/* Text styles */
+.gantt text {
+  font-size: 12px;
+  fill: #334155;
+}
+
+.gantt .lower-text {
+  font-size: 10px;
+  fill: #64748b;
+}
+
+/* Popup styles */
+.gantt-task-popup {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  max-width: 300px;
+  z-index: 100;
+}
+
+.gantt-task-popup h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.gantt-task-popup p {
+  margin: 4px 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Toolbar styles */
+.gantt-toolbar {
+  margin-bottom: 16px;
+}
+
+.gantt-toolbar button {
+  transition: background-color 0.2s ease;
+}
+
+.gantt-toolbar button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .gantt text {
+    font-size: 10px;
+  }
+  
+  .gantt .lower-text {
+    font-size: 8px;
+  }
+}
+
+
+/* Custom styles for DHTMLX Gantt */
+
+/* Task styling based on difficulty */
+.gantt_task_line.task-hard {
+  background-color: #f87171;
+  border-color: #ef4444;
+}
+
+.gantt_task_line.task-normal {
+  background-color: #fbbf24;
+  border-color: #f59e0b;
+}
+
+.gantt_task_line.task-easy {
+  background-color: #34d399;
+  border-color: #10b981;
+}
+
+/* Parent-child task styling */
+.gantt_task_line.parent-task {
+  background-color: #6366f1;
+  border-color: #4f46e5;
+  height: 24px !important;
+  border-radius: 4px;
+}
+
+.gantt_task_line.child-task {
+  margin-left: 10px;
+  height: 16px !important;
+  border-radius: 3px;
+}
+
+/* Progress bar styling */
+.gantt_task_progress {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Weekend highlighting */
+.weekend {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Today highlighting */
+.today {
+  background-color: rgba(14, 165, 233, 0.3);
+}
+
+/* Project task styling */
+.gantt_task_line.gantt_project {
+  background-color: #6366f1;
+  border-color: #4f46e5;
+}
+
+/* Milestone styling */
+.gantt_task_line.gantt_milestone {
+  background-color: #ec4899;
+  border-color: #db2777;
+}
+
+
+/* Task row hover effect */
+.gantt_task_row:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Grid header styling */
+.gantt_grid_head_cell {
+  font-weight: 600;
+  color: #374151;
+  background-color: #f9fafb;
+}
+
+/* Grid cell styling */
+.gantt_grid_data .gantt_cell {
+  color: #4b5563;
+}
+
+/* Loading spinner */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tooltip styling */
+.gantt_tooltip {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+/* Add a legend for dependency types */
+.gantt-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.gantt-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gantt-legend-color {
+  width: 16px;
+  height: 3px;
+}
+
+
+/**********************************************************************************************/
+.finish_to_start {
+  --dhx-gantt-link-background: #3b82f6;
+  --dhx-gantt-link-line-dash:    none;
+}
+.start_to_start {
+  --dhx-gantt-link-background: #10b981;
+  --dhx-gantt-link-line-dash:    4,2;
+}
+.finish_to_finish {
+  --dhx-gantt-link-background: #f59e0b;
+  --dhx-gantt-link-line-dash:    1,2;
+}
+.start_to_finish {
+  --dhx-gantt-link-background: #ef4444;
+  --dhx-gantt-link-line-dash:    none;
+}

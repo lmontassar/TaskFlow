@@ -500,6 +500,57 @@ public class TacheController {
         }
     }
 
+    @PutMapping("/resize")
+    public ResponseEntity<?> updateResize(
+            @RequestBody Tache task,
+            @RequestHeader("Authorization") String token) {
+        try {
+            
+            User u = getUserFromToken(token);
+            if (u == null)
+                return ResponseEntity.notFound().build(); // 404 Not Found
+
+            Tache oldTask = tacheSer.findTacheById(task.getId());
+            if (oldTask == null)
+                return ResponseEntity.notFound().build();
+
+            setPrivilege(u, null, oldTask);
+
+            if (canEditTasks == false)
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+            if (task.getDateDebut() != null
+                    && task.getDateFinEstime() != null
+                    && task.getDateFinEstime().isBefore(task.getDateDebut()))
+                return ResponseEntity.status(416).body("date_invalid");
+
+            if (task.getDateDebut() != null) {
+                LocalDateTime earliest = oldTask.getFirstDateDebutForMatRessource();
+                System.out.println("earliest: " + earliest);
+
+                if (earliest != null && task.getDateDebut().isAfter(earliest))
+                    return ResponseEntity.status(416).body("date_dabut_invalid");
+            }
+
+            if (task.getDateFinEstime() != null) {
+                LocalDateTime latest = oldTask.getLastDateFinForMatRessource();
+                System.out.println("latest: " + latest);
+                if (latest != null && task.getDateFinEstime().isBefore(latest))
+                    return ResponseEntity.status(416).body("date_fin_invalid");
+            }
+            System.out.println(task.getDateFinEstime());
+            oldTask.setDateDebut(task.getDateDebut());
+            oldTask.setDateFinEstime(task.getDateFinEstime());
+            Tache newTask = tacheSer.update(oldTask);
+            return ResponseEntity.ok().body(newTask);
+
+        } catch (Exception err) {
+            System.out.println(err.getMessage() + "ftghjghj");
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
     @PutMapping("/update")
     public ResponseEntity<?> update(
             @RequestBody Tache task,
@@ -518,23 +569,7 @@ public class TacheController {
             if (canEditTasks == false)
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-            //
-
-            // if ((task.getNomTache() == null ||
-            // task.getNomTache().isEmpty() ||
-            // task.getNomTache().length() > 255 ||
-            // XSS_PATTERN.matcher((task.getNomTache())).find())
-            // ||
-            // ((task.getDescription() != null && !task.getDescription().isEmpty()) &&
-            // (task.getDescription().length() > 1000 ||
-            // XSS_PATTERN.matcher((task.getDescription())).find()))
-            // ||
-            // (task.getDateDebut() != null && task.getDateFinEstime() != null &&
-            // task.getDateFinEstime().isBefore(task.getDateDebut()))
-            // || task.getDuree() < 0 || task.getMarge() < 0 || task.getBudgetEstime() < 0
-            // || task.getQualite() > 5
-            // || task.getQualite() < 0 || task.getDifficulte() == null)
-            // return ResponseEntity.status(416).build();
+            
 
             if (task.getNomTache() == null ||
                     task.getNomTache().isEmpty() ||

@@ -13,7 +13,7 @@ export function ProjectTabs({ projects, isLoading, setProject }: any) {
   const [activeTab, setActiveTab] = useState("tasks");
 
   return (
-    <Tabs defaultValue="discussions" className="mt-6" onValueChange={setActiveTab}>
+    <Tabs defaultValue="timeline" className="mt-6" onValueChange={setActiveTab}>
       <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="tasks">Tasks</TabsTrigger>
         <TabsTrigger value="timeline">Timeline</TabsTrigger>
@@ -25,7 +25,9 @@ export function ProjectTabs({ projects, isLoading, setProject }: any) {
         <ProjectTasks project={projects} />
       </TabsContent>
       <TabsContent value="timeline" className="mt-6">
-        <ProjectTimeline />
+        <ProjectTimeline
+          project={projects}
+        />
       </TabsContent>
       <TabsContent value="members" className="mt-6">
         <ProjectMembers
@@ -38,7 +40,7 @@ export function ProjectTabs({ projects, isLoading, setProject }: any) {
         <ProjectResources project={projects} />
       </TabsContent>
       <TabsContent value="discussions" className="mt-6">
-        <ProjectDiscussions project={projects}  />
+        <ProjectDiscussions project={projects} />
       </TabsContent>
     </Tabs>
   );

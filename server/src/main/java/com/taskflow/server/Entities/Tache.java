@@ -45,7 +45,9 @@ public class Tache {
 
     private List<String> comments;
 
+    
     @DBRef
+    @JsonIgnoreProperties({ "messages" })
     private Project project;
     private List<AffectationRessource> ressources = new ArrayList<>();
 

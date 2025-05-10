@@ -448,6 +448,55 @@ const useTasks = () => {
     }
     return { message, result: false };
   };
+
+   const handleResizeTask = async (updated: any) => {
+    let message = "";
+    try {
+      const token = localStorage.getItem("authToken");
+      // send only the ID and the attributes you want to edit
+      const fixedTask = {
+        dateDebut: updated.dateDebut,
+        dateFinEstime: updated.dateFinEstime,
+        id: updated.id,
+      };
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+      const res = await fetch("/api/tache/resize", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(fixedTask),
+      });
+
+      if (res.ok) {
+        toast.success(t("task.update_success"));
+        return { message, result: true };
+      } else {
+        switch (res.status) {
+          case 416: {
+            const errorText = await res.text();
+            message = t(`task.error.${errorText}`);
+            break;
+          }
+          case 400: {
+            message = t("task.error.bad_request");
+            break;
+          }
+          default: {
+            message = t("task.error.unexpected");
+          }
+        }
+      }
+    } catch (error) {
+      toast.error(t("toast.server_error"));
+    }
+    return { message, result: false };
+  };
+
   const getTasksByProjectID = async (projectID: any) => {
     setIsLoading(true);
     console.log("try to get tasks ... ");
@@ -821,6 +870,7 @@ const useTasks = () => {
   }
 
   return {
+    handleResizeTask,
     deleteAssignResource,
     editAssignResource,
     addAssignResource,
