@@ -15,6 +15,8 @@ import { Trash2 } from "lucide-react";
 
 import { UserSearch } from "@/components/ui/assigneeSearch";
 import { AttachmentsTab } from "@/components/attachments/attachments-tab";
+import TaskComments from "../task-comments";
+import useTaskComment from "../../../hooks/useTaskComment";
 
 export default function SpecificTaskMainTabs({
   canEdit,
@@ -26,6 +28,20 @@ export default function SpecificTaskMainTabs({
   checkIfAssigneeTask,
 }: any) {
   const { t } = useTranslation();
+  const { comments, addComment, deleteComment, editComment } = useTaskComment(
+    task.id
+  );
+
+  const handleAddComment = async (commentText: any, setCommentText: any) => {
+    await addComment(commentText);
+    setCommentText("");
+  };
+  const handleDeleteComment = async (commentId: any) => {
+    await deleteComment(commentId);
+  };
+  const handleEditComment = async (editingId: any, editingContent: any) => {
+    await editComment(editingId, editingContent);
+  };
   return (
     <Card className="basis-full lg:basis-[calc(30%-1rem)] grow lg:grow-0">
       <Tabs defaultValue="assignees" className="ml-2 mr-2">
@@ -99,13 +115,13 @@ export default function SpecificTaskMainTabs({
         </TabsContent>
 
         <TabsContent value="comments" className="mt-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center py-6 text-muted-foreground">
-                Comments feature coming soon
-              </div>
-            </CardContent>
-          </Card>
+          <TaskComments
+            task={task}
+            comments={comments}
+            handleAddComment={handleAddComment}
+            handleDeleteComment={handleDeleteComment}
+            handleEditComment={handleEditComment}
+          />
         </TabsContent>
         {(checkIfCreatorOfProject(task?.project) ||
           checkIfAssigneeTask(task)) && (

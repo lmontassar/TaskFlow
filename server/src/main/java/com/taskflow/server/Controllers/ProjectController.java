@@ -93,7 +93,7 @@ public class ProjectController {
                 return ResponseEntity.badRequest().body("user already in the project");
             }
 
-            Notification notification = notificationService.CreateNotification(user,userC,pr, Notification.Type.INVITATION,"");
+            Notification notification = notificationService.CreateNotification(user,userC,pr, Notification.Type.INVITATION,"",null);
             if(notification!=null){
 
                 return ResponseEntity.ok(pr);

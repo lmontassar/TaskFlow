@@ -29,30 +29,43 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon, CheckCircle2, Clock, MoreHorizontal, Trash2, X, Edit, StarIcon } from "lucide-react"
-import { format, parseISO } from "date-fns"
-import type { Task } from "./tasks-interface"
-import _ from "lodash"
-import { Input } from "../ui/input"
+} from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  CalendarIcon,
+  CheckCircle2,
+  Clock,
+  MoreHorizontal,
+  Trash2,
+  X,
+  Edit,
+  StarIcon,
+  Paperclip,
+  Send,
+} from "lucide-react";
+import { format, parseISO } from "date-fns";
+import type { Task } from "./tasks-interface";
+import _ from "lodash";
+import { Input } from "../ui/input";
 
-import DurationInput from "../ui/divided-duration-input"
-import { UserSearch } from "../ui/assigneeSearch"
-import useTasks from "../../hooks/useTasks"
-import { Link } from "react-router-dom"
-import { useTranslation } from "react-i18next"
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
-import { toLocalISOString } from "../../lib/utils"
-
-
-
-
-
-
+import DurationInput from "../ui/divided-duration-input";
+import { UserSearch } from "../ui/assigneeSearch";
+import useTasks from "../../hooks/useTasks";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { toLocalISOString } from "../../lib/utils";
 
 import { AttachmentsTab } from "../attachments/attachments-tab";
+import { Separator } from "../ui/separator";
+import TaskComments from "./task-comments";
+import { AnyAaaaRecord } from "dns";
+import useTaskComment from "../../hooks/useTaskComment";
 
 interface TaskDetailsProps {
   taskToEdit: any;
@@ -76,8 +89,6 @@ export function TaskDetails({
   const [editedTask, setEditedTask] = useState<Task>({ ...taskToEdit });
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [assigneeToDelete, setAssigneeToDelete] = useState<any>(null);
-  const [commentText, setCommentText] = useState("");
-  const commentInputRef = useRef<HTMLTextAreaElement>(null);
   const [marge, setMarge] = useState(editedTask.marge);
   const [duration, setDuration] = useState(editedTask.duree);
   const [assigneeToAdd, setAssigneeToAdd] = useState<any>(null);
@@ -86,7 +97,9 @@ export function TaskDetails({
   const [editError, setEditError] = useState("");
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = React.useState(false);
-
+  const { comments, addComment, deleteComment, editComment } = useTaskComment(
+    task.id
+  );
   useEffect(() => {
     setTask(allTasks.filter((t) => t.id == taskToEdit.id)[0]);
   }, [allTasks, taskToEdit]);
@@ -126,28 +139,15 @@ export function TaskDetails({
     setIsEditing(false);
   };
 
-  const handleAddComment = () => {
-    if (!commentText.trim()) return;
-
-    const newComment = {
-      id: `comment-${Date.now()}`,
-      user: {
-        id: "current-user",
-        name: "You",
-        avatar: "/placeholder.svg?height=32&width=32",
-        initials: "YO",
-      },
-      content: commentText,
-      createdAt: new Date().toISOString(),
-    };
-
-    const updatedTask = {
-      ...task,
-      comments: [...task.comments, newComment],
-    };
-
-    onUpdate(updatedTask);
+  const handleAddComment = async (commentText: any, setCommentText: any) => {
+    await addComment(commentText);
     setCommentText("");
+  };
+  const handleDeleteComment = async (commentId: any) => {
+    await deleteComment(commentId);
+  };
+  const handleEditComment = async (editingId: any, editingContent: any) => {
+    await editComment(editingId, editingContent);
   };
 
   const formatDate = (dateString?: string) => {
@@ -289,10 +289,9 @@ export function TaskDetails({
                 disabled={!checkIfCreatorOfProject(task.project)}
                 className="text-destructive focus:text-destructive"
                 onClick={() => {
-                  setConfirmDelete(checkIfCreatorOfProject(task.project))
+                  setConfirmDelete(checkIfCreatorOfProject(task.project));
                   setMenuOpen(false);
-                }
-                }
+                }}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 {t("common.delete", "Delete")}
@@ -505,8 +504,17 @@ export function TaskDetails({
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={editedTask.dateDebut ? parseISO(editedTask.dateDebut) : undefined}
-                      onSelect={(date: any) => handleTaskUpdate("dateDebut", date ? toLocalISOString(date) : undefined)}
+                      selected={
+                        editedTask.dateDebut
+                          ? parseISO(editedTask.dateDebut)
+                          : undefined
+                      }
+                      onSelect={(date: any) =>
+                        handleTaskUpdate(
+                          "dateDebut",
+                          date ? toLocalISOString(date) : undefined
+                        )
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -536,8 +544,17 @@ export function TaskDetails({
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={editedTask.dateFinEstime ? parseISO(editedTask.dateFinEstime) : undefined}
-                      onSelect={(date: any) => handleTaskUpdate("dateFinEstime", date ? toLocalISOString(date) : undefined)}
+                      selected={
+                        editedTask.dateFinEstime
+                          ? parseISO(editedTask.dateFinEstime)
+                          : undefined
+                      }
+                      onSelect={(date: any) =>
+                        handleTaskUpdate(
+                          "dateFinEstime",
+                          date ? toLocalISOString(date) : undefined
+                        )
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -605,18 +622,19 @@ export function TaskDetails({
                         {Array.from({ length: 5 }).map((_, i) => (
                           <StarIcon
                             key={i}
-                            className={`h-4 w-4 ${i < (task.qualite || 0)
+                            className={`h-4 w-4 ${
+                              i < (task.qualite || 0)
                                 ? "text-blue-500 fill-blue-500"
                                 : "text-muted-foreground"
-                              }`}
+                            }`}
                           />
                         ))}
                       </>
                     )) || (
-                        <span className="text-sm">
-                          {t("tasks.details.qualit.zero", "Not Rated")}
-                        </span>
-                      )}
+                      <span className="text-sm">
+                        {t("tasks.details.qualit.zero", "Not Rated")}
+                      </span>
+                    )}
                   </div>
                 </div>
                 {task.budgetEstime != 0 && (
@@ -705,71 +723,20 @@ export function TaskDetails({
                   </TabsTrigger>
                   {(checkIfCreatorOfProject(task?.project) ||
                     checkIfAssigneeTask(task)) && (
-                      <TabsTrigger value="attachments" className="flex-1">
-                        {t("tasks.specific.tabs.attachments", "Attachments")}
-                      </TabsTrigger>
-                    )}
-                </TabsList>
-                {/* <TabsContent value="comments" className="space-y-4 pt-4">
-                  {task.comments.length > 0 ? (
-                    <div className="space-y-4">
-                      {task.comments.map((comment:any) => (
-                        <div key={comment.id} className="flex gap-3">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={comment.user.avatar || "/placeholder.svg"} alt={comment.user.name} />
-                            <AvatarFallback>{comment.user.initials}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 space-y-1">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">{comment.user.name}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  {formatDistanceToNow(parseISO(comment.createdAt), { addSuffix: true })}
-                                </span>
-                              </div>
-                            </div>
-                            <p className="text-sm">{comment.content}</p>
-
-                            {comment.attachments && comment.attachments.length > 0 && (
-                              <div className="rounded-md border p-2">
-                                <div className="flex items-center gap-2">
-                                  <Paperclip className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-sm">{comment.attachments[0].name}</span>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
-                      No comments yet
-                    </div>
+                    <TabsTrigger value="attachments" className="flex-1">
+                      {t("tasks.specific.tabs.attachments", "Attachments")}
+                    </TabsTrigger>
                   )}
-
-                  <Separator />
-
-                  <div>
-                    <Textarea
-                      ref={commentInputRef}
-                      placeholder="Add a comment..."
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      className="min-h-[80px] resize-none"
-                    />
-                    <div className="mt-2 flex justify-between">
-                      <Button variant="outline" size="sm">
-                        <Paperclip className="mr-2 h-4 w-4" />
-                        Attach
-                      </Button>
-                      <Button size="sm" onClick={handleAddComment} disabled={!commentText.trim()}>
-                        <Send className="mr-2 h-4 w-4" />
-                        Send
-                      </Button>
-                    </div>
-                  </div>
-                </TabsContent> */}
+                </TabsList>
+                <TabsContent value="comments" className="space-y-4 pt-4">
+                  <TaskComments
+                    task={task}
+                    comments={comments}
+                    handleAddComment={handleAddComment}
+                    handleDeleteComment={handleDeleteComment}
+                    handleEditComment={handleEditComment}
+                  />
+                </TabsContent>
                 <TabsContent value="assignees" className="pt-2">
                   <div className="text-center text-sm text-muted-foreground">
                     <div className="grid gap-3 pl-3">
@@ -823,10 +790,10 @@ export function TaskDetails({
 
                 {(checkIfCreatorOfProject(task?.project) ||
                   checkIfAssigneeTask(task)) && (
-                    <TabsContent value="attachments" className="pt-2">
-                      <AttachmentsTab task={task} />
-                    </TabsContent>
-                  )}
+                  <TabsContent value="attachments" className="pt-2">
+                    <AttachmentsTab task={task} />
+                  </TabsContent>
+                )}
               </Tabs>
             </div>
           )}

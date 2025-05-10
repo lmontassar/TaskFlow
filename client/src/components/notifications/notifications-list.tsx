@@ -215,6 +215,18 @@ export function NotificationsList() {
                               {notification?.project?.nom}
                             </span>
                           )}
+                          {notification?.type === "MENTION" && (
+                            <span className="cursor-pointer hover:underline">
+                              {notification.sender.nom}{" "}
+                              <a
+                                href={`/task/${notification.task?.id}`}
+                                className="text-blue-500"
+                              >
+                                mentioned
+                              </a>{" "}
+                              you in {notification.project?.nom}
+                            </span>
+                          )}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
