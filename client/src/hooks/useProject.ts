@@ -10,6 +10,31 @@ function useProject() {
   const [error, setError] = useState(null);
   const clientRef = useRef<any>(null);
   const token = localStorage.getItem("authToken") || "";
+  const [newDescription, setNewDescription] = useState<string>("");
+  const generateDescription = async (oldDescription: any, projectName: any) => {
+    if (projectName === "") {
+      toast.error("Please enter a project name");
+      return;
+    }
+    const response = await fetch("/api/ai-chat/generate-description", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        description: oldDescription,
+        projectName: projectName,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch projects");
+    }
+    const data = await response.json();
+
+    setNewDescription(data.content);
+    return data.content;
+  };
   const getProject = async () => {
     setIsLoading(true);
     setError(null);
@@ -145,6 +170,8 @@ function useProject() {
     getProjectById,
     getProject,
     removeCollaborator,
+    generateDescription,
+    newDescription,
   };
 }
 
