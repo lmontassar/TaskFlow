@@ -28,6 +28,8 @@ public class Notification {
     @DBRef
     private User sender;
     @DBRef
+    private Tache task;
+    @DBRef
     private User receiver;
     private Boolean read = false;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

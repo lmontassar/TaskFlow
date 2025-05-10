@@ -6,16 +6,30 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Send, MessageCircle, Pencil, Trash, X, Check } from "lucide-react";
 import { Context } from "../../App";
+import { Mention } from "primereact/mention";
 
 function TaskComments({
   comments,
+  task,
   handleAddComment,
   handleEditComment,
   handleDeleteComment,
 }: any) {
   const [commentText, setCommentText] = useState("");
   const { user } = useContext(Context);
-  console.log(user?.id, "user id in task comments");
+  const [collabs, setCollabs] = useState([
+    ...(task?.project?.listeCollaborateur || []),
+    {
+      user: {
+        id: task?.rapporteur?.id,
+        nom: task?.rapporteur?.nom,
+        prenom: task?.rapporteur?.prenom,
+        email: task?.rapporteur?.email,
+        avatar: task?.rapporteur?.avatar,
+      },
+    },
+  ]); // Assuming this is the list of collaborators
+  const [suggestions, setSuggestions] = useState([]);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
@@ -48,13 +62,58 @@ function TaskComments({
       cancelEditing();
     }
   };
+  const onSearch = (event: any) => {
+    //in a real application, make a request to a remote url with the query and return suggestions, for demo we filter at client side
+    setTimeout(() => {
+      const query = event.query;
+      let suggestions;
 
+      if (!query.trim().length) {
+        suggestions = collabs.filter((customer: any) => {
+          return customer.user.id !== user?.id;
+        });
+      } else {
+        suggestions = collabs.filter((customer: any) => {
+          return (
+            customer.user.email.toLowerCase().startsWith(query.toLowerCase()) &&
+            customer.user.id !== user?.id
+          );
+        });
+      }
+
+      setSuggestions(suggestions);
+    }, 250);
+  };
+  const itemTemplate = (suggestion: any) => {
+    return (
+      <div className="flex items-center bg-white dark:bg-zinc-900 p-2 rounded-md">
+        <Avatar className="h-10 w-10">
+          <AvatarImage
+            src={suggestion.user.avatar || "/placeholder.svg"}
+            alt={suggestion.user.nom}
+          />
+          <AvatarFallback>{suggestion.user.nom}</AvatarFallback>
+        </Avatar>
+        <span className="flex flex-col ml-2">
+          {suggestion.user.nom + " " + suggestion.user.prenom}
+          <small
+            style={{ fontSize: ".75rem", color: "var(--text-color-secondary)" }}
+          >
+            @{suggestion.user.email}
+          </small>
+        </span>
+      </div>
+    );
+  };
   return (
     <div className="rounded-xl border bg-white shadow-sm p-4 space-y-4">
       <h3 className="text-lg font-semibold">Comments</h3>
 
       {comments.length > 0 ? (
-        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
+        <div
+          className="space-y-4 max-h-[300px] overflow-y-auto pr-1"
+          id="comments"
+        >
           {comments.map((comment: any) => (
             <div
               key={comment.id}
@@ -123,7 +182,20 @@ function TaskComments({
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground whitespace-pre-line break-words overflow-hidden">
-                    {comment.content}
+                    {comment.content
+                      .split(/(\s+)/)
+                      .map((part: string, i: any) =>
+                        part.startsWith("@") ? (
+                          <strong
+                            key={i}
+                            className="font-semibold text-foreground"
+                          >
+                            {part}
+                          </strong>
+                        ) : (
+                          part
+                        )
+                      )}
                   </p>
                 )}
               </div>
@@ -139,24 +211,39 @@ function TaskComments({
 
       <Separator />
 
-      <div className="space-y-2">
-        <Textarea
-          ref={commentInputRef}
-          placeholder="Write a thoughtful comment..."
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          className="min-h-[100px] resize-none"
-        />
-        <div className="flex justify-end">
-          <Button
-            size="sm"
-            onClick={() => handleAddComment(commentText, setCommentText)}
-            disabled={!commentText.trim()}
-            className="gap-1"
-          >
-            <Send className="h-4 w-4" />
-            Send
-          </Button>
+      <div className="p-4 bg-white dark:bg-zinc-900 space-y-3">
+        <div className="flex flex-col items-start gap-2 mb-2">
+          <Mention
+            value={commentText}
+            onChange={(e) =>
+              setCommentText((e.target as HTMLInputElement).value)
+            }
+            suggestions={suggestions}
+            onSearch={onSearch}
+            field="user.id"
+            placeholder="Write a thoughtful comment..."
+            rows={4}
+            cols={40}
+            itemTemplate={itemTemplate}
+            pt={{
+              input: {
+                className:
+                  "p-3 border border-gray-300 dark:border-zinc-700 rounded-lg w-full min-h-[100px] resize-none text-sm bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all",
+              },
+            }}
+            autoResize
+          />
+          <div className="flex justify-end">
+            <Button
+              size="sm"
+              onClick={() => handleAddComment(commentText, setCommentText)}
+              disabled={!commentText.trim()}
+              className="flex items-center gap-1 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Send className="h-4 w-4" />
+              Send
+            </Button>
+          </div>
         </div>
       </div>
     </div>

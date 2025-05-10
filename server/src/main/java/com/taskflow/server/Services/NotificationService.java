@@ -1,9 +1,6 @@
 package com.taskflow.server.Services;
 
-import com.taskflow.server.Entities.Collaborator;
-import com.taskflow.server.Entities.Notification;
-import com.taskflow.server.Entities.Project;
-import com.taskflow.server.Entities.User;
+import com.taskflow.server.Entities.*;
 import com.taskflow.server.Repositories.NotificationRepository;
 import com.taskflow.server.Repositories.ProjectRepository;
 import jakarta.mail.MessagingException;
@@ -77,7 +74,7 @@ public class NotificationService {
     public Boolean isGITHUB(String email){
         return email.contains("@github.com");
     }
-    public Notification CreateNotification(User sender,User receiver,Project project,Notification.Type type,String description){
+    public Notification CreateNotification(User sender, User receiver, Project project, Notification.Type type, String description, Tache task){
         Notification notification = new Notification();
         String subject="";
         String body="";
@@ -126,6 +123,21 @@ public class NotificationService {
                 subject = "TaskFlow - Project Join";
                 body = String.format("%s joined your project : %s ", sender.getNom()+" "+sender.getPrenom(), project.getNom());
 
+                break;
+            }
+            case MENTION -> {
+                if(task==null){
+                    return null;
+                }
+                notification.setTitle("Project Mention");
+                subject = "TaskFlow - Project Mention";
+                body = String.format("%s mentioned you in %s project : task %s", sender.getNom()+" "+sender.getPrenom(), project.getNom(),task.getNomTache());
+                notification.setProject(project);
+                notification.setReceiver(receiver);
+                notification.setSender(sender);
+                notification.setTask(task);
+                notification.setCreationDate(new Date());
+                notification.setType(Notification.Type.MENTION);
                 break;
             }
 

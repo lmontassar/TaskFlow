@@ -41,7 +41,7 @@ public class NotificationController {
                 return ResponseEntity.status(403).build();
             }
             if(notificationService.AcceptInvitation(invitation)){
-                notificationService.CreateNotification(invitation.getReceiver(),invitation.getSender(),invitation.getProject(), Notification.Type.JOINED,"");
+                notificationService.CreateNotification(invitation.getReceiver(),invitation.getSender(),invitation.getProject(), Notification.Type.JOINED,"",null);
                 return ResponseEntity.status(200).build();
             }
             return ResponseEntity.status(404).build();

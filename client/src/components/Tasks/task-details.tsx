@@ -730,6 +730,7 @@ export function TaskDetails({
                 </TabsList>
                 <TabsContent value="comments" className="space-y-4 pt-4">
                   <TaskComments
+                    task={task}
                     comments={comments}
                     handleAddComment={handleAddComment}
                     handleDeleteComment={handleDeleteComment}

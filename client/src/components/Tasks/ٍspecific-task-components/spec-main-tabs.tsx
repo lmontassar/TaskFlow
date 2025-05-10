@@ -116,6 +116,7 @@ export default function SpecificTaskMainTabs({
 
         <TabsContent value="comments" className="mt-4">
           <TaskComments
+            task={task}
             comments={comments}
             handleAddComment={handleAddComment}
             handleDeleteComment={handleDeleteComment}
