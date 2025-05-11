@@ -72,6 +72,47 @@ public class AIChatController {
         return ResponseEntity.status(400).build();
 
     }
+    @PostMapping(value = "/generate-task-description")
+    public ResponseEntity<?> generateTaskDescription(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, String> requestBody) {
+        String desc = requestBody.get("description");
+        String taskName = requestBody.get("taskName");
+        String projectName = requestBody.get("projectName");
+        String projectDescription = requestBody.get("projectDescription");
+        String initialPrompt = "You are a project management AI assistant named TaskFlowAI. " +
+                "You help users generate description for there tasks of the project using the task name and the description if exists . " +
+                "If someone asks something unrelated, respond that your scope is limited to project management, respond professionally." +
+                "Generate only the description no need to add title return only the description. ";
+        String message = "Using the language of the task name, generate a short description from this task name : "+taskName+", " +
+                "this is the project name :"+projectName+", and this is the project description : "+projectDescription +", if the project name and the description doesn't make sense don't care about them just generate the description.";
+        String userId = myJWT.extractUserId(token);
+        if(desc!=null && !desc.trim().isEmpty()){
+            message+=" using this description: "+desc;
+        }
+        AIChat aiChat = new AIChat();
+        aiChat.setTitle("GenDesc");
+        User user = new User();
+        user.setId(userId);
+        aiChat.setUser(user);
+        List<Map<String,Object>> messageList = new ArrayList<>();
+        Map<String,Object> initialPromptRequest = new HashMap<>();
+        Map<String,Object> requestMessage = new HashMap<>();
+        initialPromptRequest.put("role","system");
+        initialPromptRequest.put("content",initialPrompt);
+        requestMessage.put("role","user");
+        requestMessage.put("content",message);
+        messageList.add(initialPromptRequest);
+        messageList.add(requestMessage);
+        aiChat.setMessageList(messageList);
+
+        Map<String,Object> responseMessage = aiChatService.sendMessage(aiChat);
+        if(responseMessage!=null){
+            return ResponseEntity.status(200).body(responseMessage);
+        }
+        return ResponseEntity.status(400).build();
+
+    }
     @PostMapping(value = "/generate-description")
     public ResponseEntity<?> generateDescription(
             @RequestHeader("Authorization") String token,

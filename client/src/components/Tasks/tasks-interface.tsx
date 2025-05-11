@@ -7,7 +7,7 @@ import { TasksList } from "@/components/tasks/tasks-list";
 import { TaskDetails } from "@/components/tasks/task-details";
 import { TaskCreateModal } from "@/components/tasks/task-create-modal";
 import useTasks from "../../hooks/useTasks";
-import { useTranslation } from "react-i18next"
+import { useTranslation } from "react-i18next";
 
 export type ViewMode = "board" | "list";
 export type GroupBy = "status" | "priority" | "assignee" | "project";
@@ -21,7 +21,7 @@ type taskProps = {
 };
 
 export function TasksInterface({ project }: taskProps) {
-  const { t  } = useTranslation();
+  const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [groupBy, setGroupBy] = useState<GroupBy>("status");
   const [sortBy, setSortBy] = useState<SortBy>("createdAt");
@@ -52,20 +52,19 @@ export function TasksInterface({ project }: taskProps) {
     getTasksByProjectID,
     checkIfCreatorOfProject,
     getMyTasks,
-    isLoading
+    isLoading,
+    generateDescription,
   } = useTasks();
 
   useEffect(() => {
-    if(project)
-      getTasksByProjectID(project?.id);
-    else 
-      getMyTasks()
+    if (project) getTasksByProjectID(project?.id);
+    else getMyTasks();
   }, [project]);
 
-  const thisUserIsACreator = ()=>{
-    if( project == null ) return false
-    return  checkIfCreatorOfProject(project) ; 
-  } 
+  const thisUserIsACreator = () => {
+    if (project == null) return false;
+    return checkIfCreatorOfProject(project);
+  };
 
   const isValidDate = (date?: string) =>
     !!date && !isNaN(new Date(date).getTime());
@@ -123,7 +122,7 @@ export function TasksInterface({ project }: taskProps) {
         )
       );
     }
-    
+
     if (filterOptions.dateFinEstime) {
       const filterDate = new Date(filterOptions.dateFinEstime).toDateString();
       filtered = filtered.filter((task) => {
@@ -140,11 +139,11 @@ export function TasksInterface({ project }: taskProps) {
       switch (sortBy) {
         case "dueDate":
           valueA = isValidDate(a.dateFinEstime)
-          ? new Date(a.dateFinEstime!).getTime()
-          : Number.POSITIVE_INFINITY;
-        valueB = isValidDate(b.dateFinEstime)
-          ? new Date(b.dateFinEstime!).getTime()
-          : Number.POSITIVE_INFINITY;
+            ? new Date(a.dateFinEstime!).getTime()
+            : Number.POSITIVE_INFINITY;
+          valueB = isValidDate(b.dateFinEstime)
+            ? new Date(b.dateFinEstime!).getTime()
+            : Number.POSITIVE_INFINITY;
           break;
         case "priority":
           const priorityOrder = { hard: 3, normal: 2, easy: 1 };
@@ -236,14 +235,12 @@ export function TasksInterface({ project }: taskProps) {
     const newGroupedTasks = groupTasks();
     setGroupedTasks(newGroupedTasks);
   }, [tasks]);
-  
 
-  const addTask = async (task :any) =>{
+  const addTask = async (task: any) => {
     const res = await handleTaskCreate(task);
     if (res === true) await getTasksByProjectID(project?.id);
     return res;
-  }
-
+  };
 
   const handleTaskClick = (task: any) => {
     setSelectedTask(task);
@@ -251,13 +248,13 @@ export function TasksInterface({ project }: taskProps) {
   };
 
   const handleTaskUpdate = async (updated: any) => {
-    if(selectedTask.statut != updated.statut)
+    if (selectedTask.statut != updated.statut)
       await handleUpdateStatutTask(updated.id, updated.statut);
 
-    const result:any = await handleUpdateTask(updated);
-    if(result?.result !== true ) return result;
+    const result: any = await handleUpdateTask(updated);
+    if (result?.result !== true) return result;
     if (project) await getTasksByProjectID(project?.id);
-    else await getMyTasks()
+    else await getMyTasks();
     setSelectedTask(updated);
     return result;
   };
@@ -268,7 +265,6 @@ export function TasksInterface({ project }: taskProps) {
     await handleDeleteTask(taskId);
     if (project) getTasksByProjectID(project?.id);
     setSelectedTask(null);
-    
   };
 
   const handleViewModeChange = (mode: ViewMode) => {
@@ -322,11 +318,12 @@ export function TasksInterface({ project }: taskProps) {
       [destination.droppableId]: updatedDestinationTasks,
     }));
 
-    const updatedTasks = tasks.map((task:any) =>
-      task.id === draggableId ? { ...task, statut: destination.droppableId } : task
+    const updatedTasks = tasks.map((task: any) =>
+      task.id === draggableId
+        ? { ...task, statut: destination.droppableId }
+        : task
     );
     setTasks(updatedTasks);
-
   };
 
   return (
@@ -357,7 +354,14 @@ export function TasksInterface({ project }: taskProps) {
               onDragEnd={handleDragEnd}
             />
           ) : (
-            <TasksList project={project} isLoading={isLoading}  tasks={filteredTasks} setTasks={setTasks} onTaskClick={handleTaskClick} handleUpdateStatutTask={handleUpdateStatutTask} />
+            <TasksList
+              project={project}
+              isLoading={isLoading}
+              tasks={filteredTasks}
+              setTasks={setTasks}
+              onTaskClick={handleTaskClick}
+              handleUpdateStatutTask={handleUpdateStatutTask}
+            />
           )}
 
           {showTaskDetails && selectedTask && (
@@ -374,7 +378,7 @@ export function TasksInterface({ project }: taskProps) {
           )}
         </div>
       </div>
-        <TaskCreateModal
+      <TaskCreateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreateTask={addTask}
@@ -382,8 +386,8 @@ export function TasksInterface({ project }: taskProps) {
         addTaskError={addTaskError}
         setAddTaskError={setAddTaskError}
         project={project}
+        generateDescription={generateDescription}
       />
-      
     </div>
   );
 }

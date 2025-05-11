@@ -4,10 +4,38 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 const useTasks = () => {
+  const token = localStorage.getItem("authToken") || "";
   let [tasks, setTasks] = useState([]);
   let [isLoading, setIsLoading] = useState(false);
   const [addTaskError, setAddTaskError] = useState<string | null>("");
   const { t } = useTranslation();
+  const [newDescription, setNewDescription] = useState<string>("");
+  const generateDescription = async (oldDescription: any, taskName: any) => {
+    if (taskName === "") {
+      toast.error("Please enter a project name");
+      return;
+    }
+    const response = await fetch("/api/ai-chat/generate-task-description", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        description: oldDescription,
+        taskName: taskName,
+        projectName: tasks[0]?.project?.nom || "",
+        projectDescription: tasks[0]?.project?.description || "",
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch tasks");
+    }
+    const data = await response.json();
+
+    setNewDescription(data.content);
+    return data.content;
+  };
 
   const formatDurationReact = (duration: number): string => {
     const units = [
@@ -765,15 +793,14 @@ const useTasks = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      if (response.ok)
-        toast.success(t("task.ressource.crud.addSuccess"));
+      });
+      if (response.ok) toast.success(t("task.ressource.crud.addSuccess"));
       return response;
     } catch (err) {
-      toast.error(t("toast.server_error"))
+      toast.error(t("toast.server_error"));
     }
     return null;
-  }
+  };
 
   const editAssignResource = async (formData: any) => {
     try {
@@ -788,15 +815,14 @@ const useTasks = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      if (response.ok)
-        toast.success(t("task.ressource.crud.editSuccess"));
+      });
+      if (response.ok) toast.success(t("task.ressource.crud.editSuccess"));
       return response;
     } catch (err) {
-      toast.error(t("toast.server_error"))
+      toast.error(t("toast.server_error"));
     }
     return null;
-  }
+  };
 
   const deleteAssignResource = async (formData: any) => {
     try {
@@ -811,14 +837,14 @@ const useTasks = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
       toast.success(t("task.ressource.crud.deleteSuccess"));
       return response;
     } catch (err) {
-      toast.error(t("toast.server_error"))
+      toast.error(t("toast.server_error"));
     }
     return null;
-  }
+  };
 
   return {
     deleteAssignResource,
@@ -852,6 +878,8 @@ const useTasks = () => {
     checkIfCreatorOfProject,
     handleAddAssignee,
     checkIfAssigneeTask,
+    generateDescription,
+    newDescription,
   };
 };
 export default useTasks;
