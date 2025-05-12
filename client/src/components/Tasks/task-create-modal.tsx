@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowBigLeft, Loader2, Sparkles } from "lucide-react";
+import { ArrowBigLeft, Loader2, Redo2, Sparkles } from "lucide-react";
 import DurationInput from "../ui/divided-duration-input";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import {
@@ -198,7 +198,7 @@ export function TaskCreateModal({
                           className="cursor-pointer p-2 w-4 h-4 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
                           disabled={loadingDescription}
                         >
-                          <ArrowBigLeft className="text-red-500" />
+                          <Redo2 className="text-red-500 rotate-180" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
