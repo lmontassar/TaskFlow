@@ -230,7 +230,7 @@ function useProject() {
       if (res.ok) {
         console.log("changed");
         const data = await res.json();
-        toast.success(t("member.delete.success"));
+        toast.success(t("member.editForm.success"));
         return data;
       } else {
         console.log("noo way");

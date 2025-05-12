@@ -693,6 +693,19 @@
     }
   },
   "member": {
+    "editForm": {
+      "edit_title": "Edit Member",
+      "edit_description": "Edit the member details",
+      "skills": "Skills",
+      "select_skills": "Select Skills",
+      "new_skill": "New Skill",
+      "skill_title_placeholder": "Enter skill title",
+      "add_skill": "Add Skill",
+      "remove_skill": "Remove Skill",
+      "update_skill": "Update Skill",
+      "save_changes": "Save Changes",
+      "success": "Member updated successfully!"
+    },
     "title": "Members",
     "search": "Search members...",
     "name": "Name",

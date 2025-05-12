@@ -247,7 +247,9 @@ function MemberTable({
                     setShowNewSkillInput(false);
                   }}
                 >
-                  {t("member.editForm.add_or_update")}
+                  {currentSkillId
+                    ? t("member.editForm.update_skill")
+                    : t("member.editForm.add_skill")}
                 </Button>
               </div>
             )}
