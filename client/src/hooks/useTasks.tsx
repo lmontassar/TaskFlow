@@ -315,8 +315,9 @@ const useTasks = () => {
     }
     return false;
   };
-  const DeletePrecTask = async (taskID: any, precTaskID: any) => {
-    const toastId = toast.loading(
+  const DeletePrecTask = async (taskID: any, precTaskID: any, to: any = true) => {
+    let toastId;
+    if (to == true) toastId = toast.loading(
       t("toast.use_tasks.disassociate_precedentetask.loading")
     );
     try {
@@ -338,25 +339,28 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        toast.success(
+        if (to == true) toast.success(
           t("toast.use_tasks.disassociate_precedentetask.success"),
           { id: toastId }
         );
         return true;
       } else {
-        toast.error(t("toast.use_tasks.disassociate_precedentetask.error"), {
+        if (to == true) toast.error(t("toast.use_tasks.disassociate_precedentetask.error"), {
           id: toastId,
         });
       }
     } catch (error) {
-      toast.error(t("toast.server_error"), { id: toastId });
+      if (to == true) toast.error(t("toast.server_error"), { id: toastId });
     }
     return false;
   };
-  const DeleteParallelTask = async (taskID: any, parallelTaskID: any) => {
-    const toastId = toast.loading(
+  const DeleteParallelTask = async (taskID: any, parallelTaskID: any, to: any = true) => {
+
+    let toastId;
+    if (to == true) toastId = toast.loading(
       t("toast.use_tasks.disassociate_parallelestask.loading")
     );
+
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -376,17 +380,17 @@ const useTasks = () => {
       });
 
       if (!res.ok) {
-        toast.error(t("toast.use_tasks.disassociate_parallelestask.error"), {
+        if (to == true) toast.error(t("toast.use_tasks.disassociate_parallelestask.error"), {
           id: toastId,
         });
         return false;
       }
-      toast.success(t("toast.use_tasks.disassociate_parallelestask.success"), {
+      if (to == true) toast.success(t("toast.use_tasks.disassociate_parallelestask.success"), {
         id: toastId,
       });
       return true;
     } catch (error) {
-      toast.error(t("toast.server_error"), { id: toastId });
+      if (to == true) toast.error(t("toast.server_error"), { id: toastId });
     }
     return false;
   };
@@ -449,7 +453,7 @@ const useTasks = () => {
     return { message, result: false };
   };
 
-   const handleResizeTask = async (updated: any) => {
+  const handleResizeTask = async (updated: any) => {
     let message = "";
     try {
       const token = localStorage.getItem("authToken");
@@ -473,7 +477,6 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        toast.success(t("task.update_success"));
         return { message, result: true };
       } else {
         switch (res.status) {

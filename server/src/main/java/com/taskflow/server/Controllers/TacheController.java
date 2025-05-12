@@ -541,6 +541,11 @@ public class TacheController {
             System.out.println(task.getDateFinEstime());
             oldTask.setDateDebut(task.getDateDebut());
             oldTask.setDateFinEstime(task.getDateFinEstime());
+            if( tacheSer.isTaskValid(oldTask) == false ) {
+                System.out.println("aa");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+            }
+
             Tache newTask = tacheSer.update(oldTask);
             return ResponseEntity.ok().body(newTask);
 
@@ -549,7 +554,6 @@ public class TacheController {
             return ResponseEntity.badRequest().build();
         }
     }
-
 
     @PutMapping("/update")
     public ResponseEntity<?> update(
@@ -568,8 +572,6 @@ public class TacheController {
 
             if (canEditTasks == false)
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-
-            
 
             if (task.getNomTache() == null ||
                     task.getNomTache().isEmpty() ||
@@ -612,23 +614,14 @@ public class TacheController {
             if (task.getDifficulte() == null)
                 return ResponseEntity.status(416).body("difficulte_invalid");
 
-            // nomTache;
             oldTask.setNomTache(task.getNomTache());
-            // description;
             oldTask.setDescription(task.getDescription());
-            // budgetEstime;
             oldTask.setBudgetEstime(task.getBudgetEstime());
-            // qualite;
             oldTask.setQualite(task.getQualite());
-            // difficulte;
             oldTask.setDifficulte(task.getDifficulte());
-            // dateDebut;
             oldTask.setDateDebut(task.getDateDebut());
-            // dateFinEstime;
             oldTask.setDateFinEstime(task.getDateFinEstime());
-            // duree;
             oldTask.setDuree(task.getDuree());
-            // marge;
             oldTask.setMarge(task.getMarge());
             Tache newTask = tacheSer.update(oldTask);
             return ResponseEntity.ok().body(newTask);
@@ -948,7 +941,6 @@ public class TacheController {
                 }
             }
 
-            // Supprimer de la tâche
             t.getRessources().remove(affRess);
             Tache updatedTask = tacheSer.update(t);
             return ResponseEntity.ok(updatedTask);

@@ -40,12 +40,11 @@ public class Tache {
     private LocalDateTime dateDebut;
     private LocalDateTime dateFinEstime;
     private LocalDateTime dateFin;
-    private int duree;
-    private int marge;
+    private long duree;
+    private long marge;
 
     private List<String> comments;
 
-    
     @DBRef
     @JsonIgnoreProperties({ "messages" })
     private Project project;
@@ -135,7 +134,7 @@ public class Tache {
     private User rapporteur;
 
     public LocalDateTime getFirstDateDebutForMatRessource() {
-        LocalDateTime  earliest= null;
+        LocalDateTime earliest = null;
         for (AffectationRessource r : ressources) {
             if (r.getRess().getType().equals("Material")) {
                 if (earliest == null || r.getDateDebut().isBefore(earliest)) {
@@ -145,6 +144,7 @@ public class Tache {
         }
         return earliest;
     }
+
     public LocalDateTime getLastDateFinForMatRessource() {
         LocalDateTime latest = null;
         for (AffectationRessource r : ressources) {
@@ -156,7 +156,6 @@ public class Tache {
         }
         return latest;
     }
-    
 
     @Override
     public boolean equals(Object o) {
@@ -166,5 +165,30 @@ public class Tache {
             return false;
         Tache tache = (Tache) o;
         return this.id.equals(tache.getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Tache{" +
+                "id='" + id + '\'' +
+                ", nomTache='" + nomTache + '\'' +
+                ", description='" + description + '\'' +
+                ", budgetEstime=" + budgetEstime +
+                ", statut=" + statut +
+                ", qualite=" + qualite +
+                ", difficulte=" + difficulte +
+                ", dateCreation=" + dateCreation +
+                ", dateDebut=" + dateDebut +
+                ", dateFinEstime=" + dateFinEstime +
+                ", dateFin=" + dateFin +
+                ", duree=" + duree +
+                ", marge=" + marge +
+                ", comments=" + comments +
+                ", rapporteur=" + (rapporteur != null ? rapporteur.getId() : null) +
+                ", assigneeIds=" + assignee.stream().map(User::getId).toList() +
+                ", nbAttachments=" + attachments.size() +
+                ", nbRessources=" + ressources.size() +
+                ", nbNecessaryRessources=" + necessaryRessource.size() +
+                '}';
     }
 }

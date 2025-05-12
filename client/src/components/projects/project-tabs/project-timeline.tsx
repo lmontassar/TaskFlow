@@ -7,15 +7,18 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
-
+import { Cloud, CloudUpload, CloudCog, CheckCircleIcon } from "lucide-react"
 
 // Import DHTMLX Gantt
 import "dhtmlx-gantt/codebase/dhtmlxgantt.css"
-import { TaskDetails } from "../../Tasks/task-details"
 import { Link } from "react-router-dom"
 import { Badge } from "../../ui/badge"
 import { Clock, StarIcon } from "lucide-react"
 import { toLocalISOString } from "../../../lib/utils"
+import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
+import { Button } from "../../ui/button"
+
 
 // Add custom CSS for link styling
 const customStyles = `
@@ -44,14 +47,79 @@ export function ProjectTimeline({ project }: any) {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [ganttInitialized, setGanttInitialized] = useState<boolean>(false)
   const [sortByStartDate, setSortByStartDate] = useState<boolean>(true)
-  const { tasks: apiTasks, getTasksByProjectID, getMyTasks, getStatusBadge, formatDurationReact, getDifficulteBadge, handleResizeTask } = useTasks();
+  const { tasks: apiTasks,
+    getTasksByProjectID,
+    getMyTasks,
+    getStatusBadge,
+    formatDurationReact,
+    getDifficulteBadge,
+    handleResizeTask,
+    DeleteParallelTask,
+    DeletePrecTask
+  } = useTasks();
+  type Status = "loading" | "done" | "idle"
+  const [dep, setDep] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [cloud, setCloud] = useState<Status>("idle");
+  const [linkToDelete, setLinkToDelete] = useState<null | { id: string; link: any }>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const ganttRef = useRef<any>(null);
 
-  const handleResize = async (t: any) =>{
-    console.log("start task: ",t.dateDebut)
-    console.log("start task: ",t.dateFinEstime)
-    const res = await handleResizeTask(t);
+
+  useEffect(() => {
+    if (cloud === "done") {
+      console.log("helloo")
+      const timer = setTimeout(() => {
+        setCloud("idle")
+      }, 3 * 1000);
+
+      return () => {
+        clearTimeout(timer)
+      }
+    }
+  }, [cloud])
+
+  function CloudStatusIcon({ status }: any) {
+
+    const variants: any = {
+      loading: { bg: "bg-blue-100", text: "text-blue-800" },
+      done: { bg: "bg-green-100", text: "text-green-800" },
+      idle: { bg: "bg-gray-100", text: "text-gray-800" },
+    }
+    const { bg, text } = variants[status]
+
+    let Icon: React.ComponentType<{ size?: number; className?: string }>
+    let label: string
+    switch (status) {
+      case "loading":
+        Icon = CloudUpload
+        label = "Syncing..."
+        break
+      case "done":
+        Icon = CheckCircleIcon
+        label = "Done"
+        break
+      default:
+        Icon = Cloud
+        label = "Synced"
+    }
+    return (
+      <div
+        className={`
+        inline-flex items-center space-x-1 px-2 py-1 rounded-lg
+        text-sm font-medium shadow-sm ${bg} ${text}
+      `}
+      >
+        <Icon
+          size={16}
+          className={status === "loading" ? "animate-spin" : undefined}
+        />
+        <span>{label}</span>
+      </div>
+    )
+
+
   }
 
   const formatDate = (dateString?: string) => {
@@ -65,43 +133,27 @@ export function ProjectTimeline({ project }: any) {
     }
   };
 
-
-
-  // Initialize gantt on component mount
   useEffect(() => {
-    // Dynamic import to avoid SSR issues
     import("dhtmlx-gantt").then(({ gantt }) => {
-      // Disable console errors from DHTMLX Gantt
+
       const originalConsoleError = console.error
       console.error = (...args) => {
-        // Filter out DHTMLX Gantt link type errors
         if (args[0] && typeof args[0] === "string" && args[0].includes("Invalid link type")) {
           return
         }
         originalConsoleError(...args)
       }
-
-      // Configure gantt
       configureGantt(gantt)
-
-      // Add custom styles
       const styleEl = document.createElement('style')
       styleEl.textContent = customStyles
       document.head.appendChild(styleEl)
-
-      // Initialize gantt
       if (ganttContainer.current && !ganttInitialized) {
+        ganttRef.current = gantt;
         gantt.init(ganttContainer.current)
         setGanttInitialized(true)
-
-        // Set up event handlers
         setupGanttEvents(gantt)
-
-        // Load tasks
         loadTasks()
       }
-
-      // Clean up styles on unmount
       return () => {
         document.head.removeChild(styleEl)
         console.error = originalConsoleError
@@ -110,8 +162,6 @@ export function ProjectTimeline({ project }: any) {
     })
   }, [ganttInitialized, project])
 
-  
-  // Update gantt when tasks change
   useEffect(() => {
     if (apiTasks && apiTasks.length > 0 && ganttInitialized) {
       console.log("Raw tasks data:", apiTasks)
@@ -122,33 +172,92 @@ export function ProjectTimeline({ project }: any) {
           console.log("▶︎ Gantt Data ▶︎", formattedData.data);
           console.log("▶︎ Gantt Links ▶︎", formattedData.links);
 
-
           gantt.attachEvent("onTaskDblClick", (id: string) => {
             const task = apiTasks.find((t: any) => t.id == id);
             setSelectedTask(task);
             setDialogOpen(true);
             return false;
           })
-
-          gantt.attachEvent("onAfterTaskDrag", (id: string, mode: string) => {
-            const updatedtask = gantt.getTask(id)
-            console.log("Task dragged:", updatedtask, "Mode:", mode)
-            const task: any = apiTasks.find((t: any) => t.id == id);
-            if (mode == "resize" || mode == "move") {
-              task.dateDebut = toLocalISOString(new Date(updatedtask.start_date))
-              task.dateFinEstime = toLocalISOString(new Date(updatedtask.end_date))
-              handleResize(task);
+          let _oldDates: Record<string, { start: Date; end: Date }> = {};
+          gantt.attachEvent("onBeforeTaskDrag", (id: string, mode: string) => {
+            if (mode === "move" || mode === "resize") {
+              const t: any = gantt.getTask(id);
+              _oldDates[id] = {
+                start: new Date(t.start_date),
+                end: new Date(t.end_date),
+              };
             }
-          })
+            return true;
+          });
+
+          gantt.attachEvent("onAfterTaskDrag", async (id: string, mode: string) => {
+            if (mode === "move" || mode === "resize") {
+              setCloud("loading");
+              const updated: any = gantt.getTask(id);
+              const t = {
+                id,
+                dateDebut: toLocalISOString(updated.start_date),
+                dateFinEstime: toLocalISOString(updated.end_date),
+              };
+              const res: any = await handleResizeTask(t);
+              if (res.result !== true) {
+                const task = gantt.getTask(id);
+                const old = _oldDates[id];
+                task.start_date = old.start;
+                task.end_date = old.end;
+                gantt.updateTask(id);
+                gantt.refreshTask(id);
+                gantt.render();
+                setCloud("idle");
+              } else {
+                const orig: any = apiTasks.find((x: any) => x.id === id);
+                orig!.dateDebut = t.dateDebut;
+                orig!.dateFinEstime = t.dateFinEstime;
+                setCloud("done");
+              }
+            }
+          });
+
+
+          gantt.attachEvent("onLinkDblClick", (linkId: string) => {
+            const link = gantt.getLink(linkId);
+            setLinkToDelete({ id: linkId, link });
+            setDeleteDialogOpen(true);
+            return false;
+          });
+
+
+          gantt.attachEvent("onBeforeLinkDelete", (id, link) => {
+            console.log("allowing delete of link", id);
+
+            return true;
+          });
+
+          gantt.attachEvent("onAfterLinkDelete", async (id, link) => {
+            if (dep == true) return
+            if (link.type == "1") {
+              const res: any = await DeleteParallelTask(link.source, link.target, false);
+              if (res == false) {
+
+              }
+            } else {
+              const res: any = await DeletePrecTask(link.target, link.source, false);
+              if (res == false) {
+
+              }
+            }
+
+          });
+
+
+
 
 
           gantt.clearAll()
           gantt.parse(formattedData)
-          // Apply sorting if enabled
-          if (sortByStartDate) {
-            gantt.sort("start_date", false) // Sort by start date ascending
 
-            // Force re-render to ensure dependencies are displayed correctly
+          if (sortByStartDate) {
+            gantt.sort("start_date", false)
             setTimeout(() => {
               gantt.render()
             }, 100)
@@ -161,12 +270,9 @@ export function ProjectTimeline({ project }: any) {
       })
     }
   }, [apiTasks, ganttInitialized, sortByStartDate])
-
-  // Update view mode when it changes
   useEffect(() => {
     if (ganttInitialized) {
       import("dhtmlx-gantt").then(({ gantt }) => {
-        // Using the modern scales configuration
         switch (viewMode) {
           case "day":
             gantt.config.scales = [
@@ -202,9 +308,12 @@ export function ProjectTimeline({ project }: any) {
 
   const configureGantt = (gantt: any) => {
 
+    gantt.confirm = (_: string, cb?: () => void): boolean => {
+      if (typeof cb === "function") cb();
+      return true;
+    };
+    gantt.locale.labels.confirm_link_deleting = "";
 
-
-    // General configuration
     gantt.config.date_format = "%Y-%m-%d %H:%i"
     gantt.config.drag_links = true
     gantt.config.drag_progress = false
@@ -218,24 +327,19 @@ export function ProjectTimeline({ project }: any) {
     gantt.config.fit_tasks = false
     gantt.config.row_height = 30;
     gantt.config.bar_height = 40;
-
-    // Enable sorting
     gantt.config.sort = true
 
-    // Initial scales configuration (will be updated when view mode changes)
     gantt.config.scales = [
       { unit: "month", step: 1, format: "%F %Y" },
       { unit: "week", step: 1, format: "%W" },
     ]
 
-    // Enable task types (project, milestone, task)
     gantt.config.types = {
       task: "task",
       project: "project",
       milestone: "milestone",
     }
 
-    // Configure columns
     gantt.config.columns = [
       { name: "text", label: t("Task Name"), tree: true, width: 200 },
       {
@@ -255,27 +359,25 @@ export function ProjectTimeline({ project }: any) {
         template: (task: any) => {
           return format(task.end_date, "dd/MM/yyyy")
         },
-      },
-      { name: "duration", label: t("Duration"), align: "center", width: 60 }
+      }
     ]
 
-    // Enable link creation and editing
     gantt.config.drag_links = false
     gantt.config.show_links = true
 
-    // Configure link types
+    // gantt.config.show_errors = false;
+    // gantt.config.show_confirm = false;
+
     gantt.config.links = {
-      finish_to_start: 0,   // dependent can’t start until source ends
-      start_to_start: 1,   // dependent can’t start until source starts
-      finish_to_finish: 2,   // dependent can’t finish until source ends
-      start_to_finish: 3,   // dependent can’t finish until source starts
+      finish_to_start: 0,
+      start_to_start: 1,
+      finish_to_finish: 2,
+      start_to_finish: 3,
     }
 
-    // Disable link validation to prevent errors
     gantt.config.auto_types = false
     gantt.config.show_errors = false
 
-    // Improve link rendering
     gantt.config.links_width = 2
     gantt.config.link_arrow_size = 6
     gantt.config.link_line_width = 2
@@ -301,23 +403,19 @@ export function ProjectTimeline({ project }: any) {
       }
     };
 
-    // Custom task styling based on difficulty
     gantt.templates.task_class = (start: Date, end: Date, task: any) => {
       const classes = []
 
-      // Add difficulty class
       if (task.difficulty === "hard") classes.push("task-hard")
       else if (task.difficulty === "normal") classes.push("task-normal")
       else classes.push("task-easy")
 
-      // Add parent/child class
       if (task.type === "project") classes.push("parent-task")
       else if (task.parent && task.parent !== 0) classes.push("child-task")
 
       return classes.join(" ")
     }
 
-    // Custom tooltip
     gantt.templates.tooltip_text = (start: Date, end: Date, task: any) => {
       let tooltip = `<b>${task.text}</b><br/>
                     ${t("Start")}: ${format(start, "dd/MM/yyyy")}<br/>
@@ -325,7 +423,6 @@ export function ProjectTimeline({ project }: any) {
                     ${t("Progress")}: ${Math.round(task.progress * 100)}%<br/>
                     ${t("Difficulty")}: ${task.difficulty || "easy"}`
 
-      // Add parent info if it's a subtask
       if (task.parent && task.parent !== 0) {
         const parent = gantt.getTask(task.parent)
         if (parent) {
@@ -333,7 +430,6 @@ export function ProjectTimeline({ project }: any) {
         }
       }
 
-      // Add dependency info - use getLinks() and filter instead of getTaskLinks
       const allLinks = gantt.getLinks()
       const taskLinks = allLinks.filter((link) => link.source === task.id || link.target === task.id)
 
@@ -362,12 +458,10 @@ export function ProjectTimeline({ project }: any) {
       return tooltip
     }
 
-    // Highlight today
     gantt.templates.today_class = () => {
       return "today"
     }
 
-    // Highlight weekends
     gantt.templates.scale_cell_class = (date: Date) => {
       if (date.getDay() === 0 || date.getDay() === 6) {
         return "weekend"
@@ -384,43 +478,32 @@ export function ProjectTimeline({ project }: any) {
   }
 
   const setupGanttEvents = (gantt: any) => {
-    // Prevent link errors from showing toasts
 
     gantt.config.details_on_dblclick = false;
     gantt.attachEvent("onError", (errorMessage: string) => {
       if (errorMessage.includes("Invalid link type")) {
-        return true // Prevent default error handling
+        return true
       }
       return true
     })
 
-    // Task click event
     gantt.attachEvent("onTaskClick", (id: string) => {
       console.log("Task clicked:", gantt.getTask(id))
-      return true // Return true to allow default action
+      return true
     })
 
-    // Task double click event
-
-
-    // Link creation event
     gantt.attachEvent("onLinkCreated", (link: any) => {
       console.log("Link created:", link)
-      return true // Return true to allow link creation
+      return true
     })
 
-    // Add UI for selecting link type when creating links
     gantt.attachEvent("onBeforeLinkAdd", (id, link) => {
       const sourceTask = gantt.getTask(link.source)
       const targetTask = gantt.getTask(link.target)
 
       console.log(`Creating link from "${sourceTask.text}" to "${targetTask.text}"`)
-      return true // Allow link creation
+      return true
     })
-
-    // Task drag event
-
-
 
   }
 
@@ -434,12 +517,9 @@ export function ProjectTimeline({ project }: any) {
   }
 
   const formatTasksForGantt = (taskList: any[]) => {
-    // First, create a map of tasks by ID for easier parent-child relationship setup
     const taskMap = new Map()
-
-    // Process tasks first
     const tasks = taskList.map((task) => {
-      // Calculate progress based on status
+
       let progress = 0
       if (task.statut === "DONE") {
         progress = 1
@@ -451,7 +531,7 @@ export function ProjectTimeline({ project }: any) {
         progress = 0
       }
 
-      // Format dates for Gantt - ensure we have valid dates
+
       let startDate: Date
       let endDate: Date
 
@@ -460,14 +540,12 @@ export function ProjectTimeline({ project }: any) {
         endDate = task.dateFinEstime ? new Date(task.dateFinEstime) : new Date(Date.now() + 86400000)
       } catch (error) {
         console.error("Error formatting dates for task:", task.nomTache, error)
-        // Fallback to today and tomorrow if date parsing fails
+
         startDate = new Date()
         endDate = new Date(Date.now() + 86400000)
       }
 
-      // Determine task type - if it has a parent, it's a task, otherwise it's a project
       const type = task.parent ? "task" : "project"
-
       const formattedTask = {
         id: task.id || `task-${Math.random().toString(36).substring(2, 11)}`,
         text: typeof task.nomTache === "string" && task.nomTache.trim() !== "" ? task.nomTache : "Unnamed Task",
@@ -480,48 +558,43 @@ export function ProjectTimeline({ project }: any) {
         open: true,
       }
 
-      // Add to map for later reference
       taskMap.set(formattedTask.id, formattedTask)
 
       return formattedTask
     })
 
-    // Now process parent-child relationships
+
     tasks.forEach((task) => {
       if (task.parent && task.parent !== 0) {
         const parentTask = taskMap.get(task.parent)
         if (parentTask) {
-          // Ensure parent is marked as a project
           parentTask.type = "project"
         }
       }
     })
 
-    
+
     const links = []
 
     for (const task of taskList) {
-
-      // Process precedentes (Finish-to-Start dependencies)
       if (task.precedentes?.length) {
         for (const pred of task.precedentes) {
           links.push({
             id: `fs-${pred.id}-${task.id}`,
-            source: pred.id,      // ← predecessor first
-            target: task.id,      // ← dependent second
-            type: 0,              // ← numeric 0, not the string "0"
+            source: pred.id,
+            target: task.id,
+            type: 0,
           });
         }
       }
 
-      // Process paralleles (Start-to-Start dependencies)
       if (task.paralleles?.length) {
         for (const par of task.paralleles) {
           links.push({
             id: `ss-${par.id}-${task.id}`,
             source: par.id,
             target: task.id,
-            type: 1,              // ← numeric 1
+            type: 1,
           });
         }
       }
@@ -540,7 +613,7 @@ export function ProjectTimeline({ project }: any) {
       if (!sortByStartDate) {
         gantt.sort("start_date", false)
       } else {
-        gantt.sort(null, null) // Remove sorting
+        gantt.sort(null, null)
       }
     })
   }
@@ -552,40 +625,24 @@ export function ProjectTimeline({ project }: any) {
       </CardHeader>
       <CardContent>
         <div className="gantt-container">
-          <div className="gantt-toolbar mb-4">
-            <div className="flex justify-between">
-              <div className="flex space-x-2">
-                <button
-                  className={`px-3 py-1 rounded ${viewMode === "day" ? "bg-primary text-white" : "bg-gray-200 hover:bg-gray-300"
-                    }`}
-                  onClick={() => handleViewModeChange("day")}
-                >
-                  {t("Day")}
-                </button>
-                <button
-                  className={`px-3 py-1 rounded ${viewMode === "week" ? "bg-primary text-white" : "bg-gray-200 hover:bg-gray-300"
-                    }`}
-                  onClick={() => handleViewModeChange("week")}
-                >
-                  {t("Week")}
-                </button>
-                <button
-                  className={`px-3 py-1 rounded ${viewMode === "month" ? "bg-primary text-white" : "bg-gray-200 hover:bg-gray-300"
-                    }`}
-                  onClick={() => handleViewModeChange("month")}
-                >
-                  {t("Month")}
-                </button>
-              </div>
 
-              <button
-                className={`px-3 py-1 rounded ${sortByStartDate ? "bg-primary text-white" : "bg-gray-200 hover:bg-gray-300"
-                  }`}
-                onClick={toggleSorting}
-              >
-                {sortByStartDate ? t("Sorted by Start Date") : t("Sort by Start Date")}
-              </button>
+          <div className="flex items-center justify-between rounded-md p-3">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium">{t("View")}:</span>
+                <Select value={viewMode} onValueChange={(value) => handleViewModeChange(value as "day" | "week" | "month")}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder={t("Select view")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="day">{t("Day")}</SelectItem>
+                    <SelectItem value="week">{t("Week")}</SelectItem>
+                    <SelectItem value="month">{t("Month")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+            <CloudStatusIcon status={cloud} />
           </div>
 
           {isLoading && (
@@ -612,158 +669,209 @@ export function ProjectTimeline({ project }: any) {
         </div>
       </CardContent>
 
-      {/* You don’t need a DialogTrigger here, since we open it programmatically */}
-      {selectedTask && (
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-lg">
+      {
+        selectedTask && (
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent className="max-w-lg">
 
-            <div>
-              <div className="mb-6 space-y-4">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-semibold underline">
-                    <Link to={`/task/${selectedTask.id}`}>{selectedTask.nomTache}</Link>
-                  </h2>
+              <div>
+                <div className="mb-6 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-xl font-semibold underline">
+                      <Link to={`/task/${selectedTask.id}`}>{selectedTask.nomTache}</Link>
+                    </h2>
+                  </div>
+
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <div className="flex gap-2">
+                      {getStatusBadge(selectedTask.statut)}
+                      {getDifficulteBadge(selectedTask.difficulte)}
+                    </div>
+                    {selectedTask.dateFinEstime && (
+                      <Badge
+                        variant="outline"
+                        className="flex gap-1 bg-red-100 border-1 border-red-200 text-red-700"
+                      >
+                        <Clock className="h-3 w-3" />
+                        {formatDate(selectedTask.dateFinEstime)}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {selectedTask.description && (
+                    <div className="rounded-md border p-3">
+                      <p className="whitespace-pre-wrap text-sm">
+                        {selectedTask.description}
+                      </p>
+                    </div>
+                  )}
+
+                  <div>
+                    <h4 className="mb-2 text-sm font-medium">
+                      {t("tasks.details.form.project", "Project")}
+                    </h4>
+                    <Badge variant="outline">{selectedTask.project.nom}</Badge>
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap justify-between gap-2">
-                  <div className="flex gap-2">
-                    {getStatusBadge(selectedTask.statut)}
-                    {getDifficulteBadge(selectedTask.difficulte)}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="mb-1 text-sm font-medium">
+                      {t("tasks.details.form.quality", "Quality")}
+                    </h4>
+                    <div className="flex items-center">
+                      {(selectedTask.qualite != 0 && (
+                        <>
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <StarIcon
+                              key={i}
+                              className={`h-4 w-4 ${i < (selectedTask.qualite || 0)
+                                ? "text-blue-500 fill-blue-500"
+                                : "text-muted-foreground"
+                                }`}
+                            />
+                          ))}
+                        </>
+                      )) || (
+                          <span className="text-sm">
+                            {t("tasks.details.qualit.zero", "Not Rated")}
+                          </span>
+                        )}
+                    </div>
                   </div>
-                  {selectedTask.dateFinEstime && (
-                    <Badge
-                      variant="outline"
-                      className="flex gap-1 bg-red-100 border-1 border-red-200 text-red-700"
-                    >
-                      <Clock className="h-3 w-3" />
-                      {formatDate(selectedTask.dateFinEstime)}
-                    </Badge>
+                  {selectedTask.budgetEstime != 0 && (
+                    <div>
+                      <h4 className="mb-1 text-sm font-medium">
+                        {t("tasks.details.form.budget", "Budget")}
+                      </h4>
+                      <span className="text-sm">{selectedTask.budgetEstime}</span>
+                    </div>
                   )}
                 </div>
 
-                {selectedTask.description && (
-                  <div className="rounded-md border p-3">
-                    <p className="whitespace-pre-wrap text-sm">
-                      {selectedTask.description}
-                    </p>
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  <div>
+                    <h4 className="mb-1 text-sm font-medium">
+                      {t("tasks.details.createdat", "Created At")}
+                    </h4>
+                    <span className="text-sm">
+                      {formatDate(selectedTask.dateCreation)}
+                    </span>
                   </div>
-                )}
-
-                <div>
-                  <h4 className="mb-2 text-sm font-medium">
-                    {t("tasks.details.form.project", "Project")}
-                  </h4>
-                  <Badge variant="outline">{selectedTask.project.nom}</Badge>
+                  {selectedTask.dateFin && (
+                    <div>
+                      <h4 className="mb-1 text-sm font-medium">
+                        {t("tasks.details.finishedat", "Finished At")}
+                      </h4>
+                      <span className="text-sm">{formatDate(selectedTask.dateFin)}</span>
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h4 className="mb-1 text-sm font-medium">
-                    {t("tasks.details.form.quality", "Quality")}
-                  </h4>
-                  <div className="flex items-center">
-                    {(selectedTask.qualite != 0 && (
-                      <>
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <StarIcon
-                            key={i}
-                            className={`h-4 w-4 ${i < (selectedTask.qualite || 0)
-                              ? "text-blue-500 fill-blue-500"
-                              : "text-muted-foreground"
-                              }`}
-                          />
-                        ))}
-                      </>
-                    )) || (
-                        <span className="text-sm">
-                          {t("tasks.details.qualit.zero", "Not Rated")}
-                        </span>
-                      )}
-                  </div>
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  {selectedTask.dateDebut && (
+                    <div>
+                      <h4 className="mb-1 text-sm font-medium">
+                        {t("tasks.details.started", "Start Date")}
+                      </h4>
+                      <span className="text-sm">
+                        {formatDate(selectedTask.dateDebut)}
+                      </span>
+                    </div>
+                  )}
+
+                  {selectedTask.dateFinEstime && (
+                    <div>
+                      <h4 className="mb-1 text-sm font-medium">
+                        {t("tasks.details.form.due_date", "Due Date")}
+                      </h4>
+                      <span className="text-sm">
+                        {formatDate(selectedTask.dateFinEstime)}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                {selectedTask.budgetEstime != 0 && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-medium">
-                      {t("tasks.details.form.budget", "Budget")}
-                    </h4>
-                    <span className="text-sm">{selectedTask.budgetEstime}</span>
-                  </div>
-                )}
-              </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div>
-                  <h4 className="mb-1 text-sm font-medium">
-                    {t("tasks.details.createdat", "Created At")}
-                  </h4>
-                  <span className="text-sm">
-                    {formatDate(selectedTask.dateCreation)}
-                  </span>
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  {selectedTask.duree != 0 && (
+                    <div>
+                      <h4 className="mb-1 text-sm font-medium">
+                        {t("tasks.details.form.duration", "Duration")}
+                      </h4>
+                      <span className="text-sm">
+                        {formatDurationReact(selectedTask.duree)}
+                      </span>
+                    </div>
+                  )}
+                  {selectedTask.marge != 0 && (
+                    <div>
+                      <h4 className="mb-1 text-sm font-medium">
+                        {t("tasks.details.form.margin", "Marge")}
+                      </h4>
+                      <span className="text-sm">
+                        {formatDurationReact(selectedTask.marge)}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                {selectedTask.dateFin && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-medium">
-                      {t("tasks.details.finishedat", "Finished At")}
-                    </h4>
-                    <span className="text-sm">{formatDate(selectedTask.dateFin)}</span>
-                  </div>
-                )}
+
               </div>
-
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                {selectedTask.dateDebut && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-medium">
-                      {t("tasks.details.started", "Start Date")}
-                    </h4>
-                    <span className="text-sm">
-                      {formatDate(selectedTask.dateDebut)}
-                    </span>
-                  </div>
-                )}
-
-                {selectedTask.dateFinEstime && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-medium">
-                      {t("tasks.details.form.due_date", "Due Date")}
-                    </h4>
-                    <span className="text-sm">
-                      {formatDate(selectedTask.dateFinEstime)}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                {selectedTask.duree != 0 && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-medium">
-                      {t("tasks.details.form.duration", "Duration")}
-                    </h4>
-                    <span className="text-sm">
-                      {formatDurationReact(selectedTask.duree)}
-                    </span>
-                  </div>
-                )}
-                {selectedTask.marge != 0 && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-medium">
-                      {t("tasks.details.form.margin", "Marge")}
-                    </h4>
-                    <span className="text-sm">
-                      {formatDurationReact(selectedTask.marge)}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-            </div>
-          </DialogContent>
-        </Dialog>
-      )
+            </DialogContent>
+          </Dialog>
+        )
       }
 
-    </Card>
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to remove this dependency?
+          </DialogDescription>
+
+          {/* rest of your buttons… */}
+          <div className="flex justify-end gap-2 mt-4">
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteDialogOpen(false)
+                setLinkToDelete(null)
+              }}
+            >
+              Cancel
+            </Button>
+
+
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (linkToDelete) {
+                  console.log(linkToDelete)
+                  if (linkToDelete.link.type == 1) {
+                    ganttRef.current!.deleteLink(linkToDelete.id);
+                    setDep(true);
+                    const [type, source, target] = linkToDelete.id.split("-");
+                    const rev = `${type}-${target}-${source}`;
+                    ganttRef.current!.deleteLink(rev);
+                    setDep(false);
+                  } else {
+                    ganttRef.current!.deleteLink(linkToDelete.id);
+                  }
+                  // ganttRef.current!.deleteLink(linkToDelete.id);
+                  // setDep(true);
+                  // gantt.
+                  // setDep(true);
+                }
+                setDeleteDialogOpen(false)
+                setLinkToDelete(null)
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+    </Card >
   )
 }

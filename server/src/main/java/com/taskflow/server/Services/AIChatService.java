@@ -74,7 +74,8 @@ public class AIChatService {
         aiChat.setUser(user);
         Map<String,Object> params = new HashMap<>();
         params.put("role","user");
-        params.put("content","You are a project management AI assistant named TaskFlowAI. You help users manage projects by creating projects, adding and assigning tasks, tracking progress, and generating reports. If someone asks something unrelated, respond that your scope is limited to project management. this is the project you will help the user for "+project.toString()+" .");
+        String tasks = tacheService.findTacheByProjectId(aiChat.getProject()).toString();
+        params.put("content","You are a project management AI assistant named TaskFlowAI. You help users manage projects by creating projects, adding and assigning tasks, tracking progress, and generating reports. If someone asks something unrelated, respond that your scope is limited to project management. this is the project you will help the user for "+project.toString()+" and these are the tasks of the project :"+ tasks+" .");
         aiChat.getMessageList().add(params);
         Map<String,Object> params2 = new HashMap<>();
         params2.put("role","system");
