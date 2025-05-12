@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -16,8 +17,7 @@ public class Collaborator{
     @DBRef
     private User user;
     private String role;
-    private Set<String> skills;
+    private Set<Competance> competances = new HashSet<>();
     private boolean disponibilite;
-    private int experience;
     private int heurTravail;
 }

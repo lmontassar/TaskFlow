@@ -6,7 +6,7 @@ import MemberTable from "../../MemberTable";
 import { Search } from "lucide-react";
 import { Input } from "../../ui/input";
 import { useTranslation } from "react-i18next";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge } from "../../ui/badge";
 
 export function ProjectMembers({ project, isLoading }: any) {
@@ -33,7 +33,7 @@ export function ProjectMembers({ project, isLoading }: any) {
   }, [collaborators, searchQuery]);
   const [currentMember, setCurrentMember] = useState<any>(null);
   const [deleteTrigger, setDeleteTrigger] = useState(false);
-  const { removeCollaborator } = useProject();
+  const { removeCollaborator, addSkill, removeSkill } = useProject();
   const handleDelete = async () => {
     if (!currentMember) return;
     const updatedProject = await removeCollaborator(
@@ -45,6 +45,33 @@ export function ProjectMembers({ project, isLoading }: any) {
     );
     setCurrentMember(null);
     setDeleteTrigger(false);
+  };
+  const handleAddSkill = async (skill: string, level: number, id?: string) => {
+    if (!currentMember) return;
+    const update = await addSkill(
+      project.id,
+      currentMember?.user?.id,
+      skill,
+      level,
+      id
+    );
+    const updatedCollaborator = await update?.find(
+      (c: any) => c.user.id === currentMember?.user?.id
+    );
+    setCurrentMember(updatedCollaborator);
+  };
+  const handleRemoveSkill = async (skillId: string) => {
+    if (!currentMember) return;
+    const update = await removeSkill(
+      project.id,
+      skillId,
+      currentMember?.user?.id
+    );
+    const updatedCollaborator = await update?.find(
+      (c: any) => c.user.id === currentMember?.user?.id
+    );
+
+    setCurrentMember(updatedCollaborator);
   };
   if (isLoading) {
     return <Loading />;
@@ -66,6 +93,9 @@ export function ProjectMembers({ project, isLoading }: any) {
         );
     }
   };
+  useEffect(() => {
+    setCollaborators(project?.listeCollaborateur || []);
+  }, [project]);
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -96,6 +126,8 @@ export function ProjectMembers({ project, isLoading }: any) {
           deleteTrigger={deleteTrigger}
           currentMember={currentMember}
           handleDelete={handleDelete}
+          handleAddSkill={handleAddSkill}
+          handleRemoveSkill={handleRemoveSkill}
         />
       </CardContent>
     </Card>
