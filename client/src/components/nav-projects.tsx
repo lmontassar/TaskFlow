@@ -4,6 +4,7 @@ import {
   Folder,
   MoreHorizontal,
   Plus,
+  Redo2,
   Share,
   Sparkles,
   Trash2,
@@ -270,7 +271,7 @@ export function NavProjects({
                               className="cursor-pointer p-2 w-4 h-4 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
                               disabled={loadingDescription}
                             >
-                              <X className="text-red-500" />
+                              <Redo2 className="text-red-500 rotate-180" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>

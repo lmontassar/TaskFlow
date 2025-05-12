@@ -47,6 +47,8 @@ import {
   StarIcon,
   Paperclip,
   Send,
+  Redo2,
+  Sparkles,
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import type { Task } from "./tasks-interface";
@@ -66,6 +68,13 @@ import { Separator } from "../ui/separator";
 import TaskComments from "./task-comments";
 import { AnyAaaaRecord } from "dns";
 import useTaskComment from "../../hooks/useTaskComment";
+import Textarea03 from "../Textarea-helper";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 interface TaskDetailsProps {
   taskToEdit: any;
@@ -92,7 +101,8 @@ export function TaskDetails({
   const [marge, setMarge] = useState(editedTask.marge);
   const [duration, setDuration] = useState(editedTask.duree);
   const [assigneeToAdd, setAssigneeToAdd] = useState<any>(null);
-  const { checkIfCreatorOfProject, checkIfAssigneeTask } = useTasks();
+  const { checkIfCreatorOfProject, checkIfAssigneeTask, generateDescription } =
+    useTasks();
   const [task, setTask] = useState(taskToEdit);
   const [editError, setEditError] = useState("");
   const { t } = useTranslation();
@@ -100,6 +110,24 @@ export function TaskDetails({
   const { comments, addComment, deleteComment, editComment } = useTaskComment(
     task.id
   );
+  const [oldDescription, setOldDescription] = useState("");
+  const [loadingDescription, setLoadingDescription] = useState(false);
+  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+
+  const typeOutDescription = (text: string, callback?: () => void) => {
+    handleTaskUpdate("description", "");
+    timeoutsRef.current.forEach(clearTimeout); // clear any existing timeouts
+    timeoutsRef.current = [];
+
+    for (let i = 0; i < text.length; i++) {
+      const timeout = setTimeout(() => {
+        handleTaskUpdate("description", text.slice(0, i + 1));
+        if (i === text.length - 1 && callback) callback();
+      }, i * 20);
+      timeoutsRef.current.push(timeout);
+    }
+  };
+
   useEffect(() => {
     setTask(allTasks.filter((t) => t.id == taskToEdit.id)[0]);
   }, [allTasks, taskToEdit]);
@@ -327,19 +355,111 @@ export function TaskDetails({
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="task-description">
-                  {t("tasks.details.form.description", "Description")}
-                </Label>
-                <Textarea
-                  id="task-description"
+              <div className="space-y-2 relative">
+                <Textarea03
+                  label={t("tasks.specific.form.description", "Description")}
+                  helperText={t(
+                    "tasks.specific.form.description",
+                    "Description"
+                  )}
+                  placeholder={""}
                   value={editedTask.description || ""}
-                  onChange={(e) =>
+                  onChange={(e: any) =>
                     handleTaskUpdate("description", e.target.value)
                   }
-                  rows={4}
-                  className="resize-none"
                 />
+                <div className="absolute bottom-0 right-0">
+                  <div className="flex gap-2">
+                    {oldDescription !== "" && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={() => {
+                                setLoadingDescription(true);
+                                typeOutDescription(oldDescription, () => {
+                                  setOldDescription("");
+                                  setLoadingDescription(false);
+                                });
+                              }}
+                              variant="ghost"
+                              type="button"
+                              className="cursor-pointer p-2 w-4 h-4 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+                              disabled={loadingDescription}
+                            >
+                              <Redo2 className="text-red-500 rotate-180" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Return the old description</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            onClick={async () => {
+                              setLoadingDescription(true);
+                              const newDescription = await generateDescription(
+                                editedTask.description,
+                                editedTask.nomTache
+                              );
+                              setOldDescription(editedTask.description);
+                              if (newDescription) {
+                                typeOutDescription(
+                                  newDescription,
+
+                                  () => setLoadingDescription(false)
+                                );
+                              } else {
+                                setLoadingDescription(false);
+                              }
+                            }}
+                            variant="ghost"
+                            type="button"
+                            disabled={
+                              editedTask.nomTache === "" || loadingDescription
+                            }
+                            className="cursor-pointer p-2 w-4 h-4 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+                          >
+                            {loadingDescription ? (
+                              <div className="animate-spin">
+                                <svg
+                                  className="w-4 h-4 text-blue-500"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  />
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 1 1 16 0A8 8 0 0 1 4 12z"
+                                  />
+                                </svg>
+                              </div>
+                            ) : (
+                              <Sparkles className="text-muted-foreground" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Generate description with AI</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
