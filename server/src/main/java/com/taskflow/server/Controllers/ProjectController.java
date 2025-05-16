@@ -105,6 +105,51 @@ public class ProjectController {
         }
     }
 
+    @DeleteMapping("/remove-skill/{projectId}/{skillId}/{userId}")
+    public ResponseEntity<?> removeSkills(
+            @RequestHeader("Authorization") String token,
+            @PathVariable String projectId,
+            @PathVariable String skillId, @PathVariable String userId)
+    {
+
+        if(projectId==null || projectId.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        if(userId==null || userId.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        Project p = projectService.removeSkill(projectId,userId,skillId);
+        if(p==null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().body(p.getListeCollaborateur());
+    }
+    @PutMapping("/edit-skill")
+    public ResponseEntity<?> editSkills(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, Object> requestBody
+    ){
+        String skill = (String) requestBody.get("skill");
+        int lvl = (int) requestBody.get("lvl");
+        String userId = (String)requestBody.get("collabId");
+        String projectId = (String) requestBody.get("projectId");
+        String id = (String) requestBody.get("id");
+        System.out.println("fetched id : "+id);
+        if(projectId==null || projectId.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        if(userId==null || userId.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        Project p = projectService.addSkill(projectId,userId,skill,lvl,id);
+        if(p==null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().body(p.getListeCollaborateur());
+    }
+
     @GetMapping("/getProject/{id}")
     public ResponseEntity<?> getProject(@RequestHeader("Authorization") String token, @PathVariable String id) {
         try {

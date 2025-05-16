@@ -3,6 +3,7 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { id } from "date-fns/locale";
 
 function useProject() {
   const [project, setProject] = useState<any | null>(null);
@@ -162,6 +163,83 @@ function useProject() {
     }
     return null;
   };
+  const addSkill = async (
+    projectId: string,
+    userId: string,
+    skill: string,
+    lvl: any,
+    id: any
+  ) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+
+      const res = await fetch(`/api/project/edit-skill`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          projectId: projectId,
+          collabId: userId,
+          skill: skill,
+          lvl: lvl,
+          id: id,
+        }),
+      });
+
+      if (res.ok) {
+        console.log("changed");
+        const data = await res.json();
+        toast.success(t("member.editForm.success"));
+        return data;
+      } else {
+        console.log("noo way");
+      }
+    } catch (error) {
+      console.log("noo way");
+    }
+    return null;
+  };
+  const removeSkill = async (
+    projectId: string,
+    skillId: string,
+    userId: string
+  ) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+
+      const res = await fetch(
+        `/api/project/remove-skill/${projectId}/${skillId}/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.ok) {
+        console.log("changed");
+        const data = await res.json();
+        toast.success(t("member.editForm.success"));
+        return data;
+      } else {
+        console.log("noo way");
+      }
+    } catch (error) {
+      console.log("noo way");
+    }
+    return null;
+  };
   return {
     project,
     isLoading,
@@ -172,6 +250,8 @@ function useProject() {
     removeCollaborator,
     generateDescription,
     newDescription,
+    addSkill,
+    removeSkill,
   };
 }
 

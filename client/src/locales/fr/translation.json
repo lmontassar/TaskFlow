@@ -694,6 +694,19 @@
     }
   },
   "member": {
+    "editForm": {
+      "edit_title": "Modifier le membre",
+      "edit_description": "Modifier les détails du membre",
+      "skills": "Compétences",
+      "select_skills": "Sélectionner les compétences",
+      "new_skill": "Nouvelle compétence",
+      "skill_title_placeholder": "Entrez le nom de la compétence",
+      "add_skill": "Ajouter une compétence",
+      "remove_skill": "Supprimer la compétence",
+      "update_skill": "Mettre à jour la compétence",
+      "save_changes": "Enregistrer les modifications",
+      "success": "Membre mis à jour avec succès !"
+    },
     "title": "Membres",
     "search": "Rechercher des membres...",
     "name": "Nom",
