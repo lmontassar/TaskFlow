@@ -40,7 +40,7 @@ public class Project {
     private Date dateFinEstime;
     private Set<Collaborator> listeCollaborateur;
     @DBRef
-    private Set<Resource> listeRessource;
+    private List<Resource> listeRessource;
     private Status status;
     @DBRef
     private User createur;

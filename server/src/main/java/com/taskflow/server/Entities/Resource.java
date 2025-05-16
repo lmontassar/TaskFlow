@@ -14,6 +14,7 @@ public class Resource {
     public enum Status {
         AVAILABLE, ALLOCATED, PENDING, UNAVAILABLE
     }
+
     @Id
     private String id;
     private String nom;
@@ -23,13 +24,19 @@ public class Resource {
     private Status status;
     private String categorie;
 
+    @Override
+    public int hashCode() {
+        // Hash code based on 'id' only
+        return nom != null ? nom.hashCode() : 0;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Resource resource = (Resource ) o;
-
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Resource resource = (Resource) o;
         return this.id.equals(resource.getId());
     }
 }

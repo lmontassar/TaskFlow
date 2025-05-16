@@ -13,8 +13,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class,
+  property = "id"
+)
 @Document(collection = "taches")
 @Data
 @NoArgsConstructor
@@ -40,8 +46,8 @@ public class Tache {
     private LocalDateTime dateDebut;
     private LocalDateTime dateFinEstime;
     private LocalDateTime dateFin;
-    private long duree;
-    private long marge;
+    private long duree; //sec
+    private long marge; //sec
 
     private List<String> comments;
 
