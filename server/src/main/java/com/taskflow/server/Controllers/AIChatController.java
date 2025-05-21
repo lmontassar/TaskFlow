@@ -1,22 +1,17 @@
 package com.taskflow.server.Controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.AIChat;
-import com.taskflow.server.Entities.Project;
+
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Services.AIChatService;
-import com.taskflow.server.Services.UserService;
+
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 
 import java.util.*;
 
@@ -32,7 +27,7 @@ public class AIChatController {
     @PostMapping(value = "/stream")
     public ResponseEntity<?> streamChat(
             @RequestHeader("Authorization") String token,
-            @RequestBody Map<String, String> requestBody) {
+            @RequestBody Map<String, String> requestBody) throws InterruptedException {
         String message = requestBody.get("message");
         String aiChatId = requestBody.get("AIChatId");
         String projectID = requestBody.get("projectID");
@@ -75,7 +70,7 @@ public class AIChatController {
     @PostMapping(value = "/generate-task-description")
     public ResponseEntity<?> generateTaskDescription(
             @RequestHeader("Authorization") String token,
-            @RequestBody Map<String, String> requestBody) {
+            @RequestBody Map<String, String> requestBody) throws InterruptedException {
         String desc = requestBody.get("description");
         String taskName = requestBody.get("taskName");
         String projectName = requestBody.get("projectName");
@@ -116,7 +111,7 @@ public class AIChatController {
     @PostMapping(value = "/generate-description")
     public ResponseEntity<?> generateDescription(
             @RequestHeader("Authorization") String token,
-            @RequestBody Map<String, String> requestBody) {
+            @RequestBody Map<String, String> requestBody) throws InterruptedException {
         String desc = requestBody.get("description");
         String projectName = requestBody.get("projectName");
         String initialPrompt = "You are a project management AI assistant named TaskFlowAI. " +
