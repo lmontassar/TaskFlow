@@ -38,7 +38,7 @@ public class ProjectService {
         // Set the collaborators for the project
         p.setListeCollaborateur(set);
 
-        Set<Resource> set2 = new HashSet<>();
+        List<Resource> set2 = new ArrayList<>();
 
         p.setListeRessource(set2);
 
@@ -127,10 +127,7 @@ public class ProjectService {
 
     public Project addResource(Project p, Resource resource) {
         if (p != null) {
-            Set<Resource> resources = p.getListeRessource();
-            if (resources == null) {
-                resources = new HashSet<>(); // Use HashSet for Set
-            }
+            List<Resource> resources = p.getListeRessource();
             resources.add(resource);
             p.setListeRessource(resources);
             return projectRepository.save(p);

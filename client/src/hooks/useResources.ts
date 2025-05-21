@@ -9,7 +9,9 @@ function useResources() {
   const token = localStorage.getItem("authToken");
   const { t } = useTranslation();
   const createResource = async (resource: any) => {
+    console.log(resource);
     const res = await fetch("/api/resources/create", {
+      
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,6 +26,7 @@ function useResources() {
     toast.success(t("resource.add_success"));
     return await res.json();
   };
+
   const editResource = async (resource: any) => {
     const res = await fetch("/api/resources/edit/" + resource.id, {
       method: "PUT",

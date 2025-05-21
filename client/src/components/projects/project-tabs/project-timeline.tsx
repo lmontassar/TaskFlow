@@ -136,6 +136,8 @@ export function ProjectTimeline({ project }: any) {
   useEffect(() => {
     import("dhtmlx-gantt").then(({ gantt }) => {
 
+
+
       const originalConsoleError = console.error
       console.error = (...args) => {
         if (args[0] && typeof args[0] === "string" && args[0].includes("Invalid link type")) {
@@ -169,8 +171,24 @@ export function ProjectTimeline({ project }: any) {
       import("dhtmlx-gantt").then(({ gantt }) => {
         try {
           const formattedData = formatTasksForGantt(apiTasks)
-          console.log("▶︎ Gantt Data ▶︎", formattedData.data);
-          console.log("▶︎ Gantt Links ▶︎", formattedData.links);
+
+          const allDates = apiTasks.flatMap( (task:any) => [
+            task.dateDebut ? new Date(task.dateDebut) : null,
+            task.dateFinEstime ? new Date(task.dateFinEstime) : null
+          ]).filter((d): d is Date => !!d);
+
+          if (allDates.length) {
+            // 2) find min & max
+            const minTime = Math.min(...allDates.map(d => d.getTime()));
+            const maxTime = Math.max(...allDates.map(d => d.getTime()));
+
+            // 3) optionally pad by a couple days for breathing room
+            const pad = 10 * 24 * 60 * 60 * 1000; // two days in ms
+
+            gantt.config.start_date = new Date(minTime - pad);
+            gantt.config.end_date = new Date(maxTime + pad);
+          }
+
 
           gantt.attachEvent("onTaskDblClick", (id: string) => {
             const task = apiTasks.find((t: any) => t.id == id);
@@ -248,10 +266,6 @@ export function ProjectTimeline({ project }: any) {
             }
 
           });
-
-
-
-
 
           gantt.clearAll()
           gantt.parse(formattedData)
