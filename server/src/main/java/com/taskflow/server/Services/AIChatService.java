@@ -29,16 +29,20 @@ public class AIChatService {
     @Autowired
     private AIChatRepository aiChatRepository;
 
-    private String baseUrl="https://api.groq.com/openai/v1/chat/completions";
-    public Map<String,Object> sendMessage(AIChat aiChat){
-
+    private String baseUrl="https://api.cerebras.ai/v1/chat/completions";
+    public Map<String,Object> sendMessage(AIChat aiChat) throws InterruptedException {
+        Thread.sleep(2000);
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(apiKey);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
         Map<String,Object> request = new HashMap<>();
-        request.put("model",aiChat.getModel());
+        request.put("model","llama-4-scout-17b-16e-instruct");
+        request.put("stream",false);
+        request.put("max_completion_tokens",2048);
+        request.put("temperature",0.2);
+        request.put("top_p",1);
         request.put("messages",aiChat.getMessageList());
         HttpEntity<Map<String,Object>> entity = new HttpEntity<>(request,httpHeaders);
         try{
@@ -50,14 +54,19 @@ public class AIChatService {
                     Map<String,Object> responseMessage = (Map<String,Object>) choices.get(0).get("message");
                     aiChat.getMessageList().add(responseMessage);
                     saveChat(aiChat);
+                    System.out.println("Done !! ");
                     return responseMessage;
                 }
             }
+            System.out.println("Limit !! ");
             return null;
         }catch(HttpClientErrorException e){
+            System.out.println(e.getMessage());
+            System.out.println("Limit !! ");
             return null;
         }catch (Exception e){
-            System.out.println(e);
+            System.out.println("Limit !! ");
+            System.out.println(e.getMessage());
             return null;
         }
     }
