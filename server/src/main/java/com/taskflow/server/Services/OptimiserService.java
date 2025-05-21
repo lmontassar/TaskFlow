@@ -201,7 +201,7 @@ public class OptimiserService {
         return taskNode;
     }
 
-    public ArrayNode cleanResource(Set<Resource> resources) {
+    public ArrayNode cleanResource(List<Resource> resources) {
         ArrayNode resourcesNode = objectMapper.createArrayNode();
         for (Resource resource : resources) {
             ObjectNode res = objectMapper.createObjectNode();
