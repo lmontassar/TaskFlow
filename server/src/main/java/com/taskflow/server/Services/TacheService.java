@@ -11,6 +11,8 @@ import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.taskflow.server.Entities.Tache;
@@ -22,6 +24,7 @@ public class TacheService {
     @Autowired
     private TacheRepository tacheRep;
 
+    @CacheEvict(value = "projectTasks", key = "#t.project.id")
     public Tache addTache(Tache t) {
         return tacheRep.save(t);
     }
@@ -34,6 +37,7 @@ public class TacheService {
         return tacheRep.findById(id).orElse(null);
     }
 
+    @Cacheable(value = "projectTasks", key = "#project.id")
     public List<Tache> findTacheByProjectId(Project project) {
         return tacheRep.getAllByProject(project);
     }
@@ -42,10 +46,12 @@ public class TacheService {
         return tacheRep.findByAssigneeContainingOrRapporteur(u, u);
     }
 
+    @CacheEvict(value = "projectTasks", key = "#t.project.id")
     public Tache update(Tache t) {
         return tacheRep.save(t);
     }
 
+    @CacheEvict(value = "projectTasks", key = "#t.project.id")
     public Tache updateStatus(Tache t, Tache.Statut statut) {
         if (t.getStatut() == statut)
             return null;
@@ -57,6 +63,7 @@ public class TacheService {
         return tacheRep.save(t);
     }
 
+    @CacheEvict(value = "projectTasks", key = "#t.project.id")
     public void delete(Tache t) {
         List<Tache> taches = tacheRep.getAllByParent(t);
         for (Tache ta : taches) {
@@ -79,6 +86,7 @@ public class TacheService {
     public boolean IsRapporteur(User u, Tache task) {
         return task.getRapporteur().equals(u);
     }
+
 
     public boolean IsUserExistInAsignee(User u, Tache task) {
         if (u == null || task == null)
@@ -105,6 +113,7 @@ public class TacheService {
         return false;
     }
 
+    @CacheEvict(value = "projectTasks", key = "#task.project.id")
     public Tache addAssignee(User AssigneeUser, Tache task) {
         List<User> assignees = task.getAssignee();
         assignees.add(AssigneeUser);
@@ -112,6 +121,7 @@ public class TacheService {
         return tacheRep.save(task);
     }
 
+    @CacheEvict(value = "projectTasks", key = "#task.project.id")
     public Tache removeAssignee(User AssigneeUser, Tache task) {
         List<User> assignees = task.getAssignee();
         assignees.remove(AssigneeUser);
@@ -119,6 +129,7 @@ public class TacheService {
         return tacheRep.save(task);
     }
 
+    
     public Tache addPrecedente(Tache task, Tache PrecedenteTask) {
         task.addPrecedente(PrecedenteTask);
         return tacheRep.save(task);
@@ -170,16 +181,13 @@ public class TacheService {
                 continue;
             if (task.equals(t.getParent()) || t.equals(task.getParent()))
                 continue;
-
             if (task.getPrecedentes() != null && task.getPrecedentes().contains(t))
                 continue;
             if (task.getParalleles() != null && task.getParalleles().contains(t))
                 continue;
-
             if (t.getDateFinEstime() == null && t.getDateDebut() != null && t.getDuree() >= 0) {
                 t.setDateFinEstime(t.getDateDebut().plusSeconds(t.getDuree()));
             }
-
             if ((t.getDateFinEstime() != null && task.getDateDebut() != null &&
                     t.getDateFinEstime().isBefore(task.getDateDebut())) || (t.getDateDebut() == null)) {
                 result.add(t);
@@ -192,12 +200,10 @@ public class TacheService {
         if (project == null) {
             return null;
         }
-
         List<Tache> taches = findTacheByProjectId(project);
         if (taches == null || taches.isEmpty()) {
             return null;
         }
-
         // Using non-static context and safe compareTo
         return taches.stream()
                 .map(Tache::getDateFinEstime)
@@ -210,12 +216,10 @@ public class TacheService {
         if (project == null) {
             return null;
         }
-
         List<Tache> taches = findTacheByProjectId(project);
         if (taches == null || taches.isEmpty()) {
             return null;
         }
-
         // Using non-static context and safe compareTo
         return taches.stream()
                 .map(Tache::getDateDebut)

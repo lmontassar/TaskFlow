@@ -422,7 +422,6 @@ const useTasks = () => {
     }
     return false;
   };
-
   const handleUpdateTask = async (updated: any) => {
     let message = "";
     try {
@@ -480,7 +479,6 @@ const useTasks = () => {
     }
     return { message, result: false };
   };
-
   const handleResizeTask = async (updated: any) => {
     let message = "";
     try {
@@ -527,7 +525,6 @@ const useTasks = () => {
     }
     return { message, result: false };
   };
-
   const getTasksByProjectID = async (projectID: any) => {
     setIsLoading(true);
     console.log("try to get tasks ... ");
