@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -52,7 +51,7 @@ public class Tache {
     private List<String> comments;
 
     @DBRef
-    @JsonIgnoreProperties({ "messages" })
+    @JsonIgnoreProperties({ "messages"})
     private Project project;
     private List<AffectationRessource> ressources = new ArrayList<>();
 
@@ -87,11 +86,11 @@ public class Tache {
     private List<Attachment> attachments = new ArrayList<>();
 
     @DBRef
-    @JsonIgnoreProperties({ "parent", "precedentes", "paralleles", "project" })
+    @JsonIgnoreProperties({ "parent", "precedentes", "paralleles", "project" ,"necessaryRessource","rapporteur" })
     private Tache parent;
 
     @DBRef
-    @JsonIgnoreProperties({ "parent", "precedentes", "paralleles", "project" })
+    @JsonIgnoreProperties({ "parent", "precedentes", "paralleles", "project" , "necessaryRessource","rapporteur"})
     private List<Tache> precedentes = new ArrayList<>();
 
     public boolean addPrecedente(Tache t) {

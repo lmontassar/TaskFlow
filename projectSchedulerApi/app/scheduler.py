@@ -31,7 +31,7 @@ class ProjectScheduler:
         self.horizon = int(total_seconds // TIME_UNIT) + 1
 
     def _preprocess_dates(self):
-        date_fmt = "%Y-%m-%dT%H:%M:%S.%fZ"
+        date_fmt = "%Y-%m-%dT%H:%M"
         self.project_start = datetime.strptime(self.input['projet']['dateDebut'], date_fmt)
         self.project_end = datetime.strptime(self.input['projet']['dateFin'], date_fmt)
 
@@ -67,7 +67,7 @@ class ProjectScheduler:
         for collab in self.collaborators:
             skills = ', '.join([f"{c['titre']} (Level {c['niveau']})" for c in collab['competences']])
             text = f"{collab['title']} ({collab['role']}). Skills: {skills}"
-            self.collab_embeddings[collab['id']] = self.model_st.encode(text, convert_to_tensor=True)
+            self.collab_embeddings[collab['id']] = self.model_st.encode(skills, convert_to_tensor=True)
 
     def _get_collab_scores(self, task_id):
         task_embed = self.task_embeddings[task_id]
@@ -107,54 +107,78 @@ class ProjectScheduler:
         self._add_resource_constraints()
         self._add_collaborator_constraints()
 
-        # Makespan objective
         makespan = self.model.NewIntVar(0, self.horizon, 'makespan')
         self.model.AddMaxEquality(makespan, [v['end'] for v in self.task_vars.values()])
-        self.model.Minimize(makespan)
-        
-        # Secondary: maximize total allocations
-        if self.allocated_vars:
-            self.model.Maximize(sum(self.allocated_vars.values()))
 
-            
-        self.model.Maximize(sum(self.assignment_vars.values()))
+        # Combine makespan minimization and allocation maximization
+        total_alloc = sum(self.allocated_vars.values())
+        total_assign = sum(self.assignment_vars.values())
 
+        bigM = sum(self.requested_qte.values()) + 1
+        # lexicographic: minimize makespan first, then maximize allocations
+        self.model.Minimize(- (total_alloc + total_assign * 100) * bigM + makespan)
 
     def _add_resource_constraints(self):
-        # Material resources (cumulative)
+        # Initialize allocated_vars for Energetic & Temporary resources
+        self.allocated_vars = {}
+        self._material_unit_intervals = {}
+
+        # 1) Material resources: decompose into per-unit optional intervals
         for res in self.resources.values():
             if res['type'] == 'Material':
-                intervals, demands = [], []
+                # collect all unit-intervals across tasks
+                all_ivars = []
+                all_units = []
                 for task in self.tasks:
                     for req in task['mapped_resources']:
                         if req['id'] == res['id']:
-                            intervals.append(self.intervals[task['id']][2])
-                            demands.append(req['qte'])
-                if intervals:
-                    self.model.AddCumulative(intervals, demands, res['qte'])
+                            tid = task['id']
+                            start_var, end_var, _ = self.intervals[tid]
+                            q = req['qte']
+                            # create integer allocated var
+                            alloc_var = self.model.NewIntVar(0, q, f'alloc_{tid}_{res["id"]}')
+                            self.allocated_vars[(tid, res['id'])] = alloc_var
+                            # unit bool vars & optional intervals
+                            unit_vars = []
+                            for i in range(q):
+                                b = self.model.NewBoolVar(f'unit_{tid}_{res["id"]}_{i}')
+                                iv = self.model.NewOptionalIntervalVar(
+                                    start_var, task['duration'], end_var,
+                                    b, f'iv_{tid}_{res["id"]}_{i}')
+                                unit_vars.append(b)
+                                all_ivars.append(iv)
+                                all_units.append(b)
+                            # link sum(unit_vars) == alloc_var
+                            self.model.Add(alloc_var == sum(unit_vars))
+                # enforce cumulative capacity across all unit intervals
+                if all_ivars:
+                    self.model.AddCumulative(all_ivars, [1]*len(all_ivars), res['qte'])
 
-        # Energetic/Temporary: track and store requested qte
-        self.allocated_vars = {}
+
+        # 2) Energetic/Temporary: variable allocations with capacity constraint
         for res in self.resources.values():
             if res['type'] in ['Energetic', 'Temporary']:
-                allocs = []
+                alloc_vars = []
                 for task in self.tasks:
                     for req in task['mapped_resources']:
                         if req['id'] == res['id']:
                             key = (task['id'], res['id'])
                             self.requested_qte[key] = req['qte']
-                            var = self.model.NewIntVar(0, req['qte'], f'alloc_{task["id"]}_{res["id"]}')
+                            var = self.model.NewIntVar(0, req['qte'],
+                                                       f'alloc_{task["id"]}_{res["id"]}')
                             self.allocated_vars[key] = var
-                            allocs.append(var)
-                if allocs:
-                    self.model.Add(sum(allocs) <= res['qte'])
+                            alloc_vars.append(var)
+                if alloc_vars:
+                    self.model.Add(sum(alloc_vars) <= res['qte'])
 
+
+       
     def _add_collaborator_constraints(self):
         self.collab_assignments = {c['id']: [] for c in self.collaborators}
         for task in self.tasks:
             tid = task['id']
             scores = self._get_collab_scores(tid)
-            
+
             eligible = [cid for cid, sc in scores if sc > 0.25][:3]
 
             assign_vars = []
@@ -195,6 +219,7 @@ class ProjectScheduler:
                 alloc = self.solver.Value(self.allocated_vars[key]) if key in self.allocated_vars else req['qte']
                 requested = self.requested_qte.get(key, req['qte'])
                 res_list.append({'id': req['id'], 'requested': requested, 'allocated': alloc})
+                
             self.schedule[tid] = {
                 'start': start.isoformat(),
                 'end': end.isoformat(),
@@ -209,7 +234,7 @@ class ProjectScheduler:
         return json.dumps({'schedule': self.schedule}, indent=2)
 
 if __name__ == "__main__":
-    with open('test.json') as f:
+    with open('message.json') as f:
         data = json.load(f)
     sched = ProjectScheduler(data)
     sched.build_model()

@@ -33,7 +33,6 @@ class TaskInput(BaseModel):
     dateFinEstime: str
     duree: int
     ressourcesNecessaires: List[ResourceRequest]
-    ressources: Dict[str, Any]
 
 class Dependency(BaseModel):
     type: str              # "FS", "SS", or "SUB"
