@@ -50,6 +50,10 @@ public class ProjectController {
                 return ResponseEntity.status(404).build();
             }
 
+            if(projectRequest.getDateDebut().after(projectRequest.getDateFinEstime())){
+                return ResponseEntity.status(400).build();
+            }
+
             // Create the project
             Project p = new Project();
             p.setNom(projectRequest.getNom() );
