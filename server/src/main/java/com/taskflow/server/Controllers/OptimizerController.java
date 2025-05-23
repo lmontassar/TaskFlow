@@ -32,6 +32,11 @@ public class OptimizerController {
             @RequestBody Map<String, String> requestBody) throws InterruptedException, JsonProcessingException {
         String projectId = (String)requestBody.get("projectID");
         ObjectNode optimizerRequest = optimiserService.optimise(projectId);
-        return ResponseEntity.ok(optimizerRequest);
+        ObjectNode opt = optimiserService.sendData(optimizerRequest);
+        if(opt.get("schedule")!=null){
+            return ResponseEntity.ok(opt);
+        }
+        return ResponseEntity.notFound().build();
+
     }
 }

@@ -7,7 +7,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taskflow.server.Entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -267,5 +270,38 @@ public class OptimiserService {
         optimiseRequest.set("tasks", tasksNode);
         optimiseRequest.set("dependencies", dependenciesNode);
         return optimiseRequest;
+    }
+
+    public ObjectNode sendData(ObjectNode data) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        try {
+            // Convert ObjectNode to JSON string
+            String json = objectMapper.writeValueAsString(data);
+
+            // Prepare HTTP request
+            HttpEntity<String> entity = new HttpEntity<>(json, headers);
+
+            // Send POST request
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    "http://localhost:8000/schedule",
+                    HttpMethod.POST,
+                    entity,
+                    Map.class
+            );
+
+            // Convert response Map to ObjectNode
+            Map<String, Object> responseMap = response.getBody();
+            return objectMapper.convertValue(responseMap, ObjectNode.class);
+
+        } catch (HttpClientErrorException e) {
+            System.err.println("HTTP Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            return null;
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            return null;
+        }
     }
 }
