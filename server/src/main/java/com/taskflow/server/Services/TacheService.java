@@ -239,7 +239,7 @@ public class TacheService {
     }
 
     public int qteAvailableMaterialRess(Tache t, MaterialResource ress, LocalDateTime dateDebut,
-            LocalDateTime dateFin) {
+        LocalDateTime dateFin) {
         List<Tache> tasks = tacheRep.getAllByProject(t.getProject());
         int qteDisponible = ress.getQte();
         for (Tache task : tasks) {

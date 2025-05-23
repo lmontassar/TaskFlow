@@ -20,28 +20,39 @@ import java.util.*;
 
 @Service
 public class OptimiserService {
-
+    @Autowired
+    private TacheService tacheService;
+    @Autowired
+    private UserService userService;
+    @Autowired 
+    private ResourceService resourceService;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private ProjectService projectService;
     @Autowired
     private AIChatService aiChatService;
+
     public ArrayNode getDescription(ObjectNode data) throws InterruptedException, JsonProcessingException {
         AIChat aiChat = new AIChat();
         List<Map<String, Object>> messageList = new ArrayList<>();
         System.out.println(data);
         String init = "You are a project management AI assistant named TaskFlowAI. You help users add the required skills of the task in the description . depending on the json object i will provide take the description list and foreach description add the required skills depending on the collaborator list (the role and the competances) and return the updated description list. please dont add title and dont write your thoughts .Respond only with the updated description including the old description provided plus ' Required Skills: ...' section if there is no skills that match the desciprion in the descriptionList then add the old description plus ' Required Skills : .' . please dont add title and dont write your thoughts just return the updated description.Please return only a list of the updated descriptions,return the result in JSON format don't add title or you thoughts.return in this format [\"updated description\"].";
 
-
-                /*"You are a project management AI assistant named TaskFlowAI. " +
-                "You help users add the required skills of the task in the description depending on the collaborators list provided. " +
-                "Only include skills from the collaborators' roles and competences. " +
-                "please dont add title and dont write your thoughts ."+
-                "Respond only with the updated description including the old description provided plus ' Required Skills: ...' section. " +
-                "please dont add title and dont write your thoughts just return the updated description."+
-                "if there is no match between the collaborators roles and competances add just ' Required Skills: '."+
-                "Collaborators list: " + collabs.toString();*/
+        /*
+         * "You are a project management AI assistant named TaskFlowAI. " +
+         * "You help users add the required skills of the task in the description depending on the collaborators list provided. "
+         * +
+         * "Only include skills from the collaborators' roles and competences. " +
+         * "please dont add title and dont write your thoughts ."+
+         * "Respond only with the updated description including the old description provided plus ' Required Skills: ...' section. "
+         * +
+         * "please dont add title and dont write your thoughts just return the updated description."
+         * +
+         * "if there is no match between the collaborators roles and competances add just ' Required Skills: '."
+         * +
+         * "Collaborators list: " + collabs.toString();
+         */
 
         messageList.add(Map.of("role", "user", "content", init));
         messageList.add(Map.of("role", "assistant", "content", "ok"));
@@ -73,7 +84,8 @@ public class OptimiserService {
 
         String init = "You are a project management AI assistant named TaskFlowAI. " +
                 "Given a resource name, find a matching name from the provided resources list. " +
-                "Return only the matching resource name or 'none' if not found. please dont add title and dont write your thoughts just return the name ." +
+                "Return only the matching resource name or 'none' if not found. please dont add title and dont write your thoughts just return the name ."
+                +
                 "Resources list: " + resources.toString();
 
         messageList.add(Map.of("role", "user", "content", init));
@@ -161,8 +173,9 @@ public class OptimiserService {
         for (JsonNode dep : deps) {
             if (dep.get("type").asText().equals(type)
                     && (dep.get("taskID2").asText().equals(task2.getId())
-                    && dep.get("taskID1").asText().equals(task1.getId()))||(dep.get("taskID1").asText().equals(task2.getId())
-                    && dep.get("taskID2").asText().equals(task1.getId()))) {
+                            && dep.get("taskID1").asText().equals(task1.getId()))
+                    || (dep.get("taskID1").asText().equals(task2.getId())
+                            && dep.get("taskID2").asText().equals(task1.getId()))) {
                 return true;
             }
         }
@@ -206,11 +219,11 @@ public class OptimiserService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         ObjectNode descriptionCleanData = objectMapper.createObjectNode();
         ArrayNode descList = objectMapper.createArrayNode();
-        for (Tache task:tasks) {
+        for (Tache task : tasks) {
             descList.add(task.getDescription());
         }
-        descriptionCleanData.set("descriptionList",descList);
-        descriptionCleanData.set("collaboratorList",collabs);
+        descriptionCleanData.set("descriptionList", descList);
+        descriptionCleanData.set("collaboratorList", collabs);
         ArrayNode descriptionList = getDescription(descriptionCleanData);
         int index = 0;
         for (Tache task : tasks) {
@@ -223,7 +236,8 @@ public class OptimiserService {
                     ? formattedDate
                     : task.getDateFinEstime().atZone(ZoneOffset.UTC).format(formatter);
 
-            Duration duree = Duration.between(task.getDateDebut() != null ? task.getDateDebut() : task.getDateFinEstime(),
+            Duration duree = Duration.between(
+                    task.getDateDebut() != null ? task.getDateDebut() : task.getDateFinEstime(),
                     task.getDateFinEstime() != null ? task.getDateFinEstime() : task.getDateDebut());
 
             ObjectNode t = objectMapper.createObjectNode();
@@ -296,7 +310,7 @@ public class OptimiserService {
             }
 
             coll.set("competences", competencesArray);
-            newCollabs.add(coll);  // <-- This was missing in your code
+            newCollabs.add(coll); // <-- This was missing in your code
         }
         return newCollabs;
     }
@@ -325,7 +339,7 @@ public class OptimiserService {
         return optimiseRequest;
     }
 
-    public ObjectNode sendData(ObjectNode data) {
+    public List<Map<String, Object>> sendData(ObjectNode data) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -342,12 +356,16 @@ public class OptimiserService {
                     "http://localhost:8000/schedule",
                     HttpMethod.POST,
                     entity,
-                    Map.class
-            );
+                    Map.class);
 
             // Convert response Map to ObjectNode
             Map<String, Object> responseMap = response.getBody();
-            return objectMapper.convertValue(responseMap, ObjectNode.class);
+            if (responseMap == null) {
+            return null;// objectMapper.createObjectNode().put("error", "Empty response from external service");
+            }
+
+            List<Map<String, Object>> transformedList = preapareResponse(responseMap);
+            return transformedList;
 
         } catch (HttpClientErrorException e) {
             System.err.println("HTTP Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
@@ -356,5 +374,81 @@ public class OptimiserService {
             System.err.println("Error: " + e.getMessage());
             return null;
         }
+    }
+
+    public List<Map<String, Object>> preapareResponse(Map<String, Object> responseMap) {
+        List<Map<String, Object>> transformedList = new ArrayList<>();
+        Map<String, Object> scheduleMap = (Map<String, Object>) responseMap.get("schedule");
+        for (Map.Entry<String, Object> entry : scheduleMap.entrySet()) {
+
+
+            String taskId = entry.getKey();
+            Map<String, Object> taskData = (Map<String, Object>) entry.getValue();
+            Map<String, Object> transformed = new HashMap<>();
+            Map<String, Object> oldData = new HashMap<>();
+            Map<String, Object> newData = new HashMap<>();
+            Tache t = tacheService.findTacheById(taskId);
+            User u = userService.findById((String) taskData.get("collaborator"));
+            
+            
+            transformed.put("id", taskId);
+            transformed.put("name", t.getNomTache() );
+            oldData.put("id", taskId);
+            oldData.put("name", t.getNomTache() );
+            newData.put("id", taskId);
+            newData.put("name", t.getNomTache() );
+
+            newData.put("collaborator", ( u != null) ? u.getPrenom() + " " + u.getNom() : (String) taskData.get("collaborator")  );
+            List<Map<String, Object>> resourcesList = new ArrayList<>();
+            List<Map<String, Object>> oldResourcesList = new ArrayList<>();
+            List<Map<String, Object>> resources = (List<Map<String, Object>>) taskData.get("resources");
+            for (Map<String, Object> res : resources) {
+                Map<String, Object> resMap = new HashMap<>();
+                Resource r = resourceService.getById((String) res.get("id"));
+                resMap.put("id",r.getId());
+                resMap.put("name", r.getNom());
+                resMap.put("quantity", res.get("allocated")); // or "requested" if preferred
+                resourcesList.add(resMap);
+            }
+            for (AffectationRessource r : t.getRessources()) {
+                boolean found = false;
+                for (Map<String, Object> resMap : resourcesList) {
+                    if (resMap.get("id").equals(r.getRess().getId())) {
+                        int currentQty = Integer.parseInt(resMap.get("quantity").toString());
+                        resMap.put("quantity", currentQty + r.getQte());
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    Map<String, Object> newMap = new HashMap<>();
+                    Resource res = resourceService.getById(r.getRess().getId());
+                    newMap.put("id", res.getId());
+                    newMap.put("name", res.getNom());
+                    newMap.put("quantity", (res.getType().equals("Energetic") ? r.getConsommation() : r.getQte()));
+                    resourcesList.add(newMap);
+                }
+                Map<String, Object> newMap = new HashMap<>();
+                Resource res = resourceService.getById(r.getRess().getId());
+                newMap.put("id", res.getId());
+                newMap.put("name", res.getNom());
+                newMap.put("quantity", (res.getType().equals("Energetic") ? r.getConsommation() : r.getQte()));
+                oldResourcesList.add(newMap);
+            }
+            newData.put("resources", resourcesList);
+            newData.put("startDate", taskData.get("start"));
+            newData.put("endDate", taskData.get("end"));
+            
+            oldData.put("collaborator",null);
+            oldData.put("resources", oldResourcesList );
+            oldData.put("startDate", t.getDateDebut() );
+            oldData.put("endDate", t.getDateFinEstime() );
+            transformed.put("newData", newData);
+            transformed.put("oldData", oldData);
+            transformed.put("hasChanges",true);
+            transformedList.add(transformed);
+        }
+        return transformedList;
+        
     }
 }
