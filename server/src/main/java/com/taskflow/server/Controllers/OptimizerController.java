@@ -33,7 +33,7 @@ public class OptimizerController {
         String projectId = (String)requestBody.get("projectID");
         ObjectNode optimizerRequest = optimiserService.optimise(projectId);
         ObjectNode opt = optimiserService.sendData(optimizerRequest);
-        if(opt.get("schedule")!=null){
+        if(opt!=null && opt.get("schedule")!=null){
             return ResponseEntity.ok(opt);
         }
         return ResponseEntity.notFound().build();
