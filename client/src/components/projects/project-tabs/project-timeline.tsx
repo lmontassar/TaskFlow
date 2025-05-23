@@ -69,7 +69,6 @@ export function ProjectTimeline({ project }: any) {
 
   useEffect(() => {
     if (cloud === "done") {
-      console.log("helloo")
       const timer = setTimeout(() => {
         setCloud("idle")
       }, 3 * 1000);
@@ -602,8 +601,15 @@ export function ProjectTimeline({ project }: any) {
         }
       }
 
+
       if (task.paralleles?.length) {
         for (const par of task.paralleles) {
+          if(   links.some(
+              (l: any) =>
+                l.id === `ss-${par.id}-${task.id}` || l.id === `ss-${task.id}-${par.id}`
+            ))  
+            continue;
+          else 
           links.push({
             id: `ss-${par.id}-${task.id}`,
             source: par.id,
@@ -612,6 +618,7 @@ export function ProjectTimeline({ project }: any) {
           });
         }
       }
+      
     }
 
     return { data: tasks, links: links }
