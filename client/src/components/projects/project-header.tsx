@@ -27,8 +27,8 @@ export function ProjectHeader({
   if (hasPermission(role, "addCollaborator", "project")) {
     isAllowedToAddCollaborator = true;
   }
-  const [isOptimizeDialogOpen, setIsOptimizeDialogOpen] = useState(false)
-  
+  const [isOptimizeDialogOpen, setIsOptimizeDialogOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="space-y-1">
@@ -56,7 +56,11 @@ export function ProjectHeader({
             {t("project.addCollaborator")}
           </SearchForm>
 
-          <Button variant="outline" size="sm" onClick={() => setIsOptimizeDialogOpen(true)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsOptimizeDialogOpen(true)}
+          >
             <Gauge className="mr-2 h-4 w-4" />
             Optimize
           </Button>
@@ -72,9 +76,12 @@ export function ProjectHeader({
             {t("project.editProject")}
           </Button>
         </div>
-        
       )}
-      <OptimizeDialog isOpen={isOptimizeDialogOpen} onClose={() => setIsOptimizeDialogOpen(false)} />
+      <OptimizeDialog
+        isOpen={isOptimizeDialogOpen}
+        projectId={projects?.id}
+        onClose={() => setIsOptimizeDialogOpen(false)}
+      />
     </div>
   );
 }

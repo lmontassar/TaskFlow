@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taskflow.server.Entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -32,7 +33,8 @@ public class OptimiserService {
     private ProjectService projectService;
     @Autowired
     private AIChatService aiChatService;
-
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
     public ArrayNode getDescription(ObjectNode data) throws InterruptedException, JsonProcessingException {
         AIChat aiChat = new AIChat();
         List<Map<String, Object>> messageList = new ArrayList<>();
@@ -316,6 +318,10 @@ public class OptimiserService {
     }
 
     public ObjectNode optimise(String projectId,Boolean isCollab,Boolean isResource) throws InterruptedException, JsonProcessingException {
+        messagingTemplate.convertAndSend(
+                "/topic/optimiseSteps/" + projectId,
+                1
+        );
         ObjectNode optimiseRequest = objectMapper.createObjectNode();
         Project project = projectService.getProjectById(projectId);
         List<Tache> taches = projectService.tacheService.findTacheByProjectId(project);
@@ -326,24 +332,38 @@ public class OptimiserService {
         projectNode.put("dateFin", sdf.format(project.getDateFinEstime()));
         optimiseRequest.set("projet", projectNode);
         ArrayNode collabsNode = objectMapper.createArrayNode();
+
         ArrayNode resourcesNode = cleanResource(project.getListeRessource());
         if(isCollab){
             collabsNode = cleanCollaborateur(project.getListeCollaborateur());
         }
+
         ArrayNode tasksNode = cleanTasks(taches, collabsNode, resourcesNode,isResource);
+        messagingTemplate.convertAndSend(
+                "/topic/optimiseSteps/" + projectId,
+                2
+        );
+
         ArrayNode dependenciesNode = cleanDependencies(taches);
         optimiseRequest.set("collaborateur", collabsNode);
         optimiseRequest.set("ressources", resourcesNode);
         optimiseRequest.set("tasks", tasksNode);
         optimiseRequest.set("dependencies", dependenciesNode);
+        messagingTemplate.convertAndSend(
+                "/topic/optimiseSteps/" + projectId,
+                3
+        );
         return optimiseRequest;
     }
 
-    public List<Map<String, Object>> sendData(ObjectNode data) {
+    public List<Map<String, Object>> sendData(ObjectNode data,String projectId) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
+        messagingTemplate.convertAndSend(
+                "/topic/optimiseSteps/" + projectId,
+                4
+        );
         try {
             // Convert ObjectNode to JSON string
             String json = objectMapper.writeValueAsString(data);
@@ -365,6 +385,10 @@ public class OptimiserService {
             }
 
             List<Map<String, Object>> transformedList = preapareResponse(responseMap);
+            messagingTemplate.convertAndSend(
+                    "/topic/optimiseSteps/" + projectId,
+                    5
+            );
             return transformedList;
 
         } catch (HttpClientErrorException e) {
@@ -415,7 +439,7 @@ public class OptimiserService {
                 for (Map<String, Object> resMap : resourcesList) {
                     if (resMap.get("id").equals(r.getRess().getId())) {
                         int currentQty = Integer.parseInt(resMap.get("quantity").toString());
-                        resMap.put("quantity", currentQty + r.getQte());
+                        resMap.put("quantity", currentQty + ((r.getRess().getType()).equals("Energetics")?r.getConsommation():r.getQte()));
                         found = true;
                         break;
                     }
