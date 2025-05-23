@@ -9,6 +9,7 @@ import useGetUser from "../../hooks/useGetUser";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { OptimizeDialog } from "./optimize/optimize-dialog";
+import { Link } from "react-router-dom";
 
 export function ProjectHeader({
   projects,
@@ -32,8 +33,11 @@ export function ProjectHeader({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="space-y-1">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-5 justify-between">
           <h1 className="text-2xl font-bold tracking-tight">{projects?.nom}</h1>
+          <Link to={`/ask-ai/${projects?.id}`}>
+            <img src="/chat.png" alt="AI" className="h-7 w-7" />
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           {projects?.tags.map((tag: any) => (

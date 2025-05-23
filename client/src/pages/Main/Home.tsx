@@ -10,12 +10,8 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <WelcomeHero />
-      <QuickActions />
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <ProjectSummary className="lg:col-span-2" />
-        <ActivityFeed />
-      </div>
+      <ProjectSummary className="lg:col-span-2" />
 
       <div className="grid gap-6 md:grid-cols-2">
         <TeamUpdates />
