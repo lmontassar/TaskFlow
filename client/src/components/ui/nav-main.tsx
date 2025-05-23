@@ -40,20 +40,11 @@ export function NavMain() {
       isActive: true,
     },
     {
-      title: t("sidebar.inbox"),
-      url: "/inbox",
-      icon: Inbox,
-    },
-    {
       title: t("sidebar.chat"),
       url: "/chat",
       icon: MessageCircle,
     },
-    {
-      title: t("sidebar.documentations"),
-      url: "/documentations",
-      icon: BookText,
-    },
+
     {
       title: t("sidebar.dashboard"),
       url: "/dashboard",

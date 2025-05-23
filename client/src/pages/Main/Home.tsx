@@ -5,11 +5,14 @@ import { ProjectSummary } from "@/components/home/project-summary";
 import { ActivityFeed } from "@/components/home/activity-feed";
 import { TeamUpdates } from "@/components/home/team-updates";
 import { CompanyNews } from "@/components/home/company-news";
+import { useContext } from "react";
+import { Context } from "../../App";
 
 export default function Home() {
+  const { user } = useContext(Context);
   return (
     <div className="space-y-8">
-      <WelcomeHero />
+      <WelcomeHero nom={user?.nom} />
 
       <ProjectSummary className="lg:col-span-2" />
 
