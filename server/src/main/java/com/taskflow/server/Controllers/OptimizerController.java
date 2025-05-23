@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,8 +33,8 @@ public class OptimizerController {
             @RequestBody Map<String, String> requestBody) throws InterruptedException, JsonProcessingException {
         String projectId = (String)requestBody.get("projectID");
         ObjectNode optimizerRequest = optimiserService.optimise(projectId);
-        ObjectNode opt = optimiserService.sendData(optimizerRequest);
-        if(opt.get("schedule")!=null){
+        List<Map<String, Object>> opt = optimiserService.sendData(optimizerRequest);
+        if(opt !=null ){
             return ResponseEntity.ok(opt);
         }
         return ResponseEntity.notFound().build();
