@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useProject from "../../../hooks/useProject";
 import Loading from "../../ui/loading";
-import MemberTable from "../../MemberTable";
+import MemberTable from "../../ui/MemberTable";
 import { Search } from "lucide-react";
 import { Input } from "../../ui/input";
 import { useTranslation } from "react-i18next";

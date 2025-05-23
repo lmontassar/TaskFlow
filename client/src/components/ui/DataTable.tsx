@@ -37,9 +37,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
+} from "./dialog";
 
-import useProject from "../hooks/useProject";
+import useProject from "../../hooks/useProject";
 
 export default function DataTable({ project, setProject }: any) {
   const [data, setData] = React.useState(project?.listeCollaborateur || []);

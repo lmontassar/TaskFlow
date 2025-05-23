@@ -8,9 +8,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./button";
+import { Badge } from "./badge";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 
 interface SearchFormProps {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ interface SearchFormProps {
   setProject?: any;
 }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Loading from "./ui/loading";
+import Loading from "./loading";
 export default function SearchForm({
   children,
   project,

@@ -68,7 +68,7 @@ import { Separator } from "../ui/separator";
 import TaskComments from "./task-comments";
 import { AnyAaaaRecord } from "dns";
 import useTaskComment from "../../hooks/useTaskComment";
-import Textarea03 from "../Textarea-helper";
+import Textarea03 from "../ui/Textarea-helper";
 import {
   Tooltip,
   TooltipContent,

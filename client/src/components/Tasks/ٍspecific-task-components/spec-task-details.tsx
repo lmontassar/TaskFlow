@@ -41,7 +41,7 @@ import { TasksSearch } from "../../ui/TasksSearch";
 import { useTranslation } from "react-i18next";
 import useTasks from "../../../hooks/useTasks";
 import { toLocalISOString } from "../../../lib/utils";
-import Textarea03 from "../../Textarea-helper";
+import Textarea03 from "../../ui/Textarea-helper";
 import {
   Tooltip,
   TooltipContent,
