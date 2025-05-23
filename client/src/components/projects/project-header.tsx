@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { Edit, Plus, Share } from "lucide-react";
+import { Edit, Gauge, Plus, Share } from "lucide-react";
 import useGetProject from "../../hooks/useGetProjects";
 import SearchForm from "../comp-333";
 import hasPermission from "../../utils/authz";
 import useGetUser from "../../hooks/useGetUser";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { OptimizeDialog } from "./optimize/optimize-dialog";
 
 export function ProjectHeader({
   projects,
@@ -25,6 +27,8 @@ export function ProjectHeader({
   if (hasPermission(role, "addCollaborator", "project")) {
     isAllowedToAddCollaborator = true;
   }
+  const [isOptimizeDialogOpen, setIsOptimizeDialogOpen] = useState(false)
+  
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="space-y-1">
@@ -52,6 +56,11 @@ export function ProjectHeader({
             {t("project.addCollaborator")}
           </SearchForm>
 
+          <Button variant="outline" size="sm" onClick={() => setIsOptimizeDialogOpen(true)}>
+            <Gauge className="mr-2 h-4 w-4" />
+            Optimize
+          </Button>
+
           <Button
             variant="outline"
             size="sm"
@@ -63,7 +72,9 @@ export function ProjectHeader({
             {t("project.editProject")}
           </Button>
         </div>
+        
       )}
+      <OptimizeDialog isOpen={isOptimizeDialogOpen} onClose={() => setIsOptimizeDialogOpen(false)} />
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default function ProjectPage() {
   }, [id]);
 
   if (error) {
-    return navigate(-1);
+    return navigate("/home");
   }
   return (
     <>

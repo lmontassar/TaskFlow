@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+
 export function ProjectsHeader() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -27,6 +28,7 @@ export function ProjectsHeader() {
           </Link>
         </Button>
       </div>
+       
     </div>
   );
 }
