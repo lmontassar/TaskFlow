@@ -200,7 +200,7 @@ public class OptimiserService {
         }
         return dependenciesNode;
     }
-    public ArrayNode cleanTasks(List<Tache> tasks, ArrayNode collabs, ArrayNode resources) throws InterruptedException, JsonProcessingException {
+    public ArrayNode cleanTasks(List<Tache> tasks, ArrayNode collabs, ArrayNode resources, Boolean isResource) throws InterruptedException, JsonProcessingException {
         ArrayNode taskNode = objectMapper.createArrayNode();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
@@ -214,7 +214,7 @@ public class OptimiserService {
         ArrayNode descriptionList = getDescription(descriptionCleanData);
         int index = 0;
         for (Tache task : tasks) {
-
+            ArrayNode cleaned = objectMapper.createArrayNode();
             String formattedDate = sdf.format(new Date());
             String dateDebut = task.getDateDebut() == null
                     ? formattedDate
@@ -234,18 +234,20 @@ public class OptimiserService {
             t.put("dateDebut", dateDebut);
             t.put("dateFinEstime", datefin);
             t.put("duree", duree.toSeconds());
-            ArrayNode cleaned = cleanNecessaryResources(task.getNecessaryRessource(), resources);
-            for (AffectationRessource r :
-                    task.getRessources()) {
-                if(r.getRess() instanceof MaterialResource){
-                    ObjectNode resNode = objectMapper.createObjectNode();
-                    resNode.put("name",r.getRess().getNom());
-                    resNode.put("type",r.getRess().getType());
-                    resNode.put("category",r.getRess().getCategorie());
-                    resNode.put("qte", (int) ((MaterialResource) r.getRess()).getQte());
-                    cleaned.add(resNode);
-                }
+            if(isResource){
+                cleaned = cleanNecessaryResources(task.getNecessaryRessource(), resources);
+                for (AffectationRessource r :
+                        task.getRessources()) {
+                    if(r.getRess() instanceof MaterialResource){
+                        ObjectNode resNode = objectMapper.createObjectNode();
+                        resNode.put("name",r.getRess().getNom());
+                        resNode.put("type",r.getRess().getType());
+                        resNode.put("category",r.getRess().getCategorie());
+                        resNode.put("qte", (int) ((MaterialResource) r.getRess()).getQte());
+                        cleaned.add(resNode);
+                    }
 
+                }
             }
             t.set("ressourcesNecessaires", cleaned);
             taskNode.add(t);
@@ -299,7 +301,7 @@ public class OptimiserService {
         return newCollabs;
     }
 
-    public ObjectNode optimise(String projectId) throws InterruptedException, JsonProcessingException {
+    public ObjectNode optimise(String projectId,Boolean isCollab,Boolean isResource) throws InterruptedException, JsonProcessingException {
         ObjectNode optimiseRequest = objectMapper.createObjectNode();
         Project project = projectService.getProjectById(projectId);
         List<Tache> taches = projectService.tacheService.findTacheByProjectId(project);
@@ -309,12 +311,13 @@ public class OptimiserService {
         projectNode.put("dateDebut", sdf.format(project.getDateDebut()));
         projectNode.put("dateFin", sdf.format(project.getDateFinEstime()));
         optimiseRequest.set("projet", projectNode);
-
+        ArrayNode collabsNode = objectMapper.createArrayNode();
         ArrayNode resourcesNode = cleanResource(project.getListeRessource());
-        ArrayNode collabsNode = cleanCollaborateur(project.getListeCollaborateur());
-        ArrayNode tasksNode = cleanTasks(taches, collabsNode, resourcesNode);
+        if(isCollab){
+            collabsNode = cleanCollaborateur(project.getListeCollaborateur());
+        }
+        ArrayNode tasksNode = cleanTasks(taches, collabsNode, resourcesNode,isResource);
         ArrayNode dependenciesNode = cleanDependencies(taches);
-
         optimiseRequest.set("collaborateur", collabsNode);
         optimiseRequest.set("ressources", resourcesNode);
         optimiseRequest.set("tasks", tasksNode);

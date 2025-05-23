@@ -31,7 +31,9 @@ public class OptimizerController {
             @RequestHeader("Authorization") String token,
             @RequestBody Map<String, String> requestBody) throws InterruptedException, JsonProcessingException {
         String projectId = (String)requestBody.get("projectID");
-        ObjectNode optimizerRequest = optimiserService.optimise(projectId);
+        Boolean isCollab = (String) requestBody.get("optCollab")=="true";
+        Boolean isResource = (String) requestBody.get("optResource")=="true";
+        ObjectNode optimizerRequest = optimiserService.optimise(projectId,isCollab,isResource);
         ObjectNode opt = optimiserService.sendData(optimizerRequest);
         if(opt!=null && opt.get("schedule")!=null){
             return ResponseEntity.ok(opt);
