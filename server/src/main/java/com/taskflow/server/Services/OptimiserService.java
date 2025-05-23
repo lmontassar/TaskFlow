@@ -102,12 +102,60 @@ public class OptimiserService {
         System.out.println((String) responseMessage.get("content"));
         return (String) responseMessage.get("content");
     }
+    public ArrayNode getNecessaryNames(List<NecessaryRessource> necessaryRessources, ArrayNode resources) throws InterruptedException, JsonProcessingException {
+        AIChat aiChat = new AIChat();
+        List<Map<String, Object>> messageList = new ArrayList<>();
+        ArrayNode necessaryList = objectMapper.createArrayNode();
+        for (NecessaryRessource nr:necessaryRessources){
+            ObjectNode n = objectMapper.createObjectNode();
+            n.put("name",nr.getName());
+            n.put("category",nr.getCategorie());
+            necessaryList.add(n);
+        }
+        String init = "You are a project management AI assistant named TaskFlowAI. Given a list of resource names and categories. For each resource name find a matching name from the provided resources list, if the name does not match put 'none' in the list. please dont add title and dont write your thoughts just return list of the names . this is the Resources list: " + resources.toString();
 
-    public ArrayNode cleanNecessaryResources(List<NecessaryRessource> necessaryRessources, ArrayNode resources)
-            throws InterruptedException {
+        /*
+        *"You are a project management AI assistant named TaskFlowAI.
+        * You help users add the required skills of the task in the description .
+        * depending on the json object
+        * i will provide take the description list and foreach description
+        * add the required skills depending on the collaborator list (the role and the competances)
+        * and return the updated description list.
+        * please dont add title and dont write your thoughts .
+        * Respond only with the updated description including the old description provided plus ' Required Skills: ...' section if there is no skills that match the desciprion in the descriptionList then add the old description plus ' Required Skills : .' . please dont add title and dont write your thoughts just return the updated description.Please return only a list of the updated descriptions,return the result in JSON format don't add title or you thoughts.return in this format [\"updated description\"].";
+
+         *
+        * */
+
+        messageList.add(Map.of("role", "user", "content", init));
+        messageList.add(Map.of("role", "assistant", "content", "ok"));
+        messageList.add(Map.of("role", "user", "content", necessaryList.toString()));
+
+        aiChat.setMessageList(messageList);
+
+        Map<String, Object> responseMessage = aiChatService.sendMessage(aiChat);
+        while (responseMessage == null) {
+
+            responseMessage = aiChatService.sendMessage(aiChat);
+        }
+        System.out.println((String) responseMessage.get("content"));
+        String output = (String) responseMessage.get("content");
+        JsonNode node = objectMapper.readTree(output);
+        if (node.isArray()) {
+            ArrayNode arrayNode = (ArrayNode) node;
+            return arrayNode;
+        } else {
+            System.out.println("Input is not a valid JSON array");
+            return null;
+        }
+    }
+    public ArrayNode cleanNecessaryResources(List<NecessaryRessource> necessaryRessources, ArrayNode resources) throws InterruptedException, JsonProcessingException {
         ArrayNode cleaned = objectMapper.createArrayNode();
+        ArrayNode necessaryNames = getNecessaryNames(necessaryRessources,resources);
+        System.out.println("dzadzadazd : "+necessaryNames);
+        int index = 0;
         for (NecessaryRessource resource : necessaryRessources) {
-            String name = getNecessaryName(resource.getName(), resources);
+            String name =necessaryNames.get(index).asText();
             if (!Objects.equals(name, "none")) {
                 ObjectNode nr = objectMapper.createObjectNode();
                 nr.put("name", name);
@@ -116,6 +164,7 @@ public class OptimiserService {
                 nr.put("qte", (int) resource.getQte());
                 cleaned.add(nr);
             }
+            index++;
         }
         return cleaned;
     }
