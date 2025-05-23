@@ -112,9 +112,11 @@ public class OptimiserService {
             ObjectNode n = objectMapper.createObjectNode();
             n.put("name",nr.getName());
             n.put("category",nr.getCategorie());
+            n.put("type",nr.getType().toString());
+
             necessaryList.add(n);
         }
-        String init = "You are a project management AI assistant named TaskFlowAI. Given a list of resource names and categories. For each resource name find a matching name from the provided resources list, if the name does not match put 'none' in the list. please dont add title and dont write your thoughts just return list of the names . this is the Resources list: " + resources.toString();
+        String init = "You are a project management AI assistant named TaskFlowAI. Given a list of resources (name, type and category). For each resource name find a matching name from the provided resources list, if the name does not match put 'none' in the list. please dont add title and dont write your thoughts just return list of the names . this is the Resources list: " + resources.toString();
 
         /*
         *"You are a project management AI assistant named TaskFlowAI.
@@ -439,7 +441,7 @@ public class OptimiserService {
                 for (Map<String, Object> resMap : resourcesList) {
                     if (resMap.get("id").equals(r.getRess().getId())) {
                         int currentQty = Integer.parseInt(resMap.get("quantity").toString());
-                        resMap.put("quantity", currentQty + ((r.getRess().getType()).equals("Energetics")?r.getConsommation():r.getQte()));
+                        resMap.put("quantity", currentQty + ((r.getRess().getType()).equals("Energetic")?r.getConsommation():r.getQte()));
                         found = true;
                         break;
                     }
