@@ -34,7 +34,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import Textarea03 from "../Textarea-helper";
+import Textarea03 from "../ui/Textarea-helper";
 
 interface TaskCreateModalProps {
   isOpen: boolean;

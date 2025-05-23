@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { Edit, Gauge, Plus, Share } from "lucide-react";
 import useGetProject from "../../hooks/useGetProjects";
-import SearchForm from "../comp-333";
+import SearchForm from "../ui/comp-333";
 import hasPermission from "../../utils/authz";
 import useGetUser from "../../hooks/useGetUser";
 import { useTranslation } from "react-i18next";

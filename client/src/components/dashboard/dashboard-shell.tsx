@@ -39,8 +39,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { NavMain } from "../nav-main";
-import { NavProjects } from "../nav-projects";
+import { NavMain } from "../ui/nav-main";
+import { NavProjects } from "../ui/nav-projects";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import useGetProject from "../../hooks/useGetProjects";

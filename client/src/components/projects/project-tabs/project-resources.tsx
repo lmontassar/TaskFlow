@@ -34,10 +34,10 @@ import {
 } from "lucide-react";
 import useResources from "../../../hooks/useResources";
 import { useTranslation } from "react-i18next";
-import AddResource from "../../AddResource";
-import ResourceDetail from "../../ResourceDetail";
-import EditResource from "../../EditResource";
-import ResourcesTable from "../../ResourcesTable";
+import AddResource from "../../ui/AddResource";
+import ResourceDetail from "../../ui/ResourceDetail";
+import EditResource from "../../ui/EditResource";
+import ResourcesTable from "../../ui/ResourcesTable";
 
 interface Resource {
   id: string;

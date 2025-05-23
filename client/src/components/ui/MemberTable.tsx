@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
+} from "./table";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -15,19 +15,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import useProject from "../hooks/useProject";
+} from "./dialog";
+import { Button } from "./button";
+import useProject from "../../hooks/useProject";
 import { EditDialog } from "./EditDialog";
-import { Label } from "./ui/label";
+import { Label } from "./label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Input } from "./ui/input";
+} from "./select";
+import { Input } from "./input";
 
 function MemberTable({
   filteredMembers,

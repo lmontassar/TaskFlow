@@ -5,12 +5,12 @@ import { CalendarDays, CalendarIcon, Clock } from "lucide-react";
 import { Input } from "../ui/input";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import InputNumber from "../InputNumber";
+import InputNumber from "../ui/InputNumber";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { format, parseISO } from "date-fns";
 import { Calendar } from "../ui/calendar";
-import Textarea03 from "../Textarea-helper";
+import Textarea03 from "../ui/Textarea-helper";
 import { toast } from "sonner";
 import { id } from "date-fns/locale";
 

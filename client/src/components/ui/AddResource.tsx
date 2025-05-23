@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+import { Button } from "./button";
 import {
   Dialog,
   DialogContent,
@@ -6,9 +6,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+} from "./dialog";
+import { Input } from "./input";
+import { Label } from "./label";
 import { DollarSign, PlusIcon } from "lucide-react";
 import {
   Select,
@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "./select";
 
 function AddResource({
   formData,

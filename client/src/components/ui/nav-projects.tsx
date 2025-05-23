@@ -32,21 +32,21 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "./ui/collapsible";
+} from "./collapsible";
 import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "./ui/sidebar";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+} from "./sidebar";
+import { Input } from "./input";
+import { Label } from "./label";
 import { EditDialog } from "./EditDialog";
 import { useContext, useEffect, useRef, useState } from "react";
-import Input42 from "./ui/date-range";
+import Input42 from "./date-range";
 import Textarea03 from "./Textarea-helper";
-import useCreateProject from "../hooks/useCreateProject";
+import useCreateProject from "../../hooks/useCreateProject";
 import { Link, useNavigate } from "react-router-dom";
-import { Context } from "../App";
+import { Context } from "../../App";
 import TagsInput from "./TagsInput";
 import InputNumber from "./InputNumber";
 import { Tag } from "emblor";
@@ -58,9 +58,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
-import useProject from "../hooks/useProject";
-import { Button } from "./ui/button";
+} from "./tooltip";
+import useProject from "../../hooks/useProject";
+import { Button } from "./button";
 import { set } from "lodash";
 type Project = {
   id: string;
