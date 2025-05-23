@@ -436,6 +436,8 @@ public class OptimiserService {
             newData.put("resources", resourcesList);
             newData.put("startDate", taskData.get("start"));
             newData.put("endDate", taskData.get("end"));
+            
+            oldData.put("collaborator",null);
             oldData.put("resources", oldResourcesList );
             oldData.put("startDate", t.getDateDebut() );
             oldData.put("endDate", t.getDateFinEstime() );
@@ -445,6 +447,6 @@ public class OptimiserService {
             transformedList.add(transformed);
         }
         return transformedList;
-
+        
     }
 }
