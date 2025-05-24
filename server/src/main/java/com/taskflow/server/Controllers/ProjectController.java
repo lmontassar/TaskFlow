@@ -170,6 +170,7 @@ public class ProjectController {
         try {
             User user = userService.findById(myJWT.extractUserId(token));
             Project myProjects = projectService.getMyProjects(user.getId());
+            
             return ResponseEntity.ok(myProjects);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

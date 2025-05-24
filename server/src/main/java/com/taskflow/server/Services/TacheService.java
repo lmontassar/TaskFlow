@@ -10,6 +10,7 @@ import com.taskflow.server.Entities.NecessaryRessource;
 import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.Resource;
 
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -87,7 +88,6 @@ public class TacheService {
         return task.getRapporteur().equals(u);
     }
 
-
     public boolean IsUserExistInAsignee(User u, Tache task) {
         if (u == null || task == null)
             return false;
@@ -129,7 +129,6 @@ public class TacheService {
         return tacheRep.save(task);
     }
 
-    
     public Tache addPrecedente(Tache task, Tache PrecedenteTask) {
         task.addPrecedente(PrecedenteTask);
         return tacheRep.save(task);
@@ -239,7 +238,7 @@ public class TacheService {
     }
 
     public int qteAvailableMaterialRess(Tache t, MaterialResource ress, LocalDateTime dateDebut,
-        LocalDateTime dateFin) {
+            LocalDateTime dateFin) {
         List<Tache> tasks = tacheRep.getAllByProject(t.getProject());
         int qteDisponible = ress.getQte();
         for (Tache task : tasks) {
@@ -330,4 +329,15 @@ public class TacheService {
                 && IsValidSubTasks(t);
     }
 
+    public Map<String, Integer> getStats(String projectId) {
+        Map<String, Object> rawStats = tacheRep.getStatsByProject(projectId);
+
+        if (rawStats == null || rawStats.isEmpty()) {
+            return Map.of("tasks", 0, "completed", 0);
+        }
+
+        return Map.of(
+                "tasks", ((Number) rawStats.get("tasks")).intValue(),
+                "completed", ((Number) rawStats.get("completed")).intValue());
+    }
 }

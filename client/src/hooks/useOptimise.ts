@@ -39,6 +39,8 @@ const useOptimise = (projectId: string) => {
       }
     };
   }, [projectId, token]);
+
+
   const optimise = async (
     projectId: string,
     isCollab: boolean,
@@ -62,10 +64,43 @@ const useOptimise = (projectId: string) => {
     const data = await response.json();
     return data;
   };
+
+
+  const saveChanges = async (
+    result: any,
+    isCollab: boolean,
+    isResource: boolean
+  ) => {
+    const response = await fetch(`/api/optimise/save`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        result: result,
+        optCollab: isCollab,
+        optResource: isResource,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(t("optimise.error"));
+    }
+    
+    return true;
+  };
+
+
+
   return {
+    saveChanges,
     optimise,
     step,
     setStep,
   };
 };
+
+
+
 export default useOptimise;

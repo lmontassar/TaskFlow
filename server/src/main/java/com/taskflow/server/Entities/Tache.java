@@ -150,7 +150,7 @@ public class Tache {
         return earliest;
     }
 
-    public LocalDateTime getLastDateFinForMatRessource() {
+    public LocalDateTime getLastDateFinForMatRessource(){
         LocalDateTime latest = null;
         for (AffectationRessource r : ressources) {
             if (r.getRess().getType().equals("Material")) {

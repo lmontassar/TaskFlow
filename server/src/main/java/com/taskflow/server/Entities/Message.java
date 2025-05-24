@@ -32,16 +32,13 @@ public class Message {
     private User user;
     private String text;
     private List<Attachment> attachments = new ArrayList<>();
-
     public boolean removeAttachment(Attachment att) {
         return attachments.remove(att);
     }
-
     private boolean edited = false;
     private LocalDateTime createdAt = LocalDateTime.now();
     @JsonIdentityReference(alwaysAsId = true)
     private Message refTo;
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -51,11 +48,8 @@ public class Message {
         Message message = (Message) o;
         return Objects.equals(id, message.id);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
-
-
 }

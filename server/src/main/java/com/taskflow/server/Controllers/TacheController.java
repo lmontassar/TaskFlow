@@ -3,6 +3,7 @@ package com.taskflow.server.Controllers;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -467,6 +468,24 @@ public class TacheController {
 
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/get/stats/{id}")
+    public ResponseEntity<?> getByStats(
+            @RequestHeader("Authorization") String token,
+            @PathVariable("id") String projID
+            ) {
+        try {
+            User u = getUserFromToken(token);
+            if (u == null)
+                return ResponseEntity.notFound().build();
+
+
+            return ResponseEntity.ok().body(tacheSer.getStats(projID));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
@@ -949,5 +968,7 @@ public class TacheController {
             return ResponseEntity.internalServerError().body("Error deleting resource: " + e.getMessage());
         }
     }
+
+
 
 }

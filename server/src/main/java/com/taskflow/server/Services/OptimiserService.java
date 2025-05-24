@@ -369,30 +369,25 @@ public class OptimiserService {
         try {
             // Convert ObjectNode to JSON string
             String json = objectMapper.writeValueAsString(data);
-
             // Prepare HTTP request
             HttpEntity<String> entity = new HttpEntity<>(json, headers);
-
             // Send POST request
             ResponseEntity<Map> response = restTemplate.exchange(
                     "http://localhost:8000/schedule",
                     HttpMethod.POST,
                     entity,
                     Map.class);
-
             // Convert response Map to ObjectNode
             Map<String, Object> responseMap = response.getBody();
             if (responseMap == null) {
             return null;// objectMapper.createObjectNode().put("error", "Empty response from external service");
             }
-
             List<Map<String, Object>> transformedList = preapareResponse(responseMap);
             messagingTemplate.convertAndSend(
                     "/topic/optimiseSteps/" + projectId,
                     5
             );
             return transformedList;
-
         } catch (HttpClientErrorException e) {
             System.err.println("HTTP Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
             return null;
@@ -401,21 +396,16 @@ public class OptimiserService {
             return null;
         }
     }
-
     public List<Map<String, Object>> preapareResponse(Map<String, Object> responseMap) {
         List<Map<String, Object>> transformedList = new ArrayList<>();
         Map<String, Object> scheduleMap = (Map<String, Object>) responseMap.get("schedule");
         for (Map.Entry<String, Object> entry : scheduleMap.entrySet()) {
-
-
             String taskId = entry.getKey();
             Map<String, Object> taskData = (Map<String, Object>) entry.getValue();
             Map<String, Object> transformed = new HashMap<>();
             Map<String, Object> oldData = new HashMap<>();
             Map<String, Object> newData = new HashMap<>();
             Tache t = tacheService.findTacheById(taskId);
-            User u = userService.findById((String) taskData.get("collaborator"));
-            
             
             transformed.put("id", taskId);
             transformed.put("name", t.getNomTache() );
@@ -424,7 +414,19 @@ public class OptimiserService {
             newData.put("id", taskId);
             newData.put("name", t.getNomTache() );
 
-            newData.put("collaborator", ( u != null) ? u.getPrenom() + " " + u.getNom() : (String) taskData.get("collaborator")  );
+            User u = userService.findById((String) taskData.get("collaborator"));
+            List<Map<String,Object>> newColabs = new ArrayList<>();
+            if( u != null){
+                Map<String, Object> newcolab = new HashMap<>();
+                newcolab.put("id", u.getId());
+                newcolab.put("name", u.getPrenom() + " " + u.getNom());
+                newColabs.add(newcolab);
+            }
+            newData.put("collaborator",newColabs);
+
+            //newData.put("collaborator", ( u != null) ? u.getPrenom() + " " + u.getNom() : (String) taskData.get("collaborator")  );
+            
+
             List<Map<String, Object>> resourcesList = new ArrayList<>();
             List<Map<String, Object>> oldResourcesList = new ArrayList<>();
             List<Map<String, Object>> resources = (List<Map<String, Object>>) taskData.get("resources");
@@ -441,7 +443,13 @@ public class OptimiserService {
                 for (Map<String, Object> resMap : resourcesList) {
                     if (resMap.get("id").equals(r.getRess().getId())) {
                         int currentQty = Integer.parseInt(resMap.get("quantity").toString());
-                        resMap.put("quantity", currentQty + ((r.getRess().getType()).equals("Energetic")?r.getConsommation():r.getQte()));
+
+                        if((r.getRess().getType()).equals("Material")){
+                            resMap.put("quantity",  ((r.getRess().getType()).equals("Energetic")?r.getConsommation():r.getQte()));
+                        }
+                        else{
+                            resMap.put("quantity", currentQty +  ((r.getRess().getType()).equals("Energetic")?r.getConsommation():r.getQte()));
+                        }
                         found = true;
                         break;
                     }
@@ -465,7 +473,14 @@ public class OptimiserService {
             newData.put("startDate", taskData.get("start"));
             newData.put("endDate", taskData.get("end"));
             
-            oldData.put("collaborator",null);
+            List<Map<String,Object>> oldColabs = new ArrayList<>();
+            for(User ass: t.getAssignee()) {
+                Map<String, Object> newMap = new HashMap<>();
+                newMap.put("id", ass.getId());
+                newMap.put("name", ass.getPrenom() + " " + ass.getNom());
+                oldColabs.add(newMap);
+            }
+            oldData.put("collaborator",oldColabs);
             oldData.put("resources", oldResourcesList );
             oldData.put("startDate", t.getDateDebut() );
             oldData.put("endDate", t.getDateFinEstime() );
@@ -474,7 +489,6 @@ public class OptimiserService {
             transformed.put("hasChanges",true);
             transformedList.add(transformed);
         }
-        return transformedList;
-        
+        return transformedList; 
     }
 }

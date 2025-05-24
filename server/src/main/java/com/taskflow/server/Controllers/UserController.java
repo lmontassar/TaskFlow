@@ -257,17 +257,13 @@ public class UserController {
                     fullName = "";
                 }
                 String[] nameParts = fullName.split(" ", 2);  // Split into first and last name
-                
                 userInfo.setNom(nameParts[0]);                      // First name
                 userInfo.setPrenom(nameParts.length > 1 ? nameParts[1] : "");
-
                 userInfo.setAvatar((String) userData.getOrDefault("avatar_url", ""));
                 userInfo.setCreationDate(LocalDateTime.now());
                 User user = userService.findOrCreateUser(userInfo);
-
                 String jwtToken = myJWT.generateToken(user);
                 LoginResponce loginResponse = new LoginResponce(jwtToken, user);
-
                 return ResponseEntity.status(HttpStatus.ACCEPTED).body(loginResponse);
 
             }
