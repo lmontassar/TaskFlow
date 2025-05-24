@@ -14,7 +14,7 @@ export default function Home() {
     <div className="space-y-8">
       <WelcomeHero nom={user?.nom} />
 
-      <ProjectSummary className="lg:col-span-2" />
+      <ProjectSummary className="lg:col-span-2" userId={user?.id} />
 
       <div className="grid gap-6 md:grid-cols-2">
         <TeamUpdates />

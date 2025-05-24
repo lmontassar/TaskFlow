@@ -330,4 +330,18 @@ public class TacheService {
                 && IsValidSubTasks(t);
     }
 
+
+
+    public int getCompletedTasks(Project project){
+        List<Tache> taches = findTacheByProjectId(project);
+        int completed = 0;
+        for (Tache t :
+                taches) {
+            if (t.getStatut() == Tache.Statut.DONE) {
+                completed++;
+            }
+        }
+        return completed;
+    }
+
 }

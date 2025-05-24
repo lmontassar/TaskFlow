@@ -1,5 +1,6 @@
 package com.taskflow.server.Controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.*;
 import com.taskflow.server.Services.NotificationService;
@@ -284,5 +285,14 @@ public class ProjectController {
         }
     }
 
+
+    @GetMapping("/getProjectSummery/{userId}")
+    public ResponseEntity<?> getProjectSummery(@RequestHeader("Authorization") String token, @PathVariable String userId){
+        if(userId==null || userId.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        ArrayNode summery = projectService.projectSummery(userId);
+        return ResponseEntity.ok().body(summery);
+    }
 
 }
