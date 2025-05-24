@@ -1,5 +1,8 @@
 package com.taskflow.server.Services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taskflow.server.Entities.*;
 import com.taskflow.server.Repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,8 @@ public class ProjectService {
     private ProjectRepository projectRepository;
     @Autowired
     public SimpMessagingTemplate messagingTemplate;
-
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     public TacheService tacheService;
 
@@ -263,4 +267,41 @@ public class ProjectService {
 
         return null;
     }
+
+    public List<Project> getMyProjectsList(String userId) {
+        return projectRepository.findAll().stream()
+                .filter(project -> {
+                    boolean isCollaborator = project.getListeCollaborateur().stream()
+                            .anyMatch(collaborator -> collaborator.getUser() != null &&
+                                    userId.equals(collaborator.getUser().getId()));
+
+                    boolean isCreator = project.getCreateur() != null &&
+                            project.getCreateur().getId() != null &&
+                            userId.equals(project.getCreateur().getId());
+
+                    return (isCollaborator || isCreator);
+                }).toList();
+    }
+
+
+    public ArrayNode projectSummery(String userId){
+        List<Project> projects = getMyProjectsList(userId);
+        ArrayNode projectSummeryList = objectMapper.createArrayNode();
+        for(Project project:projects){
+            List<Tache> tasks = tacheService.findTacheByProjectId(project);
+            int done = tacheService.getCompletedTasks(project);
+            ObjectNode projectNode = objectMapper.createObjectNode();
+            projectNode.put("id",project.getId());
+            projectNode.put("name",project.getNom());
+            projectNode.put("due",project.getDateFinEstime().toString());
+            projectNode.put("status",project.getStatus().toString());
+            projectNode.put("totalTasks",tasks.size());
+            projectNode.put("doneTasks",done);
+            projectNode.put("progress", !tasks.isEmpty() ?(done*100)/tasks.size():0);
+            projectSummeryList.add(projectNode);
+        }
+        return  projectSummeryList;
+    }
+
+
 }

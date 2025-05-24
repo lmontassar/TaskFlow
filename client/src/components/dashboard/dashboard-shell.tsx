@@ -80,19 +80,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
         isActive: true,
       },
       {
-        title: t("sidebar.inbox"),
-        url: "/inbox",
-        icon: Inbox,
-      },
-      {
         title: t("sidebar.chat"),
         url: "/chat",
         icon: MessageCircle,
-      },
-      {
-        title: t("sidebar.documentations"),
-        url: "/documentations",
-        icon: BookText,
       },
       {
         title: t("sidebar.dashboard"),
@@ -181,16 +171,13 @@ export function DashboardShell({ children }: DashboardShellProps) {
               <div className="ml-auto flex items-center gap-4">
                 <NotificationsDropdown />
                 <Link to={"profile"}>
-                <Avatar>
-                  <AvatarImage
-                    src= {user ? user?.avatar : "" }
-                    alt="User"
-                  />
-                  <AvatarFallback>
-                    {user ? user?.nom?.charAt(0).toUpperCase() : "T"}
-                  </AvatarFallback>
-                </Avatar>
-              </Link>
+                  <Avatar>
+                    <AvatarImage src={user ? user?.avatar : ""} alt="User" />
+                    <AvatarFallback>
+                      {user ? user?.nom?.charAt(0).toUpperCase() : "T"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
               </div>
             </header>
             <main className="flex-1 space-y-4 p-6">{children}</main>

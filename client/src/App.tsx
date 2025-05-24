@@ -76,7 +76,6 @@ function App() {
                   <Route path="home" element={<Home />} />
                   <Route path="/" element={<Home />} />
                   <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="inbox" element={<Inbox />} />
                   <Route path="ask-ai/:projectId" element={<AskAI />} />
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="projects/:id" element={<ProjectPage />} />

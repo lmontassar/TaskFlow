@@ -12,6 +12,7 @@ function useProject() {
   const clientRef = useRef<any>(null);
   const token = localStorage.getItem("authToken") || "";
   const [newDescription, setNewDescription] = useState<string>("");
+  const [loadingSummary, setLoadingSummary] = useState(true);
   const generateDescription = async (oldDescription: any, projectName: any) => {
     if (projectName === "") {
       toast.error("Please enter a project name");
@@ -240,6 +241,36 @@ function useProject() {
     }
     return null;
   };
+  const ProjectSummaryList = async (userId: string) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Authentication token missing!");
+        return;
+      }
+
+      const res = await fetch(`/api/project/getProjectSummery/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        console.log("changed");
+        const data = await res.json();
+        setLoadingSummary(false);
+        return data;
+      } else {
+        setLoadingSummary(false);
+        console.log("noo way");
+      }
+    } catch (error) {
+      setLoadingSummary(false);
+      console.log("noo way");
+    }
+    return [];
+  };
   return {
     project,
     isLoading,
@@ -249,7 +280,9 @@ function useProject() {
     getProject,
     removeCollaborator,
     generateDescription,
+    ProjectSummaryList,
     newDescription,
+    loadingSummary,
     addSkill,
     removeSkill,
   };
