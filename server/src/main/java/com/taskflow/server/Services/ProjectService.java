@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taskflow.server.Entities.*;
+import com.taskflow.server.Entities.DTO.ProjectsStatsDTO;
 import com.taskflow.server.Repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -306,16 +307,23 @@ public class ProjectService {
     public List<Project> getAll(){
         return projectRepository.findAll();
     }
+
+
     public int getAllSize(){
-        return getAll().size();
+        ProjectsStatsDTO statsDTO = projectRepository.getStatsAllProjects();
+
+        return statsDTO.getProjects();
     }
     public int getCompletedSize(){
-        return projectRepository.findAllByStatus(Project.Status.COMPLETED).size();
+        ProjectsStatsDTO statsDTO = projectRepository.getStatsAllProjects();
+        return statsDTO.getCompletedProjects();
     }
     public int getInProgressSize(){
-        return projectRepository.findAllByStatus(Project.Status.IN_PROGRESS).size();
+        ProjectsStatsDTO statsDTO = projectRepository.getStatsAllProjects();
+        return statsDTO.getActiveProjects();
     }
     public int getNotStartedSize(){
-        return projectRepository.findAllByStatus(Project.Status.NOT_STARTED).size();
+        ProjectsStatsDTO statsDTO = projectRepository.getStatsAllProjects();
+        return statsDTO.getNotStartedProjects();
     }
 }

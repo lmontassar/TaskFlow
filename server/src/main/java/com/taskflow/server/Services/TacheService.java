@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import com.taskflow.server.Entities.Tache;
 import com.taskflow.server.Entities.User;
+import com.taskflow.server.Entities.DTO.ProjectStatsDTO;
+import com.taskflow.server.Entities.DTO.TasksStatsDTO;
 import com.taskflow.server.Repositories.TacheRepository;
 
 @Service
@@ -329,35 +331,28 @@ public class TacheService {
                 && IsValidSubTasks(t);
     }
 
-    public Map<String, Integer> getStats(String projectId) {
-        Map<String, Object> rawStats = tacheRep.getStatsByProject(projectId);
-
-        if (rawStats == null || rawStats.isEmpty()) {
-            return Map.of("tasks", 0, "completed", 0);
+    public ProjectStatsDTO getStats(String projectId) {
+        ProjectStatsDTO stats = tacheRep.getStatsByProject(projectId);
+        if (stats == null ) {
+            return null;
         }
-
-        return Map.of(
-                "tasks", ((Number) rawStats.get("tasks")).intValue(),
-                "completed", ((Number) rawStats.get("completed")).intValue());
+        return stats;
     }
 
-
-    public int getCompletedTasks(Project project){
-        List<Tache> taches = findTacheByProjectId(project);
-        int completed = 0;
-        for (Tache t :
-                taches) {
-            if (t.getStatut() == Tache.Statut.DONE) {
-                completed++;
-            }
-        }
-        return completed;
+    public int getCompletedTasks(Project project) {
+        ProjectStatsDTO stats = tacheRep.getStatsByProject(project.getId());
+        return stats.getCompleted();
     }
+
     public int getAllCompletedTasksSize(){
-        return tacheRep.findAllByStatut(Tache.Statut.DONE).size();
+
+        TasksStatsDTO stats = tacheRep.getStatsAllTasks();
+        return stats.getCompleted();
     }
+
     public int getAllTaskSize(){
-        return tacheRep.findAll().size();
+        TasksStatsDTO stats = tacheRep.getStatsAllTasks();
+        return stats.getCompleted();
     }
 
 }
