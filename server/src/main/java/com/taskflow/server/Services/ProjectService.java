@@ -326,4 +326,12 @@ public class ProjectService {
         ProjectsStatsDTO statsDTO = projectRepository.getStatsAllProjects();
         return statsDTO.getNotStartedProjects();
     }
+
+    public ProjectsStatsDTO getStatsAllProjects(){
+        return projectRepository.getStatsAllProjects();
+    }
+
+    public List<Project> getAllProjectsV2(){
+        return projectRepository.getAllProjectsV2();
+    }
 }

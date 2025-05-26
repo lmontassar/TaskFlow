@@ -9,4 +9,5 @@ public class ProjectsStatsDTO {
     private int activeProjects;
     private int completedProjects;
     private int createdThisMonth;
+    private int budgets;
 }
