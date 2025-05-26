@@ -45,8 +45,8 @@ public class Tache {
     private LocalDateTime dateDebut;
     private LocalDateTime dateFinEstime;
     private LocalDateTime dateFin;
-    private long duree; //sec
-    private long marge; //sec
+    private long duree;
+    private long marge;
 
     private List<String> comments;
 

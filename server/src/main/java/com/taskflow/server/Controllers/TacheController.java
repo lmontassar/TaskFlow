@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.taskflow.server.Entities.Attachment;
+
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -414,7 +416,7 @@ public class TacheController {
                 return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(tasks);
         } catch (Exception e) {
-            System.out.println(e); 
+            System.out.println(e);
             return ResponseEntity.badRequest().build();
         }
     }
@@ -475,17 +477,14 @@ public class TacheController {
     @GetMapping("/get/stats/{id}")
     public ResponseEntity<?> getByStats(
             @RequestHeader("Authorization") String token,
-            @PathVariable("id") String projID
-            ) {
+            @PathVariable("id") String projID) {
         try {
             User u = getUserFromToken(token);
             if (u == null)
                 return ResponseEntity.notFound().build();
-
-
-            return ResponseEntity.ok().body(tacheSer.getStats(projID));
+            return ResponseEntity.ok(tacheSer.getStats(projID));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage()+"\n"+e);
             return ResponseEntity.badRequest().build();
         }
     }
@@ -524,7 +523,7 @@ public class TacheController {
             @RequestBody Tache task,
             @RequestHeader("Authorization") String token) {
         try {
-            
+
             User u = getUserFromToken(token);
             if (u == null)
                 return ResponseEntity.notFound().build(); // 404 Not Found
@@ -560,7 +559,7 @@ public class TacheController {
             System.out.println(task.getDateFinEstime());
             oldTask.setDateDebut(task.getDateDebut());
             oldTask.setDateFinEstime(task.getDateFinEstime());
-            if( tacheSer.isTaskValid(oldTask) == false ) {
+            if (tacheSer.isTaskValid(oldTask) == false) {
                 System.out.println("aa");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
@@ -807,8 +806,8 @@ public class TacheController {
                 case "Material": {
                     if (qte == null || dateDebut == null || dateFin == null)
                         return ResponseEntity.badRequest().build();
-                    System.out.println("c1: "+t.getDateDebut().isAfter(dateDebut));
-                    System.out.println("c3: "+t.getDateFinEstime().isBefore(dateFin));
+                    System.out.println("c1: " + t.getDateDebut().isAfter(dateDebut));
+                    System.out.println("c3: " + t.getDateFinEstime().isBefore(dateFin));
                     if ((t.getDateDebut() != null && t.getDateDebut().isAfter(dateDebut))
                             || (t.getDateFinEstime() != null && t.getDateFinEstime().isBefore(dateFin))) {
                         return ResponseEntity.status(416).build();
@@ -968,7 +967,5 @@ public class TacheController {
             return ResponseEntity.internalServerError().body("Error deleting resource: " + e.getMessage());
         }
     }
-
-
 
 }
