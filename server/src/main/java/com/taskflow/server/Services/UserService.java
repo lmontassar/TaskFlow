@@ -133,7 +133,7 @@ public class UserService {
                             userId.equals(project.getCreateur().getId());
 
                     return (isCollaborator || isCreator);
-                }).collect(Collectors.toList());
+        }).collect(Collectors.toList());
     }
 
     public Boolean isAvailable(User user, Project project) {
