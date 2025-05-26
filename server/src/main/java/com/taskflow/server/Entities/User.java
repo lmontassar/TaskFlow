@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,12 +16,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NoArgsConstructor
 
 public class User {
+    public enum Role{
+        ADMIN,USER;
+    };
     @Id
     private String id;
     private String email;
     @JsonIgnore
     private String password;
     private String phoneNumber;
+    private Role role;
+    private Boolean online;
+    private LocalDateTime lastOnline;
     private String nom;
     private String prenom;
     private String title;

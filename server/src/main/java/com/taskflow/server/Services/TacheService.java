@@ -353,5 +353,11 @@ public class TacheService {
         }
         return completed;
     }
+    public int getAllCompletedTasksSize(){
+        return tacheRep.findAllByStatut(Tache.Statut.DONE).size();
+    }
+    public int getAllTaskSize(){
+        return tacheRep.findAll().size();
+    }
 
 }

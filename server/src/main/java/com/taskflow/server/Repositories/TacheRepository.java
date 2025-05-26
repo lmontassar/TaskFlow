@@ -30,4 +30,7 @@ public interface TacheRepository extends MongoRepository<Tache, String> {
         "{ \"$group\": { \"_id\": null, \"tasks\": { \"$sum\": 1 }, \"completed\": { \"$sum\": { \"$cond\": [ { \"$eq\": [ \"$statut\", \"DONE\" ] }, 1, 0 ] } } }"
     })
     Map<String, Object> getStatsByProject(String projectId);
+
+    public List<Tache> findAllByStatut(Tache.Statut statut);
+
 }

@@ -42,10 +42,12 @@ export function useNotifications() {
   const clientRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!user?.id || clientRef.current) return; // prevent duplicate connections
+    if (!user?.id || clientRef.current) return;
 
     const socket = new SockJS("/ws");
     const client = Stomp.over(socket);
+    client.heartbeat.outgoing = 10000;
+    client.heartbeat.incoming = 10000;
 
     client.connect(
       { Authorization: `Bearer ${token}` },

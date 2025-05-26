@@ -30,6 +30,16 @@ public class UserService {
     private ProjectRepository projectRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    private User changeRole(String userId, User.Role role){
+        User user = findById(userId);
+        if(user==null){
+            return null;
+        }
+        user.setRole(role);
+        return userRepository.save(user);
+    }
+
+
     public User findOrCreateUser(User u) {
         User existingUser = userRepository.findByEmail(u.getEmail()).orElse(null);
         if (existingUser != null) {
@@ -39,7 +49,9 @@ public class UserService {
             return userRepository.save(u);
         }
     }
-
+    public List<User> getAll(){
+        return userRepository.findAll();
+    }
     public User createUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return null;
@@ -180,5 +192,14 @@ public class UserService {
         String id = myJWT.extractUserId(token);
         return findById(id);
     }
-
+    public void changeOnline(String userID,Boolean online){
+        User user = findById(userID);
+        if(user!=null){
+            user.setOnline(online);
+            if(!online){
+                user.setLastOnline(LocalDateTime.now());
+            }
+            userRepository.save(user);
+        }
+    }
 }

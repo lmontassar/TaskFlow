@@ -303,5 +303,19 @@ public class ProjectService {
         return  projectSummeryList;
     }
 
-
+    public List<Project> getAll(){
+        return projectRepository.findAll();
+    }
+    public int getAllSize(){
+        return getAll().size();
+    }
+    public int getCompletedSize(){
+        return projectRepository.findAllByStatus(Project.Status.COMPLETED).size();
+    }
+    public int getInProgressSize(){
+        return projectRepository.findAllByStatus(Project.Status.IN_PROGRESS).size();
+    }
+    public int getNotStartedSize(){
+        return projectRepository.findAllByStatus(Project.Status.NOT_STARTED).size();
+    }
 }
