@@ -1,7 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Shield, Users, Activity } from "lucide-react";
+import useStatistics from "../../hooks/useStatistics";
 
 export function AdminHeader() {
+  const { overview } = useStatistics();
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="space-y-1">
@@ -17,11 +19,11 @@ export function AdminHeader() {
       <div className="flex items-center gap-4">
         <Badge variant="outline" className="gap-1">
           <Users className="h-3 w-3" />
-          247 Active Users
+          {overview?.user} Users
         </Badge>
         <Badge variant="outline" className="gap-1">
           <Activity className="h-3 w-3" />
-          12 Projects Active
+          {overview?.project.all} Projects
         </Badge>
       </div>
     </div>

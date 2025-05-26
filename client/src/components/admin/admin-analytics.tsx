@@ -1,14 +1,103 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { TrendingUp, TrendingDown, Users, FolderKanban, CheckSquare, BarChart3, PieChart, Activity } from "lucide-react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import {
+  TrendingUp,
+  TrendingDown,
+  Users,
+  FolderKanban,
+  CheckSquare,
+  BarChart3,
+  PieChart,
+  Activity,
+} from "lucide-react";
+import useStatistics from "../../hooks/useStatistics";
+import Loading from "../ui/loading";
+import { NumberTicker } from "../ui/number-ticker";
 
 export function AdminAnalytics() {
+  const {
+    loading,
+
+    overview: overviewData,
+    setOverview: setOverviewData,
+    users,
+    blockUser,
+    unblockUser,
+
+    prjcts,
+  } = useStatistics();
+  if (loading) {
+    return <Loading />;
+  }
+  const getProjectCompletionRate = () => {
+    const completedProjects = prjcts.filter(
+      (project) => project.status === "COMPLETED"
+    ).length;
+    const totalProjects = prjcts.length;
+    return totalProjects === 0
+      ? 0
+      : ((completedProjects / totalProjects) * 100).toFixed(2);
+  };
+  const projectCompletionRate = getProjectCompletionRate();
+  const getUsersMonthlyGrowth = () => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const previousDate = new Date();
+    previousDate.setMonth(currentMonth - 1);
+
+    if (currentMonth === 0) {
+      previousDate.setFullYear(currentYear - 1);
+      previousDate.setMonth(11); // December
+    }
+
+    const previousMonthStats = users.filter(
+      (user) =>
+        new Date(user.creationDate).getMonth() === previousDate.getMonth() &&
+        new Date(user.creationDate).getFullYear() === previousDate.getFullYear()
+    ).length;
+
+    const currentMonthStats = users.filter(
+      (user) =>
+        new Date(user.creationDate).getMonth() === currentMonth &&
+        new Date(user.creationDate).getFullYear() === currentYear
+    ).length;
+
+    const growth =
+      previousMonthStats === 0
+        ? 100
+        : ((currentMonthStats - previousMonthStats) / previousMonthStats) * 100;
+
+    return {
+      value: Math.abs(growth),
+      trend: growth >= 0 ? "up" : "down",
+    };
+  };
+  const userGrowth = getUsersMonthlyGrowth();
+
   const metrics = [
     {
       title: "User Growth",
-      value: "2,847",
-      change: "+12.5%",
-      trend: "up",
+      value: <NumberTicker value={users.length} delay={0.1} />,
+      change: (
+        <>
+          <NumberTicker
+            value={userGrowth.value}
+            delay={0.1}
+            className={
+              userGrowth.trend === "up" ? "text-green-500" : "text-red-500"
+            }
+          />
+          %
+        </>
+      ),
+      trend: userGrowth.trend,
       period: "vs last month",
     },
     {
@@ -32,14 +121,14 @@ export function AdminAnalytics() {
       trend: "up",
       period: "vs last week",
     },
-  ]
+  ];
 
   const projectsByCategory = [
     { name: "Development", count: 45, percentage: 35 },
     { name: "Design", count: 32, percentage: 25 },
     { name: "Marketing", count: 28, percentage: 22 },
     { name: "Infrastructure", count: 23, percentage: 18 },
-  ]
+  ];
 
   const userActivity = [
     { day: "Monday", active: 89 },
@@ -49,7 +138,7 @@ export function AdminAnalytics() {
     { day: "Friday", active: 88 },
     { day: "Saturday", active: 45 },
     { day: "Sunday", active: 32 },
-  ]
+  ];
 
   return (
     <div className="space-y-6">
@@ -58,7 +147,9 @@ export function AdminAnalytics() {
         {metrics.map((metric) => (
           <Card key={metric.title}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {metric.title}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{metric.value}</div>
@@ -68,7 +159,13 @@ export function AdminAnalytics() {
                 ) : (
                   <TrendingDown className="h-3 w-3 text-red-600" />
                 )}
-                <span className={metric.trend === "up" ? "text-green-600" : "text-red-600"}>{metric.change}</span>
+                <span
+                  className={
+                    metric.trend === "up" ? "text-green-600" : "text-red-600"
+                  }
+                >
+                  {metric.change}
+                </span>
                 <span>{metric.period}</span>
               </div>
             </CardContent>
@@ -84,7 +181,9 @@ export function AdminAnalytics() {
               <PieChart className="h-5 w-5" />
               Projects by Category
             </CardTitle>
-            <CardDescription>Distribution of projects across different categories</CardDescription>
+            <CardDescription>
+              Distribution of projects across different categories
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {projectsByCategory.map((category) => (
@@ -106,7 +205,9 @@ export function AdminAnalytics() {
               <Activity className="h-5 w-5" />
               Weekly User Activity
             </CardTitle>
-            <CardDescription>Percentage of active users by day of week</CardDescription>
+            <CardDescription>
+              Percentage of active users by day of week
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {userActivity.map((day) => (
@@ -219,7 +320,9 @@ export function AdminAnalytics() {
             <BarChart3 className="h-5 w-5" />
             Performance Insights
           </CardTitle>
-          <CardDescription>Key insights and recommendations based on platform data</CardDescription>
+          <CardDescription>
+            Key insights and recommendations based on platform data
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
@@ -241,7 +344,9 @@ export function AdminAnalytics() {
               </ul>
             </div>
             <div className="space-y-3">
-              <h4 className="font-medium text-orange-600">Areas for Improvement</h4>
+              <h4 className="font-medium text-orange-600">
+                Areas for Improvement
+              </h4>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-orange-500" />
@@ -261,5 +366,5 @@ export function AdminAnalytics() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

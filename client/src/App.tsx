@@ -27,6 +27,7 @@ import { NotificationProvider } from "./utils/NotificationContext";
 import Loading from "./components/ui/loading";
 import AskAI from "./pages/Main/AskAI";
 import AdminPage from "./pages/Main/Admin";
+import AdminRoutes from "./utils/adminRoutes";
 
 export type UserType = {
   id: string;
@@ -39,6 +40,7 @@ export type UserType = {
   avatar: string;
   region: string;
   twoFactorAuth: boolean;
+  role: string;
 };
 
 export const Context = createContext<{
@@ -80,7 +82,9 @@ function App() {
                   <Route path="ask-ai/:projectId" element={<AskAI />} />
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="projects/:id" element={<ProjectPage />} />
-                  <Route path="admin" element={<AdminPage />} />
+                  <Route element={<AdminRoutes role={user?.role ?? "USER"} />}>
+                    <Route path="admin" element={<AdminPage />} />
+                  </Route>
                   <Route path="profile" element={<Profile />} />
                   <Route path="tasks" element={<TasksPage />} />
                   <Route path="my-tasks" element={<MyTasksPage />} />

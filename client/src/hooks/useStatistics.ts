@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 function useStatistics() {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<any[]>([]);
+  const [prjcts, setProjects] = useState<any[]>([]);
+  const [stats, setStats] = useState<any | null>(null);
+  const [overview, setOverview] = useState<any>(null);
   const token = localStorage.getItem("authToken") || "";
   const getOverviewData = async () => {
     const response = await fetch("/api/admin/overview", {
@@ -29,10 +32,57 @@ function useStatistics() {
         console.error("Failed to fetch users:", error);
       }
     };
-    if (users.length === 0) {
-      fetchData();
-    }
-  }, [token, users]);
+
+    fetchData();
+  }, [token]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getAllProjects();
+        setProjects(data);
+      } catch (error) {
+        console.error("Failed to fetch projects:", error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getAllProjectStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getOverviewData();
+        setOverview(data);
+      } catch (error) {
+        console.error("Failed to fetch overview:", error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getUsers();
+        setUsers(data);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
   const getUsers = async () => {
     try {
       const response = await fetch("/api/admin/users", {
@@ -125,7 +175,7 @@ function useStatistics() {
     return [];
   };
 
-    const getAllProjectStats = async () => {
+  const getAllProjectStats = async () => {
     try {
       const response = await fetch("/api/admin/projects/stats", {
         method: "GET",
@@ -158,7 +208,13 @@ function useStatistics() {
     getUsers,
     users,
     blockUser,
+    prjcts,
+    setProjects,
+    stats,
+    setStats,
     unblockUser,
+    overview,
+    setOverview,
   };
 }
 

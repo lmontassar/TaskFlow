@@ -236,6 +236,18 @@ export function AdminUsers() {
                 Manage user accounts, roles, and permissions
               </CardDescription>
             </div>
+            <Button
+              variant="outline"
+              onClick={() =>
+                exportToCSV(
+                  filteredUsers,
+                  `users-export-${new Date().toISOString().split("T")[0]}.csv`
+                )
+              }
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export Report
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -272,18 +284,6 @@ export function AdminUsers() {
                 </SelectContent>
               </Select>
             </div>
-            <Button
-              variant="outline"
-              onClick={() =>
-                exportToCSV(
-                  filteredUsers,
-                  `users-export-${new Date().toISOString().split("T")[0]}.csv`
-                )
-              }
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
           </div>
 
           {/* Users Table */}

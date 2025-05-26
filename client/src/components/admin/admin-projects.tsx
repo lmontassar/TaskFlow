@@ -46,6 +46,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import useStatistics from "../../hooks/useStatistics";
+import Loading from "../ui/loading";
 
 interface Project {
   id: string;
@@ -77,10 +78,8 @@ interface Stats {
 export function AdminProjects() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [prjcts, setProjects] = useState<Project[]>([]);
-  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-  const { getAllProjectStats, getAllProjects } = useStatistics();
+  const { prjcts, stats } = useStatistics();
 
   // Mock data based on your provided structure
   useEffect(() => {
@@ -88,24 +87,6 @@ export function AdminProjects() {
 
     setLoading(false);
   }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getAllProjects();
-        setProjects(data);
-        const data2 = await getAllProjectStats();
-        setStats(data2);
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-    if (prjcts == null || stats == null) {
-      fetchData();
-    }
-  }, [prjcts]);
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -211,9 +192,7 @@ export function AdminProjects() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">Loading...</div>
-    );
+    return <Loading />;
   }
 
   return (
