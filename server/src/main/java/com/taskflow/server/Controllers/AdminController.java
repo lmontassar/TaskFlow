@@ -1,5 +1,6 @@
 package com.taskflow.server.Controllers;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.User;
@@ -42,8 +43,29 @@ public class AdminController {
         if (!adminService.isAdmin(userId)) {
             return ResponseEntity.status(403).build();
         }
-        List<User> users = adminService.getUsers();
-        return ResponseEntity.status(200).body(users);
+        ArrayNode usersStats = adminService.getUsersStats();
+        return ResponseEntity.status(200).body(usersStats);
+    }
+
+    @PutMapping("/block/{userId}")
+    public ResponseEntity<?> blockUser(@PathVariable String userId,@RequestHeader("Authorization") String token)
+    {
+        String uid = myJWT.extractUserId(token);
+        if(!adminService.isAdmin(uid)){
+            return ResponseEntity.status(403).build();
+        }
+        adminService.blockUser(userId);
+        return ResponseEntity.status(200).build();
+    }
+    @PutMapping("/unblock/{userId}")
+    public ResponseEntity<?> unblockUser(@PathVariable String userId,@RequestHeader("Authorization") String token)
+    {
+        String uid = myJWT.extractUserId(token);
+        if(!adminService.isAdmin(uid)){
+            return ResponseEntity.status(403).build();
+        }
+        adminService.unblockUser(userId);
+        return ResponseEntity.status(200).build();
     }
 
     @GetMapping("/projects/stats")

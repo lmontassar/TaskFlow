@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -41,10 +41,13 @@ import {
   Ban,
   CheckCircle,
   Download,
+  Unlock,
+  Users,
 } from "lucide-react";
 
 import useStatistics from "../../hooks/useStatistics";
 import Loading from "../ui/loading";
+import { Context } from "../../App";
 
 interface User {
   id: string;
@@ -56,28 +59,59 @@ interface User {
   creationDate: string;
   projects: number;
   avatar?: string;
+  block: boolean;
 }
+
+const exportToCSV = (data: User[], filename: string) => {
+  const headers = [
+    "ID",
+    "First Name",
+    "Last Name",
+    "Email",
+    "Role",
+    "Email Activation",
+    "Blocked",
+    "Projects",
+    "Creation Date",
+  ];
+
+  const csvContent = [
+    headers.join(","),
+    ...data.map((user) =>
+      [
+        user.id,
+        `"${user.nom}"`,
+        `"${user.prenom}"`,
+        `"${user.email}"`,
+        user.role,
+        user.activation ? "Active" : "Inactive",
+        user.block ? "Blocked" : "Active",
+        user.projects,
+        `"${user.creationDate}"`,
+      ].join(",")
+    ),
+  ].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
 
 export function AdminUsers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [users, setUsers] = useState<User[]>([]);
-  const { getUsers, loading } = useStatistics();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getUsers();
-        setUsers(data);
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
-    };
-    if (users.length === 0) {
-      fetchData();
-    }
-  }, [getUsers]);
+  const { user } = useContext(Context);
+  const { users, loading, blockUser, unblockUser } = useStatistics();
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
@@ -128,34 +162,44 @@ export function AdminUsers() {
   return (
     <div className="space-y-6">
       {/* User Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className={`h-4 w-4 text-blue-500`} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{users.length}</div>
-            <p className="text-xs text-muted-foreground">
-              +12% from last month
-            </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <CheckCircle className={`h-4 w-4 text-green-600`} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter((u) => u.activation === true).length}
+              {users.filter((u) => u.block === false).length}
             </div>
-            <p className="text-xs text-muted-foreground">+8% from last month</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Blocked Users</CardTitle>
+            <Ban className={`h-4 w-4 text-red-500`} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {users.filter((u) => u.block === true).length}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               New This Month
             </CardTitle>
+            <Users className={`h-4 w-4 text-blue-500`} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -228,7 +272,15 @@ export function AdminUsers() {
                 </SelectContent>
               </Select>
             </div>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={() =>
+                exportToCSV(
+                  filteredUsers,
+                  `users-export-${new Date().toISOString().split("T")[0]}.csv`
+                )
+              }
+            >
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
@@ -241,23 +293,24 @@ export function AdminUsers() {
                 <TableHead>User</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Email Activation</TableHead>
+                <TableHead>Blocked</TableHead>
                 <TableHead>Projects</TableHead>
                 <TableHead>Creation Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
+              {filteredUsers.map((u) => (
+                <TableRow key={u.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarImage
-                          src={user.avatar || "/placeholder.svg"}
-                          alt={user.nom}
+                          src={u.avatar || "/placeholder.svg"}
+                          alt={u.nom}
                         />
                         <AvatarFallback>
-                          {user.nom
+                          {u.nom
                             .split(" ")
                             .map((n) => n[0])
                             .join("")}
@@ -265,54 +318,68 @@ export function AdminUsers() {
                       </Avatar>
                       <div>
                         <div className="font-medium">
-                          {user.nom + " " + user.prenom}
+                          {u.nom + " " + u.prenom}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {user.email}
+                          {u.email}
                         </div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={getRoleBadgeColor(user.role)}>
-                      {user.role}
+                    <Badge className={getRoleBadgeColor(u.role)}>
+                      {u.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={getStatusBadgeColor(user.activation)}>
-                      {user.activation ? "Active" : "Inactive"}
+                    <Badge className={getStatusBadgeColor(u.activation)}>
+                      {u.activation ? "Active" : "Inactive"}
                     </Badge>
                   </TableCell>
-                  <TableCell>{user.projects}</TableCell>
+                  <TableCell>
+                    <Badge className={getStatusBadgeColor(!u.block)}>
+                      {!u.block ? "Active" : "Blocked"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{u.projects}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {user.creationDate}
+                    {u.creationDate}
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit User
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Reset Password
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Ban className="mr-2 h-4 w-4" />
-                          Suspend User
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete User
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {user?.id !== u.id && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {u.block ? (
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() => {
+                                unblockUser(u.id);
+                                u.block = false;
+                              }}
+                            >
+                              <Unlock className="mr-2 h-4 w-4" />
+                              Unblock User
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              className="text-red-500 cursor-pointer"
+                              onClick={() => {
+                                blockUser(u.id);
+                                u.block = true;
+                              }}
+                            >
+                              <Ban className="mr-2 h-4 w-4 text-red-500" />
+                              <span className="text-red-500">Block User</span>
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

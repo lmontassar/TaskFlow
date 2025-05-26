@@ -1,59 +1,93 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, MoreHorizontal, Edit, Trash2, Archive, Eye, Download, FolderKanban, Calendar, DollarSign } from 'lucide-react'
-import useStatistics from "../../hooks/useStatistics"
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Search,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Archive,
+  Eye,
+  Download,
+  FolderKanban,
+  Calendar,
+  DollarSign,
+} from "lucide-react";
+import useStatistics from "../../hooks/useStatistics";
 
 interface Project {
-  id: string
-  nom: string
-  description: string
-  budgetEstime: number
-  dateDebut: string
-  dateFinEstime: string
-  status: string
+  id: string;
+  nom: string;
+  description: string;
+  budgetEstime: number;
+  dateDebut: string;
+  dateFinEstime: string;
+  status: string;
   createur: {
-    id: string
-    email: string
-    nom: string
-    prenom: string
-    avatar: string
-  }
-  dateCreation: string
+    id: string;
+    email: string;
+    nom: string;
+    prenom: string;
+    avatar: string;
+  };
+  dateCreation: string;
 }
 
 interface Stats {
-  projects: number
-  notStartedProjects: number
-  activeProjects: number
-  completedProjects: number
-  createdThisMonth: number
-  budgets: number
+  projects: number;
+  notStartedProjects: number;
+  activeProjects: number;
+  completedProjects: number;
+  createdThisMonth: number;
+  budgets: number;
 }
 
 export function AdminProjects() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [prjcts, setProjects] = useState<Project[]>([])
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { getAllProjectStats, getAllProjects} = useStatistics();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [prjcts, setProjects] = useState<Project[]>([]);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { getAllProjectStats, getAllProjects } = useStatistics();
 
   // Mock data based on your provided structure
   useEffect(() => {
     // Simulate API call with your data
 
-    setLoading(false)
-  }, [])
-
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,56 +97,54 @@ export function AdminProjects() {
         const data2 = await getAllProjectStats();
         setStats(data2);
 
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch users:", error);
       }
     };
-    if (prjcts == null || stats == null ) {
+    if (prjcts == null || stats == null) {
       fetchData();
     }
   }, [prjcts]);
 
-
-
-
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case "IN_PROGRESS":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "COMPLETED":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "NOT_STARTED":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800";
       case "CANCELLED":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const getStatusDisplayName = (status: string) => {
     switch (status) {
       case "IN_PROGRESS":
-        return "In Progress"
+        return "In Progress";
       case "NOT_STARTED":
-        return "Not Started"
+        return "Not Started";
       case "COMPLETED":
-        return "Completed"
+        return "Completed";
       case "CANCELLED":
-        return "Cancelled"
+        return "Cancelled";
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   const filteredProjects = prjcts.filter((project) => {
     const matchesSearch =
       project.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || project.status === statusFilter
-    return matchesSearch && matchesStatus
-  })
+      project.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || project.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -120,63 +152,68 @@ export function AdminProjects() {
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    })
-  }
+    });
+  };
 
   const exportToCSV = () => {
     // Define CSV headers
     const headers = [
-      'Project Name',
-      'Description', 
-      'Status',
-      'Creator Name',
-      'Creator Email',
-      'Budget',
-      'Start Date',
-      'End Date',
-      'Date Created'
+      "Project Name",
+      "Description",
+      "Status",
+      "Creator Name",
+      "Creator Email",
+      "Budget",
+      "Start Date",
+      "End Date",
+      "Date Created",
     ];
-  
+
     // Convert filtered projects to CSV rows
-    const csvData = filteredProjects.map(project => [
+    const csvData = filteredProjects.map((project) => [
       project.nom,
       project.description,
       getStatusDisplayName(project.status),
       `${project.createur.prenom} ${project.createur.nom}`,
       project.createur.email,
-      project.budgetEstime > 0 ? project.budgetEstime.toString() : 'Not set',
+      project.budgetEstime > 0 ? project.budgetEstime.toString() : "Not set",
       formatDate(project.dateDebut),
       formatDate(project.dateFinEstime),
-      formatDate(project.dateCreation)
+      formatDate(project.dateCreation),
     ]);
-  
+
     // Combine headers and data
     const csvContent = [headers, ...csvData]
-      .map(row => row.map(field => `"${field}"`).join(','))
-      .join('\n');
-  
+      .map((row) => row.map((field) => `"${field}"`).join(","))
+      .join("\n");
+
     // Create and download the file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `projects_report_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `projects_report_${new Date().toISOString().split("T")[0]}.csv`
+    );
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64">Loading...</div>
+    return (
+      <div className="flex items-center justify-center h-64">Loading...</div>
+    );
   }
 
   return (
@@ -199,7 +236,9 @@ export function AdminProjects() {
             <CardTitle className="text-sm font-medium">Active</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats?.activeProjects || 0}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats?.activeProjects || 0}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -207,7 +246,9 @@ export function AdminProjects() {
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats?.completedProjects || 0}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {stats?.completedProjects || 0}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -215,7 +256,9 @@ export function AdminProjects() {
             <CardTitle className="text-sm font-medium">Not Started</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats?.notStartedProjects || 0}</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {stats?.notStartedProjects || 0}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -226,7 +269,9 @@ export function AdminProjects() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(stats?.budgets || 0)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(stats?.budgets || 0)}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -237,7 +282,9 @@ export function AdminProjects() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Project Management</CardTitle>
-              <CardDescription>Monitor and manage all projects across the platform</CardDescription>
+              <CardDescription>
+                Monitor and manage all projects across the platform
+              </CardDescription>
             </div>
             <Button variant="outline" onClick={exportToCSV}>
               <Download className="mr-2 h-4 w-4" />
@@ -292,7 +339,9 @@ export function AdminProjects() {
                   <TableCell>
                     <div>
                       <div className="font-medium">{project.nom}</div>
-                      <div className="text-sm text-muted-foreground">{project.description}</div>
+                      <div className="text-sm text-muted-foreground max-w-2xl whitespace-normal break-words">
+                        {project.description}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -320,26 +369,34 @@ export function AdminProjects() {
                         <div className="text-sm font-medium">
                           {project.createur.prenom} {project.createur.nom}
                         </div>
-                        <div className="text-xs text-muted-foreground">{project.createur.email}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {project.createur.email}
+                        </div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">
-                    {project.budgetEstime > 0 ? formatCurrency(project.budgetEstime) : "Not set"}
+                    {project.budgetEstime > 0
+                      ? formatCurrency(project.budgetEstime)
+                      : "Not set"}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{formatDate(project.dateDebut)}</span>
+                      <span className="text-sm">
+                        {formatDate(project.dateDebut)}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{formatDate(project.dateFinEstime)}</span>
+                      <span className="text-sm">
+                        {formatDate(project.dateFinEstime)}
+                      </span>
                     </div>
                   </TableCell>
-                  
+
                   {/* <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -367,12 +424,14 @@ export function AdminProjects() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell> */}
-
                 </TableRow>
               ))}
               {filteredProjects.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-8 text-muted-foreground"
+                  >
                     No projects found matching your criteria.
                   </TableCell>
                 </TableRow>
@@ -382,5 +441,5 @@ export function AdminProjects() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

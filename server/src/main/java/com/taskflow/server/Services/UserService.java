@@ -202,4 +202,12 @@ public class UserService {
             userRepository.save(user);
         }
     }
+
+    public void changeBlocked(String userId,boolean block){
+        User user = findById(userId);
+        if(user!=null){
+            user.setBlocked(block);
+            userRepository.save(user);
+        }
+    }
 }
