@@ -35,6 +35,7 @@ public class User {
     private String region;
     private LocalDateTime creationDate;
     private String bio;
+    private Boolean blocked = false;
     private Boolean activation;
     private Boolean twoFactorAuth;
     @Override
