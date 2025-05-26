@@ -87,6 +87,7 @@ export function AdminAnalytics() {
       value: <NumberTicker value={users.length} delay={0.1} />,
       change: (
         <>
+          {userGrowth.trend === "up" ? "+" : "-"}
           <NumberTicker
             value={userGrowth.value}
             delay={0.1}
