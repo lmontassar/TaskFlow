@@ -254,17 +254,16 @@ public class OptimiserService {
             t.put("duree", duree.toSeconds());
             if(isResource){
                 cleaned = cleanNecessaryResources(task.getNecessaryRessource(), resources);
-                for (AffectationRessource r :
-                        task.getRessources()) {
-                    if(r.getRess() instanceof MaterialResource){
-                        ObjectNode resNode = objectMapper.createObjectNode();
-                        resNode.put("name",r.getRess().getNom());
-                        resNode.put("type",r.getRess().getType());
-                        resNode.put("category",r.getRess().getCategorie());
-                        resNode.put("qte", (int) ((MaterialResource) r.getRess()).getQte());
-                        cleaned.add(resNode);
-                    }
-
+            }
+            for (AffectationRessource r :
+                    task.getRessources()) {
+                if(r.getRess() instanceof MaterialResource){
+                    ObjectNode resNode = objectMapper.createObjectNode();
+                    resNode.put("name",r.getRess().getNom());
+                    resNode.put("type",r.getRess().getType());
+                    resNode.put("category",r.getRess().getCategorie());
+                    resNode.put("qte", (int) ((MaterialResource) r.getRess()).getQte());
+                    cleaned.add(resNode);
                 }
             }
             t.set("ressourcesNecessaires", cleaned);
