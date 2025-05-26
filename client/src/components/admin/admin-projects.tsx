@@ -1,164 +1,182 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  Search,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Archive,
-  Eye,
-  Download,
-  FolderKanban,
-  Users,
-  Calendar,
-  DollarSign,
-} from "lucide-react"
+import { Search, MoreHorizontal, Edit, Trash2, Archive, Eye, Download, FolderKanban, Calendar, DollarSign } from 'lucide-react'
+import useStatistics from "../../hooks/useStatistics"
 
 interface Project {
   id: string
-  name: string
+  nom: string
   description: string
-  status: "active" | "completed" | "on-hold" | "cancelled"
-  progress: number
-  budget: string
-  startDate: string
-  endDate: string
-  teamSize: number
-  manager: {
-    name: string
+  budgetEstime: number
+  dateDebut: string
+  dateFinEstime: string
+  status: string
+  createur: {
+    id: string
+    email: string
+    nom: string
+    prenom: string
     avatar: string
   }
-  category: string
+  dateCreation: string
+}
+
+interface Stats {
+  projects: number
+  notStartedProjects: number
+  activeProjects: number
+  completedProjects: number
+  createdThisMonth: number
+  budgets: number
 }
 
 export function AdminProjects() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [categoryFilter, setCategoryFilter] = useState("all")
+  const [prjcts, setProjects] = useState<Project[]>([])
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const { getAllProjectStats, getAllProjects} = useStatistics();
 
-  const projects: Project[] = [
-    {
-      id: "1",
-      name: "Website Redesign",
-      description: "Complete redesign of company website with new branding",
-      status: "active",
-      progress: 75,
-      budget: "$25,000",
-      startDate: "2025-01-15",
-      endDate: "2025-03-30",
-      teamSize: 8,
-      manager: {
-        name: "Sarah Miller",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      category: "Design",
-    },
-    {
-      id: "2",
-      name: "Mobile App Development",
-      description: "Native mobile app for iOS and Android platforms",
-      status: "active",
-      progress: 45,
-      budget: "$50,000",
-      startDate: "2025-02-01",
-      endDate: "2025-06-15",
-      teamSize: 12,
-      manager: {
-        name: "David Chen",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      category: "Development",
-    },
-    {
-      id: "3",
-      name: "Marketing Campaign Q2",
-      description: "Comprehensive marketing campaign for product launch",
-      status: "completed",
-      progress: 100,
-      budget: "$15,000",
-      startDate: "2024-12-01",
-      endDate: "2025-02-28",
-      teamSize: 6,
-      manager: {
-        name: "Emma Wilson",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      category: "Marketing",
-    },
-    {
-      id: "4",
-      name: "Database Migration",
-      description: "Migration from legacy database to cloud infrastructure",
-      status: "on-hold",
-      progress: 30,
-      budget: "$35,000",
-      startDate: "2025-01-10",
-      endDate: "2025-04-30",
-      teamSize: 4,
-      manager: {
-        name: "James Brown",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      category: "Infrastructure",
-    },
-    {
-      id: "5",
-      name: "Customer Portal",
-      description: "Self-service portal for customer account management",
-      status: "cancelled",
-      progress: 15,
-      budget: "$20,000",
-      startDate: "2024-11-01",
-      endDate: "2025-02-15",
-      teamSize: 5,
-      manager: {
-        name: "Alex Johnson",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      category: "Development",
-    },
-  ]
+  // Mock data based on your provided structure
+  useEffect(() => {
+    // Simulate API call with your data
+
+    setLoading(false)
+  }, [])
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getAllProjects();
+        setProjects(data);
+        const data2 = await getAllProjectStats();
+        setStats(data2);
+
+        setLoading(false)
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+      }
+    };
+    if (prjcts == null || stats == null ) {
+      fetchData();
+    }
+  }, [prjcts]);
+
+
+
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case "active":
+      case "IN_PROGRESS":
         return "bg-green-100 text-green-800"
-      case "completed":
+      case "COMPLETED":
         return "bg-blue-100 text-blue-800"
-      case "on-hold":
+      case "NOT_STARTED":
         return "bg-yellow-100 text-yellow-800"
-      case "cancelled":
+      case "CANCELLED":
         return "bg-red-100 text-red-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
   }
 
-  const filteredProjects = projects.filter((project) => {
+  const getStatusDisplayName = (status: string) => {
+    switch (status) {
+      case "IN_PROGRESS":
+        return "In Progress"
+      case "NOT_STARTED":
+        return "Not Started"
+      case "COMPLETED":
+        return "Completed"
+      case "CANCELLED":
+        return "Cancelled"
+      default:
+        return status
+    }
+  }
+
+  const filteredProjects = prjcts.filter((project) => {
     const matchesSearch =
-      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.description.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === "all" || project.status === statusFilter
-    const matchesCategory = categoryFilter === "all" || project.category === categoryFilter
-    return matchesSearch && matchesStatus && matchesCategory
+    return matchesSearch && matchesStatus
   })
 
-  const projectStats = {
-    total: projects.length,
-    active: projects.filter((p) => p.status === "active").length,
-    completed: projects.filter((p) => p.status === "completed").length,
-    onHold: projects.filter((p) => p.status === "on-hold").length,
-    totalBudget: projects.reduce((sum, p) => sum + Number.parseInt(p.budget.replace(/[$,]/g, "")), 0),
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  }
+
+  const exportToCSV = () => {
+    // Define CSV headers
+    const headers = [
+      'Project Name',
+      'Description', 
+      'Status',
+      'Creator Name',
+      'Creator Email',
+      'Budget',
+      'Start Date',
+      'End Date',
+      'Date Created'
+    ];
+  
+    // Convert filtered projects to CSV rows
+    const csvData = filteredProjects.map(project => [
+      project.nom,
+      project.description,
+      getStatusDisplayName(project.status),
+      `${project.createur.prenom} ${project.createur.nom}`,
+      project.createur.email,
+      project.budgetEstime > 0 ? project.budgetEstime.toString() : 'Not set',
+      formatDate(project.dateDebut),
+      formatDate(project.dateFinEstime),
+      formatDate(project.dateCreation)
+    ]);
+  
+    // Combine headers and data
+    const csvContent = [headers, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+  
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `projects_report_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-64">Loading...</div>
   }
 
   return (
@@ -173,7 +191,7 @@ export function AdminProjects() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{projectStats.total}</div>
+            <div className="text-2xl font-bold">{stats?.projects || 0}</div>
           </CardContent>
         </Card>
         <Card>
@@ -181,7 +199,7 @@ export function AdminProjects() {
             <CardTitle className="text-sm font-medium">Active</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{projectStats.active}</div>
+            <div className="text-2xl font-bold text-green-600">{stats?.activeProjects || 0}</div>
           </CardContent>
         </Card>
         <Card>
@@ -189,15 +207,15 @@ export function AdminProjects() {
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{projectStats.completed}</div>
+            <div className="text-2xl font-bold text-blue-600">{stats?.completedProjects || 0}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">On Hold</CardTitle>
+            <CardTitle className="text-sm font-medium">Not Started</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{projectStats.onHold}</div>
+            <div className="text-2xl font-bold text-yellow-600">{stats?.notStartedProjects || 0}</div>
           </CardContent>
         </Card>
         <Card>
@@ -208,7 +226,7 @@ export function AdminProjects() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${projectStats.totalBudget.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats?.budgets || 0)}</div>
           </CardContent>
         </Card>
       </div>
@@ -221,7 +239,7 @@ export function AdminProjects() {
               <CardTitle>Project Management</CardTitle>
               <CardDescription>Monitor and manage all projects across the platform</CardDescription>
             </div>
-            <Button variant="outline">
+            <Button variant="outline" onClick={exportToCSV}>
               <Download className="mr-2 h-4 w-4" />
               Export Report
             </Button>
@@ -246,22 +264,10 @@ export function AdminProjects() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="on-hold">On Hold</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="Design">Design</SelectItem>
-                  <SelectItem value="Development">Development</SelectItem>
-                  <SelectItem value="Marketing">Marketing</SelectItem>
-                  <SelectItem value="Infrastructure">Infrastructure</SelectItem>
+                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                  <SelectItem value="COMPLETED">Completed</SelectItem>
+                  <SelectItem value="NOT_STARTED">Not Started</SelectItem>
+                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -273,12 +279,11 @@ export function AdminProjects() {
               <TableRow>
                 <TableHead>Project</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Progress</TableHead>
-                <TableHead>Manager</TableHead>
-                <TableHead>Team</TableHead>
+                <TableHead>Creator</TableHead>
                 <TableHead>Budget</TableHead>
+                <TableHead>Start Date</TableHead>
                 <TableHead>End Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                {/* <TableHead className="text-right">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -286,50 +291,56 @@ export function AdminProjects() {
                 <TableRow key={project.id}>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{project.name}</div>
+                      <div className="font-medium">{project.nom}</div>
                       <div className="text-sm text-muted-foreground">{project.description}</div>
-                      <Badge variant="outline" className="mt-1 text-xs">
-                        {project.category}
-                      </Badge>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className={getStatusBadgeColor(project.status)}>{project.status.replace("-", " ")}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="text-sm font-medium">{project.progress}%</div>
-                      <Progress value={project.progress} className="h-2 w-16" />
-                    </div>
+                    <Badge className={getStatusBadgeColor(project.status)}>
+                      {getStatusDisplayName(project.status)}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Avatar className="h-6 w-6">
-                        <AvatarImage src={project.manager.avatar || "/placeholder.svg"} alt={project.manager.name} />
+                        <AvatarImage
+                          src={
+                            project.createur.avatar.startsWith("http")
+                              ? project.createur.avatar
+                              : `/avatars/${project.createur.avatar}`
+                          }
+                          alt={`${project.createur.prenom} ${project.createur.nom}`}
+                        />
                         <AvatarFallback>
-                          {project.manager.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
+                          {project.createur.prenom[0]}
+                          {project.createur.nom[0]}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm">{project.manager.name}</span>
+                      <div>
+                        <div className="text-sm font-medium">
+                          {project.createur.prenom} {project.createur.nom}
+                        </div>
+                        <div className="text-xs text-muted-foreground">{project.createur.email}</div>
+                      </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{project.teamSize}</span>
-                    </div>
+                  <TableCell className="font-medium">
+                    {project.budgetEstime > 0 ? formatCurrency(project.budgetEstime) : "Not set"}
                   </TableCell>
-                  <TableCell className="font-medium">{project.budget}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{new Date(project.endDate).toLocaleDateString()}</span>
+                      <span className="text-sm">{formatDate(project.dateDebut)}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{formatDate(project.dateFinEstime)}</span>
+                    </div>
+                  </TableCell>
+                  
+                  {/* <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -355,9 +366,17 @@ export function AdminProjects() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </TableCell>
+                  </TableCell> */}
+
                 </TableRow>
               ))}
+              {filteredProjects.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    No projects found matching your criteria.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

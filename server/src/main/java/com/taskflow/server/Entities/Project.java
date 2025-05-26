@@ -28,7 +28,6 @@ public class Project {
         IN_PROGRESS,
         COMPLETED;
     }
-
     @Id
     private String id;
     private String nom;

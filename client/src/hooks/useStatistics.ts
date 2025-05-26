@@ -101,7 +101,57 @@ function useStatistics() {
     }
   };
 
+  const getAllProjects = async () => {
+    try {
+      const response = await fetch("/api/admin/projects", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        setLoading(false);
+        return [];
+        throw new Error("Failed to fetch users");
+      }
+      const data = await response.json();
+      setLoading(false);
+      return data;
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching users:", error);
+    }
+    return [];
+  };
+
+    const getAllProjectStats = async () => {
+    try {
+      const response = await fetch("/api/admin/projects/stats", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        setLoading(false);
+        return [];
+        throw new Error("Failed to fetch users");
+      }
+      const data = await response.json();
+      setLoading(false);
+      return data;
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching users:", error);
+    }
+    return [];
+  };
+
   return {
+    getAllProjectStats,
+    getAllProjects,
     loading,
     setLoading,
     getOverviewData,
