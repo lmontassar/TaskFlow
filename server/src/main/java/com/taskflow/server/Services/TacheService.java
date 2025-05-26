@@ -341,6 +341,7 @@ public class TacheService {
 
     public int getCompletedTasks(Project project) {
         ProjectStatsDTO stats = tacheRep.getStatsByProject(project.getId());
+        if (stats == null) return 0;
         return stats.getCompleted();
     }
 
