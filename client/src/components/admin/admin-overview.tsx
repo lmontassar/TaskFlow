@@ -14,20 +14,23 @@ import Loading from "../ui/loading";
 
 export function AdminOverview() {
   const { getOverviewData, loading, setLoading } = useStatistics();
-  const [overviewData, setOverviewData] = useState<any>({});
+  const [overviewData, setOverviewData] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getOverviewData();
         setOverviewData(data);
+        console.log("Overview Data:", data);
       } catch (error) {
         console.error("Failed to fetch overview data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+    if (overviewData == null) {
+      fetchData();
+    }
   }, [getOverviewData, setLoading]);
 
   if (loading) {
