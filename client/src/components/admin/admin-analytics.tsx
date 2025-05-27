@@ -366,6 +366,8 @@ export function AdminAnalytics() {
           </div>
         </CardContent>
       </Card>
+
+      
     </div>
   );
 }

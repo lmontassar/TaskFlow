@@ -292,7 +292,7 @@ export function AdminOverview() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProjects.map((project) => (
+              {filteredProjects.map((project:any) => (
                 <TableRow key={project.id}>
                   <TableCell>
                     <div>
@@ -309,23 +309,21 @@ export function AdminOverview() {
                       <Avatar className="h-6 w-6">
                         <AvatarImage
                           src={
-                            project.createur.avatar.startsWith("http")
-                              ? project.createur.avatar
-                              : `/avatars/${project.createur.avatar}`
+                            project?.createur?.avatar
                           }
-                          alt={`${project.createur.prenom} ${project.createur.nom}`}
+                          alt={`${project.createur?.prenom} ${project?.createur?.nom}`}
                         />
                         <AvatarFallback>
-                          {project.createur.prenom[0]}
-                          {project.createur.nom[0]}
+                          {project?.createur?.prenom[0]}
+                          {project?.createur?.nom[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="text-sm font-medium">
-                          {project.createur.prenom} {project.createur.nom}
+                          {project?.createur?.prenom} {project?.createur?.nom}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {project.createur.email}
+                          {project?.createur?.email}
                         </div>
                       </div>
                     </div>
