@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
+import org.springframework.data.mongodb.core.mapping.Field;
 import javax.persistence.Id;
 
 import java.util.ArrayList;
@@ -23,11 +23,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 public class Project {
+
     public enum Status {
         NOT_STARTED,
         IN_PROGRESS,
         COMPLETED;
     }
+
     @Id
     private String id;
     private String nom;
@@ -40,7 +42,10 @@ public class Project {
     private Set<Collaborator> listeCollaborateur;
     @DBRef
     private List<Resource> listeRessource;
+
+    @Field("status")
     private Status status;
+    
     @DBRef
     private User createur;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

@@ -2,20 +2,18 @@
 
 import { useState } from "react"
 import {
-    Activity,
     BarChart3,
-    CheckCircle,
-    DollarSign,
     TrendingUp,
     Users,
     AlertTriangle,
     Target,
     Award,
-    Briefcase,
     Settings,
-    Clock,
     Maximize2,
-    Share2,
+    DollarSign,
+    CheckCircle,
+    Briefcase,
+    Clock,
 } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -52,6 +50,7 @@ export default function ProfessionalAnalyticsDashboard() {
     const {
         kpis,
         taskStatus,
+        projectStatus,
         performanceTrends,
         teamPerformance,
         teamWorkload,
@@ -90,6 +89,17 @@ export default function ProfessionalAnalyticsDashboard() {
         refetch()
     }
 
+    const status = (s: any) => {
+        switch (s) {
+            case "TODO": return "TO-DO";
+            case "IN_PROGRESS": return "In Progress";
+            case "REVIEW": return "Review";
+            case "DONE": return "Done";
+            case "NOT_STARTED": return "Not Started";
+            case "COMPLETED": return "Completed";
+        }
+    }
+
     if (loading) {
         return (
             <Loading></Loading>
@@ -114,6 +124,40 @@ export default function ProfessionalAnalyticsDashboard() {
 
         <>
 
+            {/* Quick Stats Footer */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-blue-50 to-blue-100">
+                    <Briefcase className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                    <div className="text-xl font-bold text-slate-900">{kpis.activeProjects}</div>
+                    <div className="text-xs text-slate-500">Active Projects</div>
+                </Card>
+
+                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-green-50 to-green-100">
+                    <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                    <div className="text-xl font-bold text-slate-900">{kpis.completedTasks.toLocaleString()}</div>
+                    <div className="text-xs text-slate-500">Completed Tasks</div>
+                </Card>
+
+                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-orange-50 to-orange-100">
+                    <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+                    <div className="text-xl font-bold text-slate-900">{kpis.avgTaskDuration.toFixed(1)}</div>
+                    <div className="text-xs text-slate-500">Avg Days/Task</div>
+                </Card>
+
+                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-red-50 to-red-100">
+                    <AlertTriangle className="h-8 w-8 text-red-600 mx-auto mb-2" />
+                    <div className="text-xl font-bold text-slate-900">{kpis.overdueTasks}</div>
+                    <div className="text-xs text-slate-500">Overdue Tasks</div>
+                </Card>
+
+                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-yellow-50 to-yellow-100">
+                    <DollarSign className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
+                    <div className="text-xl font-bold text-slate-900">
+                        ${(kpis.totalBudget / kpis.totalTasks / 1000).toFixed(1)}K
+                    </div>
+                    <div className="text-xs text-slate-500">Avg Budget/Task</div>
+                </Card>
+            </div>
 
             {/* Simplified Controls */}
             <SimplifiedControls
@@ -125,12 +169,13 @@ export default function ProfessionalAnalyticsDashboard() {
                 onCustomDateRangeChange={setCustomDateRange}
             />
 
+
             {/* Analytics Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+                <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="performance">Performance</TabsTrigger>
-                    <TabsTrigger value="resources">Resources</TabsTrigger>
+                    {/* <TabsTrigger value="resources">Resources</TabsTrigger> */}
                     <TabsTrigger value="team">Team Analytics</TabsTrigger>
                 </TabsList>
 
@@ -154,6 +199,7 @@ export default function ProfessionalAnalyticsDashboard() {
                                 <ResponsiveContainer width="100%" height={350}>
                                     <PieChart>
                                         <Pie
+                                            nameKey="status"
                                             data={taskStatus}
                                             cx="50%"
                                             cy="50%"
@@ -161,6 +207,7 @@ export default function ProfessionalAnalyticsDashboard() {
                                             outerRadius={120}
                                             paddingAngle={5}
                                             dataKey="count"
+                                            label={entry => status(entry.status)}
                                         >
                                             {taskStatus.map((entry, index) => {
                                                 const colors = {
@@ -184,8 +231,63 @@ export default function ProfessionalAnalyticsDashboard() {
                             </CardContent>
                         </Card>
 
-                        {/* Performance Trends - Always Line Chart */}
+
+
+
                         <Card className="shadow-lg border-0">
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Target className="h-5 w-5 text-purple-500" />
+                                        Project Status Distribution
+                                    </CardTitle>
+                                    <CardDescription>Current status breakdown with budget allocation</CardDescription>
+                                </div>
+                                <Button variant="ghost" size="sm">
+                                    <Maximize2 className="h-4 w-4" />
+                                </Button>
+                            </CardHeader>
+                            <CardContent>
+                                <ResponsiveContainer width="100%" height={350}>
+                                    <PieChart>
+                                        <Pie
+                                            nameKey="status"
+                                            data={projectStatus}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={120}
+                                            paddingAngle={5}
+                                            dataKey="count"
+                                            label={entry => status(entry.status)}
+                                        >
+                                            {projectStatus.map((entry, index) => {
+                                                const colors = {
+                                                    IN_PROGRESS: "#8b5cf6",
+                                                    NOT_STARTED: "#f59e0b",
+                                                    COMPLETED: "#22c55e"
+
+                                                }
+                                                return <Cell key={`cell-${index}`} fill={colors[entry.status]} />
+                                            })}
+                                        </Pie>
+                                        <Tooltip
+                                            formatter={(value: any, name: any, props: any) => [
+                                                `${value} tasks (${props.payload.percentage}%)`,
+                                                `$${props.payload.totalBudget.toLocaleString()} budget`,
+                                            ]}
+                                        />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+
+
+
+
+                        {/* Performance Trends - Always Line Chart */}
+                        {/* <Card className="shadow-lg border-0">
                             <CardHeader className="flex flex-row items-center justify-between">
                                 <div>
                                     <CardTitle className="flex items-center gap-2">
@@ -212,7 +314,7 @@ export default function ProfessionalAnalyticsDashboard() {
                                     </LineChart>
                                 </ResponsiveContainer>
                             </CardContent>
-                        </Card>
+                        </Card> */}
                     </div>
                 </TabsContent>
 
@@ -305,45 +407,6 @@ export default function ProfessionalAnalyticsDashboard() {
                             </CardContent>
                         </Card>
                     </div>
-                </TabsContent>
-
-                <TabsContent value="resources" className="space-y-6">
-                    <Card className="shadow-lg border-0">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Settings className="h-5 w-5 text-indigo-500" />
-                                Resource Utilization Analysis
-                            </CardTitle>
-                            <CardDescription>Optimized resource allocation and efficiency metrics</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {resourceUtilization.map((resource, index) => (
-                                    <div key={index} className="space-y-2 p-4 bg-slate-50 rounded-lg">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <span className="font-medium">{resource.name}</span>
-                                                <Badge variant="outline" className="ml-2 text-xs">
-                                                    {resource.category}
-                                                </Badge>
-                                                <Badge variant="secondary" className="ml-1 text-xs">
-                                                    {resource.type}
-                                                </Badge>
-                                            </div>
-                                            <span className="text-sm text-slate-500">{resource.utilizationRate.toFixed(1)}% utilized</span>
-                                        </div>
-                                        <Progress value={resource.utilizationRate} className="h-2" />
-                                        <div className="flex justify-between text-xs text-slate-500">
-                                            <span>
-                                                {resource.currentUsage.toLocaleString()} / {resource.totalCapacity.toLocaleString()} units
-                                            </span>
-                                            <span>${resource.totalCost.toLocaleString()} total cost</span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
                 </TabsContent>
 
                 <TabsContent value="team" className="space-y-6">
@@ -451,46 +514,7 @@ export default function ProfessionalAnalyticsDashboard() {
                 </TabsContent>
             </Tabs>
 
-            {/* Quick Stats Footer */}
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-blue-50 to-blue-100">
-                    <Briefcase className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-xl font-bold text-slate-900">{kpis.activeProjects}</div>
-                    <div className="text-xs text-slate-500">Active Projects</div>
-                </Card>
 
-                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-green-50 to-green-100">
-                    <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <div className="text-xl font-bold text-slate-900">{kpis.completedTasks.toLocaleString()}</div>
-                    <div className="text-xs text-slate-500">Completed Tasks</div>
-                </Card>
-
-                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-purple-50 to-purple-100">
-                    <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                    <div className="text-xl font-bold text-slate-900">{kpis.activeUsers}</div>
-                    <div className="text-xs text-slate-500">Active Users</div>
-                </Card>
-
-                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-orange-50 to-orange-100">
-                    <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                    <div className="text-xl font-bold text-slate-900">{kpis.avgTaskDuration.toFixed(1)}</div>
-                    <div className="text-xs text-slate-500">Avg Days/Task</div>
-                </Card>
-
-                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-red-50 to-red-100">
-                    <AlertTriangle className="h-8 w-8 text-red-600 mx-auto mb-2" />
-                    <div className="text-xl font-bold text-slate-900">{kpis.overdueTasks}</div>
-                    <div className="text-xs text-slate-500">Overdue Tasks</div>
-                </Card>
-
-                <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-yellow-50 to-yellow-100">
-                    <DollarSign className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-                    <div className="text-xl font-bold text-slate-900">
-                        ${(kpis.totalBudget / kpis.totalTasks / 1000).toFixed(1)}K
-                    </div>
-                    <div className="text-xs text-slate-500">Avg Budget/Task</div>
-                </Card>
-            </div>
         </>
     )
 }
