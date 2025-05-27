@@ -23,26 +23,72 @@ import { NumberTicker } from "../ui/number-ticker";
 export function AdminAnalytics() {
   const {
     loading,
-
     overview: overviewData,
     setOverview: setOverviewData,
     users,
     blockUser,
     unblockUser,
-
     prjcts,
   } = useStatistics();
+  console.log("overviewData", overviewData);
+
   if (loading) {
     return <Loading />;
   }
   const getProjectCompletionRate = () => {
-    const completedProjects = prjcts.filter(
-      (project) => project.status === "COMPLETED"
-    ).length;
-    const totalProjects = prjcts.length;
-    return totalProjects === 0
-      ? 0
-      : ((completedProjects / totalProjects) * 100).toFixed(2);
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0 = Jan
+    const currentYear = now.getFullYear();
+    const currentQuarter = Math.floor(currentMonth / 3);
+    const currentQuarterStart = new Date(currentYear, currentQuarter * 3, 1);
+    const currentQuarterEnd = new Date(currentYear, currentQuarter * 3 + 3, 0); // last day of current quarter
+
+    const previousQuarterStart =
+      currentQuarter === 0
+        ? new Date(currentYear - 1, 9, 1) // Q4 of previous year
+        : new Date(currentYear, (currentQuarter - 1) * 3, 1);
+
+    const previousQuarterEnd =
+      currentQuarter === 0
+        ? new Date(currentYear - 1, 11, 31)
+        : new Date(currentYear, currentQuarter * 3, 0);
+
+    const completedProjectsCurrentQuarter = prjcts.filter((project) => {
+      const date = new Date(project.dateFinEstime);
+      return (
+        project.status === "COMPLETED" &&
+        date >= currentQuarterStart &&
+        date <= currentQuarterEnd
+      );
+    }).length;
+
+    const completedProjectsPreviousQuarter = prjcts.filter((project) => {
+      const date = new Date(project.dateFinEstime);
+      return (
+        project.status === "COMPLETED" &&
+        date >= previousQuarterStart &&
+        date <= previousQuarterEnd
+      );
+    }).length;
+    const completedProjectsRate =
+      prjcts.filter((project) => project.status === "COMPLETED").length /
+      prjcts.length;
+    const rate = completedProjectsRate * 100;
+    const growth =
+      completedProjectsCurrentQuarter === 0
+        ? 0
+        : completedProjectsPreviousQuarter === 0
+        ? 100
+        : ((completedProjectsCurrentQuarter -
+            completedProjectsPreviousQuarter) /
+            completedProjectsPreviousQuarter) *
+          100;
+
+    return {
+      value: Math.abs(growth.toFixed(2)),
+      rate: rate,
+      trend: growth > 0 ? "up" : "down",
+    };
   };
   const projectCompletionRate = getProjectCompletionRate();
   const getUsersMonthlyGrowth = () => {
@@ -103,14 +149,40 @@ export function AdminAnalytics() {
     },
     {
       title: "Project Completion Rate",
-      value: "87%",
-      change: "+5.2%",
-      trend: "up",
-      period: "vs last quarter",
+      value: (
+        <>
+          <NumberTicker value={projectCompletionRate.rate} delay={0.1} />%
+        </>
+      ),
+      change: (
+        <>
+          {projectCompletionRate.trend === "up" ? "+" : "-"}
+          <NumberTicker
+            value={projectCompletionRate.value}
+            delay={0.1}
+            className={
+              projectCompletionRate.trend === "up"
+                ? "text-green-500"
+                : "text-red-500"
+            }
+          />
+          %
+        </>
+      ),
+      trend: projectCompletionRate.trend,
+      period: " vs last quarter",
     },
     {
       title: "Average Task Duration",
-      value: "3.2 days",
+      value:
+        overviewData?.taskDurations
+          .map((td: any) =>
+            td.month === new Date().getMonth() &&
+            td.year === new Date().getFullYear()
+              ? td.averageDuration
+              : 0
+          )
+          .reduce((a, b) => a + b, 0) + " days",
       change: "-8.1%",
       trend: "down",
       period: "vs last month",
