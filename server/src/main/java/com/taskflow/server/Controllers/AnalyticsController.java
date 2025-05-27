@@ -3,6 +3,7 @@ package com.taskflow.server.Controllers;
 import com.taskflow.server.Entities.DTO.AnalyticsKpisDTO;
 import com.taskflow.server.Entities.DTO.PerformanceTrendDTO;
 import com.taskflow.server.Entities.DTO.TaskStatusStatsDTO;
+import com.taskflow.server.Entities.DTO.TeamPerformanceDTO;
 import com.taskflow.server.Services.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -66,6 +67,22 @@ public class AnalyticsController {
         try {
             Date[] dates = parseDateRange(timeRange, startDate, endDate);
             return analyticsService.getProjectStatusStats(dates[0], dates[1]);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @GetMapping("/team-performance")
+    public List<TeamPerformanceDTO> getTeamPerformance(
+            @RequestParam(required = false) String timeRange,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
+            @RequestParam(defaultValue = "20") int limit,
+            @RequestParam(defaultValue = "0") int offset) {
+        try {
+            Date[] dates = parseDateRange(timeRange, startDate, endDate);
+            return analyticsService.getTeamPerformance(dates[0], dates[1], limit, offset);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

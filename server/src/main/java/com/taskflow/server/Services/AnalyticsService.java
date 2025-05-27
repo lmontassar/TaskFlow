@@ -4,6 +4,7 @@ import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.DTO.AnalyticsKpisDTO;
 import com.taskflow.server.Entities.DTO.PerformanceTrendDTO;
 import com.taskflow.server.Entities.DTO.TaskStatusStatsDTO;
+import com.taskflow.server.Entities.DTO.TeamPerformanceDTO;
 import com.taskflow.server.Repositories.ProjectRepository;
 import com.taskflow.server.Repositories.TacheRepository;
 import com.taskflow.server.Repositories.TacheRepository.TaskStatsAggregation;
@@ -38,6 +39,10 @@ public class AnalyticsService {
     // }
     // return tacheRepository.getPerformanceTrends(startDate, endDate, format);
     // }
+
+    public List<TeamPerformanceDTO> getTeamPerformance(Date startDate, Date endDate, int limit, int offset) {
+        return tacheRepository.getTeamPerformance(startDate, endDate, limit, offset);
+    }
 
     public List<TaskStatusStatsDTO> getTaskStatusStats(Date startDate, Date endDate) {
         List<TaskStatusStatsDTO> agg = tacheRepository.getTaskStatusAggregation(startDate, endDate);

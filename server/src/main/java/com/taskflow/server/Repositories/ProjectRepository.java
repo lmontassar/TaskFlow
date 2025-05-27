@@ -4,6 +4,7 @@ import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Entities.DTO.ProjectsStatsDTO;
 import com.taskflow.server.Entities.DTO.TaskStatusStatsDTO;
+import com.taskflow.server.Entities.DTO.TeamPerformanceDTO;
 
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -96,5 +97,6 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
                         "{ '$project': { status: '$_id', count: 1, totalBudget: 1, _id: 0 } }"
         })
         List<TaskStatusStatsDTO> getProjectStatusAggregation(Date startDate, Date endDate);
+
 
 }

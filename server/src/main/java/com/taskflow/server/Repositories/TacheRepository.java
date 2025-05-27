@@ -12,6 +12,7 @@ import com.taskflow.server.Entities.Tache;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Entities.DTO.ProjectStatsDTO;
 import com.taskflow.server.Entities.DTO.TasksStatsDTO;
+import com.taskflow.server.Entities.DTO.TeamPerformanceDTO;
 
 import lombok.Data;
 
@@ -191,5 +192,53 @@ public interface TacheRepository extends MongoRepository<Tache, String> {
         })
         List<com.taskflow.server.Entities.DTO.TaskStatusStatsDTO> getTaskStatusAggregation(Date startDate,
                         Date endDate);
+
+        @Aggregation(pipeline = {
+                        // 1. Filter by date AND ensure at least one assignee
+                        "{ $match: { "
+                                        + "dateCreation: { $gte: ?0, $lte: ?1 }, "
+                                        + "\"assignee.0\": { $exists: true } "
+                                        + "} }",
+
+                        // 2. Unwind assignees
+                        "{ $unwind: \"$assignee\" }",
+
+                        // 3. Group per assignee
+                        "{ $group: { "
+                                        + "_id: \"$assignee.$id\", "
+                                        + "tasksAssigned:   { $sum: 1 }, "
+                                        + "tasksCompleted:  { $sum: { $cond: [ { $eq: [ \"$statut\", \"DONE\" ] }, 1, 0 ] } }, "
+                                        + "avgTaskDurationMs: { $avg: \"$duree\" }, "
+                                        + "totalBudget:     { $sum: \"$budgetEstime\" }, "
+                                        + "avgQuality:      { $avg: \"$qualite\" } "
+                                        + "} }",
+
+                        // 4. Join back to users
+                        "{ $lookup: { "
+                                        + "from: \"users\", localField: \"_id\", foreignField: \"_id\", as: \"user\" "
+                                        + "} }",
+                        "{ $unwind: \"$user\" }",
+
+                        // 5. Shape DTO
+                        "{ $project: { "
+                                        + "userId:       \"$_id\", "
+                                        + "userName:     { $concat: [ \"$user.nom\", \" \", \"$user.prenom\" ] }, "
+                                        + "role:         { $ifNull: [ \"$user.title\", \"No Specific\" ] }, "
+                                        + "tasksAssigned:1, tasksCompleted:1, "
+                                        + "completionRate: { $round: [ { $multiply: [ "
+                                        + "{ $cond: [ { $gt:[\"$tasksAssigned\",0] }, { $divide:[\"$tasksCompleted\",\"$tasksAssigned\"] }, 0 ] }, "
+                                        + "100 ] }, 1 ] }, "
+                                        + "qualityScore:  { $round:[\"$avgQuality\", 2] }, "
+                                        + "avgTaskDuration: { $round:[ { $divide:[ \"$avgTaskDurationMs\", 86400 ] }, 2 ] }, "
+                                        + "totalBudgetManaged: \"$totalBudget\", "
+                                        + "_id: 0 "
+                                        + "} }",
+
+                        // 6. Sort & paginate
+                        "{ $sort: { tasksCompleted: -1 } }",
+                        "{ $skip: ?3 }",
+                        "{ $limit: ?2 }"
+        })
+        List<TeamPerformanceDTO> getTeamPerformance(Date startDate, Date endDate, int limit, int offset);
 
 }

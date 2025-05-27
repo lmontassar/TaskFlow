@@ -192,8 +192,13 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
              *   }
              * ]
              */
-            // const teamPerfResponse = await fetch(`/api/analytics/team-performance?${params}&limit=20`)
-            // const teamPerfData = await teamPerfResponse.json()
+            const teamPerfResponse = await fetch(`/api/analytics/team-performance?${params}&limit=20`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            const teamPerfData = await teamPerfResponse.json()
 
             // API 5: Team Workload - Current active workload
             /*
@@ -433,7 +438,8 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
 
             // setPerformanceTrends(mockPerformanceTrends)
 
-            setTeamPerformance(mockTeamPerformance)
+            console.log(teamPerfData)
+            setTeamPerformance(teamPerfData)
             setTeamWorkload(mockTeamWorkload)
             setResourceUtilization(mockResourceUtilization)
         } catch (err) {
