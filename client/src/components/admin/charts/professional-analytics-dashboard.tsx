@@ -142,41 +142,6 @@ export default function ProfessionalAnalyticsDashboard() {
       </div>
     );
   }
-  const getUsersMonthlyGrowth = () => {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-
-    const previousDate = new Date();
-    previousDate.setMonth(currentMonth - 1);
-
-    if (currentMonth === 0) {
-      previousDate.setFullYear(currentYear - 1);
-      previousDate.setMonth(11); // December
-    }
-
-    const previousMonthStats = users.filter(
-      (user) =>
-        new Date(user.creationDate).getMonth() === previousDate.getMonth() &&
-        new Date(user.creationDate).getFullYear() === previousDate.getFullYear()
-    ).length;
-
-    const currentMonthStats = users.filter(
-      (user) =>
-        new Date(user.creationDate).getMonth() === currentMonth &&
-        new Date(user.creationDate).getFullYear() === currentYear
-    ).length;
-
-    const growth =
-      previousMonthStats === 0
-        ? 100
-        : ((currentMonthStats - previousMonthStats) / previousMonthStats) * 100;
-
-    return {
-      value: Math.abs(growth),
-      trend: growth >= 0 ? "up" : "down",
-    };
-  };
-  const userGrowth = getUsersMonthlyGrowth();
   return (
     <>
       {/* Quick Stats Footer */}
