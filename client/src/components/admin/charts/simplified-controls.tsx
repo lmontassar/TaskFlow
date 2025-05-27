@@ -60,12 +60,10 @@ export function SimplifiedControls({
 
   return (
     <Card className="mb-6">
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="text-lg font-semibold">
           Analytics Controls
         </CardTitle>
-      </CardHeader>
-      <CardContent>
         <div className="flex flex-wrap items-center gap-4">
           {/* Time Range Selector */}
           <div className="flex items-center gap-2">
@@ -129,7 +127,7 @@ export function SimplifiedControls({
             Export Chart
           </Button>
         </div>
-      </CardContent>
+      </CardHeader>
     </Card>
   );
 }
