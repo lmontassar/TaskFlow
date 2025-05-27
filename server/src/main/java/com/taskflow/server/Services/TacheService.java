@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.taskflow.server.Entities.AffectationRessource;
 import com.taskflow.server.Entities.Collaborator;
+import com.taskflow.server.Entities.DTO.MonthlyTaskDurationDTO;
 import com.taskflow.server.Entities.MaterialResource;
 import com.taskflow.server.Entities.NecessaryRessource;
 import com.taskflow.server.Entities.Project;
@@ -354,6 +355,10 @@ public class TacheService {
     public int getAllTaskSize(){
         TasksStatsDTO stats = tacheRep.getStatsAllTasks();
         return stats.getCompleted();
+    }
+
+    public List<MonthlyTaskDurationDTO> getMonthlyAverageDurations(){
+        return tacheRep.getMonthlyAverageDurations();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.taskflow.server.Repositories;
 
+import com.taskflow.server.Entities.DTO.MonthlyTaskDurationDTO;
 import com.taskflow.server.Entities.Project;
 
 import org.bson.Document;
@@ -74,5 +75,36 @@ public interface TacheRepository extends MongoRepository<Tache, String> {
     TasksStatsDTO getStatsAllTasks();
 
     public List<Tache> findAllByStatut(Tache.Statut statut);
+
+    @Aggregation(pipeline = {
+            "{ '$match': { " +
+                    "'dateDebut': { '$ne': null }, " +
+                    "'dateFin': { '$ne': null }, " +
+                    "'statut': 'DONE' " +
+                    "} }",
+            "{ '$project': { " +
+                    "'duration': { '$divide': [ { '$subtract': [ '$dateFin', '$dateDebut' ] }, 86400000 ] }, " +
+                    "'month': { '$month': '$dateFin' }, " +
+                    "'year': { '$year': '$dateFin' } " +
+                    "} }",
+            "{ '$match': { 'duration': { '$gte': 0 } } }",
+            "{ '$group': { " +
+                    "'_id': { 'month': '$month', 'year': '$year' }, " +
+                    "'averageDurationInDays': { '$avg': '$duration' }, " +
+                    "'count': { '$sum': 1 } " +
+                    "} }",
+            "{ '$project': { " +
+                    "'_id': 0, " +
+                    "'month': '$_id.month', " +
+                    "'year': '$_id.year', " +
+                    "'averageDurationInDays': 1, " +
+                    "'count': 1 " +
+                    "} }"
+    })
+    List<MonthlyTaskDurationDTO> getMonthlyAverageDurations();
+
+
+
+
 
 }

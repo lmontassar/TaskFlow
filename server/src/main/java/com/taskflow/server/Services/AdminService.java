@@ -3,6 +3,7 @@ package com.taskflow.server.Services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.taskflow.server.Entities.DTO.MonthlyTaskDurationDTO;
 import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,18 @@ public class AdminService {
         overview.set("project",projectStat);
         overview.put("user",getUserSize());
         overview.set("task",taskStat);
+        List<MonthlyTaskDurationDTO> monthlyTaskDurationDTOS = tacheService.getMonthlyAverageDurations();
+        ArrayNode monthlyTaskDurationNode = objectMapper.createArrayNode();
+        for (MonthlyTaskDurationDTO mtd :
+                monthlyTaskDurationDTOS) {
+            ObjectNode mtdNode = objectMapper.createObjectNode();
+            mtdNode.put("month",mtd.getMonth());
+            mtdNode.put("year",mtd.getYear());
+            mtdNode.put("averageDuration",mtd.getAverageDurationInDays());
+            mtdNode.put("count",mtd.getCount());
+            monthlyTaskDurationNode.add(mtdNode);
+        }
+        overview.set("taskDurations",monthlyTaskDurationNode);
         return overview;
     }
 }
