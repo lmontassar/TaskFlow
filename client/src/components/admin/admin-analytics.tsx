@@ -217,37 +217,7 @@ export function AdminAnalytics() {
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => (
-          <Card key={metric.title}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                {metric.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{metric.value}</div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                {metric.trend === "up" ? (
-                  <TrendingUp className="h-3 w-3 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 text-red-600" />
-                )}
-                <span
-                  className={
-                    metric.trend === "up" ? "text-green-600" : "text-red-600"
-                  }
-                >
-                  {metric.change}
-                </span>
-                <span>{metric.period}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
       <ProfessionalAnalyticsDashboard />
-      
     </div>
   );
 }
