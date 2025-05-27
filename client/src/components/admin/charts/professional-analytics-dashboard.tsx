@@ -93,6 +93,7 @@ export default function ProfessionalAnalyticsDashboard() {
         switch (s) {
             case "TODO": return "TO-DO";
             case "IN_PROGRESS": return "In Progress";
+            case "PROGRESS": return "In Progress";
             case "REVIEW": return "Review";
             case "DONE": return "Done";
             case "NOT_STARTED": return "Not Started";
@@ -123,7 +124,6 @@ export default function ProfessionalAnalyticsDashboard() {
     return (
 
         <>
-
             {/* Quick Stats Footer */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-blue-50 to-blue-100">
@@ -200,7 +200,7 @@ export default function ProfessionalAnalyticsDashboard() {
                                     <PieChart>
                                         <Pie
                                             nameKey="status"
-                                            data={taskStatus}
+                                            data={ taskStatus }
                                             cx="50%"
                                             cy="50%"
                                             innerRadius={60}
@@ -212,7 +212,7 @@ export default function ProfessionalAnalyticsDashboard() {
                                             {taskStatus.map((entry, index) => {
                                                 const colors = {
                                                     TODO: "#f59e0b",
-                                                    IN_PROGRESS: "#8b5cf6",
+                                                    PROGRESS: "#8b5cf6",
                                                     REVIEW: "#3b82f6",
                                                     DONE: "#22c55e",
                                                 }
