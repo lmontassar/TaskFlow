@@ -41,7 +41,7 @@ public class AnalyticsService {
     // }
 
     public List<TeamPerformanceDTO> getTeamPerformance(Date startDate, Date endDate, int limit, int offset) {
-        return projectRepository.getTeamPerformance(startDate, endDate, limit, offset);
+        return tacheRepository.getTeamPerformance(startDate, endDate, limit, offset);
     }
 
     public List<TaskStatusStatsDTO> getTaskStatusStats(Date startDate, Date endDate) {
