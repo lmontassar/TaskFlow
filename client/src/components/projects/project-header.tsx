@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import { Edit, Gauge, Plus, Share } from "lucide-react";
+import { Download, Edit, Gauge, Plus, Share } from "lucide-react";
 import useGetProject from "../../hooks/useGetProjects";
 import SearchForm from "../ui/comp-333";
 import hasPermission from "../../utils/authz";
@@ -17,9 +17,34 @@ export function ProjectHeader({
   isProjectEditing,
   setIsProjectEditing,
 }: any) {
+  const [loading, setLoading] = useState(false);
   // In a real app, you would fetch the project data based on the ID
   const { t } = useTranslation();
   const { user } = useGetUser();
+  const downloadPDF = async () => {
+    setLoading(true);
+    const res = await fetch(`/api/pdf/project/${projects?.id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        "Content-Type": "application/pdf",
+      },
+    });
+    if (!res.ok) {
+      setLoading(false);
+      throw new Error("Failed to download PDF");
+    }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${projects?.nom}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    setLoading(false);
+  };
   let isAllowedToAddCollaborator = false;
   let role = "memeber";
   if (projects?.createur?.id === user?.id) {
@@ -59,7 +84,23 @@ export function ProjectHeader({
             <Plus className="mr-2 h-4 w-4" />
             {t("project.addCollaborator")}
           </SearchForm>
-
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              downloadPDF();
+            }}
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="animate-spin">Downloading...</span>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Export PDF
+              </>
+            )}
+          </Button>
           <Button
             variant="outline"
             size="sm"
