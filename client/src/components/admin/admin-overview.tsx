@@ -36,8 +36,10 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Context } from "../../App";
+import { useTranslation } from "react-i18next";
 
 export function AdminOverview() {
+  const { t } = useTranslation();
   const {
     loading,
 
@@ -114,18 +116,7 @@ export function AdminOverview() {
     .slice(0, 5);
 
   const getStatusDisplayName = (status: string) => {
-    switch (status) {
-      case "IN_PROGRESS":
-        return "In Progress";
-      case "NOT_STARTED":
-        return "Not Started";
-      case "COMPLETED":
-        return "Completed";
-      case "CANCELLED":
-        return "Cancelled";
-      default:
-        return status;
-    }
+    return t(`project.${status}`) || status; // Fallback to status if translation not found
   };
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -292,7 +283,7 @@ export function AdminOverview() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProjects.map((project:any) => (
+              {filteredProjects.map((project: any) => (
                 <TableRow key={project.id}>
                   <TableCell>
                     <div>
@@ -308,9 +299,7 @@ export function AdminOverview() {
                     <div className="flex items-center gap-2">
                       <Avatar className="h-6 w-6">
                         <AvatarImage
-                          src={
-                            project?.createur?.avatar
-                          }
+                          src={project?.createur?.avatar}
                           alt={`${project.createur?.prenom} ${project?.createur?.nom}`}
                         />
                         <AvatarFallback>

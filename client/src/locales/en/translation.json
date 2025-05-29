@@ -129,6 +129,8 @@
     "server": "Oops! Something went wrong"
   },
   "project": {
+    "exportPDF": "Export to PDF",
+    "optimizeProject": "Optimize Project",
     "NOT_STARTED": "Not Started",
     "IN_PROGRESS": "In Progress",
     "COMPLETED": "Completed",
@@ -724,6 +726,139 @@
       "cancel": "Cancel",
       "confirm": "Delete",
       "success": "Member deleted successfully!"
+    }
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "description": "Manage users, projects, and analyse.",
+    "tabs": {
+      "overview": "Overview",
+      "users": "Users",
+      "projects": "Projects",
+      "analytics": "Analytics"
+    },
+    "overview": {
+      "complited_tasks": "Completed Tasks",
+      "recent_users": "Recent Users",
+      "recent_user_description": "Last 5 registered users",
+      "recent_projects": "Recent Projects",
+      "recent_projects_description": "Last 5 created projects"
+    },
+    "users": {
+      "": "users",
+      "total_users": "Total Users",
+      "active_users": "Active Users",
+      "blocked_users": "Blocked Users",
+      "new_this_month": "New This Month",
+      "title": "Users Management",
+      "search": "Search users...",
+      "user": "User",
+      "role": "Role",
+      "email_activation": "Email Activation",
+      "blocked": "Blocked",
+      "projects": "Projects",
+      "creation_date": "Creation Date",
+      "actions": "Actions",
+      "block_user": "Block User",
+      "unblock_user": "Unblock User",
+      "roles": {
+        "all": "All Roles",
+        "admin": "Admin",
+        "user": "User"
+      },
+      "status": {
+        "all": "All Statuses",
+        "active": "Active",
+        "blocked": "Blocked",
+        "inactive": "Inactive",
+        "unblocked": "Unblocked"
+      }
+    },
+    "projects": {
+      "": "projects",
+      "total_projects": "Total Projects",
+      "active_projects": "Active Projects",
+      "completed_projects": "Completed Projects",
+      "not_started_projects": "Not Started Projects",
+      "total_budget": "Total Budget",
+      "title": "Projects Management",
+      "description": "Monitor and manage all projects across the platform",
+      "search": "Search projects...",
+      "project": "Project",
+      "owner": "Owner",
+      "status": "Status",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "budget": "Budget",
+      "statusList": {
+        "all": "All Statuses",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "not_started": "Not Started",
+        "canceled": "Canceled"
+      }
+    },
+    "analytics": {
+      "overview": {
+        "user_growth": "User Growth",
+        "active_projects": "Active Projects",
+        "completed_tasks": "Completed Tasks",
+        "avg_day_tasks": "Average Tasks per Day",
+        "overdue_tasks": "Overdue Tasks",
+        "avg_budget_task": "Average Budget per Task"
+      },
+      "title": "Analytics Controle",
+      "controle": {
+        "time_range": {
+          "title": "Time Range :",
+          "options": {
+            "last_7_days": "Last 7 Days",
+            "last_30_days": "Last 30 Days",
+            "last_90_days": "Last 90 Days",
+            "last_year": "Last Year",
+            "all_time": "All Time",
+            "custom": "Custom Range"
+          },
+          "refresh_data": "Refresh Data",
+          "export_chart": "Export Chart"
+        },
+        "tabs": {
+          "status": "Status",
+          "performance": "Performance"
+        },
+        "status": {
+          "task_chart": {
+            "title": "Task Status Distribution",
+            "description": "Current status breakdown with budget allocation"
+          },
+          "project_chart": {
+            "title": "Project Status Distribution",
+            "description": "Current status breakdown with budget allocation"
+          }
+        },
+        "performance": {
+          "title": "Team Performance Matrix",
+          "description": "Top performers with completion rates and quality scores",
+          "completion_rate": "Completion Rate",
+          "quality_score": "Quality Score",
+          "completion": "Completion",
+          "quality": "Quality"
+        }
+      },
+      "charts": {
+        "user_growth": {
+          "title": "User Growth",
+          "description": "Track user registrations over time"
+        },
+        "project_status": {
+          "title": "Project Status Distribution",
+          "description": "Overview of project statuses across the platform"
+        },
+        "task_completion": {
+          "title": "Task Completion Rate",
+          "description": "Monitor task completion rates in projects"
+        }
+      }
     }
   }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.awt.*;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,9 @@ public class PDFGenerator {
             Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLACK);
             Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Color.DARK_GRAY);
 
+            document.add(new Paragraph(new Date().toString(), valueFont));
+            document.add(new Paragraph(" "));
+
             document.add(new Paragraph("Project Name: ", labelFont));
             document.add(new Paragraph(project.getNom(), valueFont));
             document.add(new Paragraph(" "));
@@ -61,10 +65,10 @@ public class PDFGenerator {
             document.add(new Paragraph(" "));
 
             // Tasks Table
-            PdfPTable table = new PdfPTable(3);
+            PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);
             table.setSpacingBefore(10);
-            table.setWidths(new float[]{3, 3, 2}); // Proportional column widths
+            table.setWidths(new float[]{3, 3, 1, 3}); // Proportional column widths
 
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.WHITE);
             PdfPCell header;
@@ -81,6 +85,10 @@ public class PDFGenerator {
             header.setBackgroundColor(Color.GRAY);
             table.addCell(header);
 
+            header = new PdfPCell(new Phrase("Estimated end date", headerFont));
+            header.setBackgroundColor(Color.GRAY);
+            table.addCell(header);
+
             // Table Data
             for (Tache tache : taches) {
                 table.addCell(new Phrase(tache.getNomTache(), valueFont));
@@ -91,7 +99,7 @@ public class PDFGenerator {
                     assignedTo = "None";
                 } else {
                     assignedTo = assignees.stream()
-                            .map(User::getEmail)
+                            .map(user -> user.getNom()+' '+user.getPrenom())
                             .collect(Collectors.joining(", "));
                 }
                 table.addCell(new Phrase(assignedTo, valueFont));
@@ -104,6 +112,7 @@ public class PDFGenerator {
                     default -> tache.getStatut().toString();
                 };
                 table.addCell(new Phrase(status, valueFont));
+                table.addCell(new Phrase(tache.getDateFinEstime().toString(), valueFont));
             }
 
             document.add(table);

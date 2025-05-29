@@ -130,6 +130,8 @@
     "server": "Oups! Un problème est survenu"
   },
   "project": {
+    "exportPDF": "Exporter en PDF",
+    "optimizeProject": "Optimiser le projet",
     "NOT_STARTED": "Non Commencé",
     "IN_PROGRESS": "En Cours",
     "COMPLETED": "Terminé",
@@ -725,6 +727,139 @@
       "cancel": "Annuler",
       "confirm": "Supprimer",
       "success": "Membre supprimé avec succès !"
+    }
+  },
+  "admin": {
+    "title": "Tableau de Bord Admin",
+    "description": "Gérer les utilisateurs, les projets et analyser.",
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "users": "Utilisateurs",
+      "projects": "Projets",
+      "analytics": "Analytique"
+    },
+    "overview": {
+      "complited_tasks": "Tâches Terminées",
+      "recent_users": "Utilisateurs Récents",
+      "recent_user_description": "Les 5 derniers utilisateurs enregistrés",
+      "recent_projects": "Projets Récents",
+      "recent_projects_description": "Les 5 derniers projets créés"
+    },
+    "users": {
+      "": "utilisateurs",
+      "total_users": "Nombre Total d'Utilisateurs",
+      "active_users": "Utilisateurs Actifs",
+      "blocked_users": "Utilisateurs Bloqués",
+      "new_this_month": "Nouveaux Ce Mois",
+      "title": "Gestion des Utilisateurs",
+      "search": "Rechercher des utilisateurs...",
+      "user": "Utilisateur",
+      "role": "Rôle",
+      "email_activation": "Activation de l'Email",
+      "blocked": "Bloqué",
+      "projects": "Projets",
+      "creation_date": "Date de Création",
+      "actions": "Actions",
+      "block_user": "Bloquer l'Utilisateur",
+      "unblock_user": "Débloquer l'Utilisateur",
+      "roles": {
+        "all": "Tous les Rôles",
+        "admin": "Admin",
+        "user": "Utilisateur"
+      },
+      "status": {
+        "all": "Tous les Statuts",
+        "active": "Actif",
+        "blocked": "Bloqué",
+        "inactive": "Inactif",
+        "unblocked": "Débloqué"
+      }
+    },
+    "projects": {
+      "": "projets",
+      "total_projects": "Nombre Total de Projets",
+      "active_projects": "Projets Actifs",
+      "completed_projects": "Projets Terminés",
+      "not_started_projects": "Projets Non Commencés",
+      "total_budget": "Budget Total",
+      "title": "Gestion des Projets",
+      "description": "Surveiller et gérer tous les projets de la plateforme",
+      "search": "Rechercher des projets...",
+      "project": "Projet",
+      "owner": "Propriétaire",
+      "status": "Statut",
+      "start_date": "Date de Début",
+      "end_date": "Date de Fin",
+      "budget": "Budget",
+      "statusList": {
+        "all": "Tous les Statuts",
+        "in_progress": "En Cours",
+        "completed": "Terminé",
+        "not_started": "Non Commencé",
+        "canceled": "Annulé"
+      }
+    },
+    "analytics": {
+      "overview": {
+        "user_growth": "Croissance des Utilisateurs",
+        "active_projects": "Projets Actifs",
+        "completed_tasks": "Tâches Terminées",
+        "avg_day_tasks": "Moyenne des Tâches par Jour",
+        "overdue_tasks": "Tâches en Retard",
+        "avg_budget_task": "Budget Moyen par Tâche"
+      },
+      "title": "Contrôle Analytique",
+      "controle": {
+        "time_range": {
+          "title": "Période :",
+          "options": {
+            "last_7_days": "7 Derniers Jours",
+            "last_30_days": "30 Derniers Jours",
+            "last_90_days": "90 Derniers Jours",
+            "last_year": "L'année Dernière",
+            "all_time": "Depuis le Début",
+            "custom": "Période Personnalisée"
+          },
+          "refresh_data": "Actualiser les Données",
+          "export_chart": "Exporter le Graphique"
+        },
+        "tabs": {
+          "status": "Statut",
+          "performance": "Performance"
+        },
+        "status": {
+          "task_chart": {
+            "title": "Répartition des Statuts des Tâches",
+            "description": "Répartition actuelle des statuts avec l'allocation budgétaire"
+          },
+          "project_chart": {
+            "title": "Répartition des Statuts des Projets",
+            "description": "Répartition actuelle des statuts avec l'allocation budgétaire"
+          }
+        },
+        "performance": {
+          "title": "Matrice de Performance de l'Équipe",
+          "description": "Meilleurs performeurs avec les taux d'achèvement et les scores de qualité",
+          "completion_rate": "Taux d'Achèvement",
+          "quality_score": "Score de Qualité",
+          "completion": "Achèvement",
+          "quality": "Qualité"
+        }
+      },
+      "charts": {
+        "user_growth": {
+          "title": "Croissance des Utilisateurs",
+          "description": "Suivre les inscriptions des utilisateurs au fil du temps"
+        },
+        "project_status": {
+          "title": "Répartition des Statuts des Projets",
+          "description": "Vue d'ensemble des statuts des projets sur la plateforme"
+        },
+        "task_completion": {
+          "title": "Taux de Réalisation des Tâches",
+          "description": "Surveiller les taux de réalisation des tâches dans les projets"
+        }
+      }
     }
   }
 }

@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { OptimizeDialog } from "./optimize/optimize-dialog";
 import { Link } from "react-router-dom";
+import Loading from "../ui/loading";
 
 export function ProjectHeader({
   projects,
@@ -93,11 +94,11 @@ export function ProjectHeader({
             disabled={loading}
           >
             {loading ? (
-              <span className="animate-spin">Downloading...</span>
+              <Loading />
             ) : (
               <>
                 <Download className="mr-2 h-4 w-4" />
-                Export PDF
+                {t("project.exportPDF")}
               </>
             )}
           </Button>
@@ -107,7 +108,7 @@ export function ProjectHeader({
             onClick={() => setIsOptimizeDialogOpen(true)}
           >
             <Gauge className="mr-2 h-4 w-4" />
-            Optimize
+            {t("project.optimizeProject")}
           </Button>
 
           <Button
