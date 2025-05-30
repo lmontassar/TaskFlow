@@ -160,6 +160,23 @@
       "submit_loading": "Création en cours...",
       "server_error": "Oups! Un problème est survenu.",
       "success": "Projet créé avec succès."
+    },
+    "tabs": {
+      "timeline": {
+        "title": "Chronologie du projet",
+        "views": {
+          "label": "Vue",
+          "select": "Sélectionner une vue",
+          "day": "Jour",
+          "week": "Semaine",
+          "month": "Mois"
+        },
+        "done": "Terminé",
+        "synced": "Synchronisé",
+        "task_name": "Nom de la tâche",
+        "start_date": "Date de début",
+        "end_date": "Date de fin"
+      }
     }
   },
   "tasks": {
@@ -739,6 +756,7 @@
       "analytics": "Analytique"
     },
     "overview": {
+      "export_report": "Exporter le rapport",
       "complited_tasks": "Tâches Terminées",
       "recent_users": "Utilisateurs Récents",
       "recent_user_description": "Les 5 derniers utilisateurs enregistrés",
@@ -752,6 +770,7 @@
       "blocked_users": "Utilisateurs Bloqués",
       "new_this_month": "Nouveaux Ce Mois",
       "title": "Gestion des Utilisateurs",
+      "description": "Surveiller et gérer tous les utilisateurs de la plateforme",
       "search": "Rechercher des utilisateurs...",
       "user": "Utilisateur",
       "role": "Rôle",
@@ -767,6 +786,7 @@
         "admin": "Admin",
         "user": "Utilisateur"
       },
+      "from_last_month": "du Mois Dernier",
       "status": {
         "all": "Tous les Statuts",
         "active": "Actif",
@@ -860,6 +880,113 @@
           "description": "Surveiller les taux de réalisation des tâches dans les projets"
         }
       }
+    }
+  },
+  "optimise": {
+    "title": "Optimisation du Projet",
+    "description": "Améliorez l'efficacité de votre projet en optimisant les ressources et les tâches.",
+    "schedule": {
+      "title": "Planification des Tâches",
+      "collaborators_affectations": "Affectations des Collaborateurs",
+      "resources_affectations": "Affectations des Ressources"
+    },
+    "optimization-failed": {
+      "title": "Échec de l'optimisation",
+      "description": "Une erreur s'est produite lors de l'optimisation du projet. Veuillez réessayer plus tard."
+    },
+    "steps": {
+      "title": "Chargement de l'optimisation",
+      "description": "Le processus d'optimisation est en cours. Veuillez patienter pendant que nous analysons votre projet.",
+      "1": "Requête envoyée",
+      "2": "Identification des compétences et ressources requises pour les tâches",
+      "3": "Préparation des données",
+      "4": "Démarrage de l'optimisation",
+      "5": "Optimisation terminée",
+      "6": "Terminé"
+    },
+
+    "actions": {
+      "analyze_resources": "Analyser les Ressources",
+      "identify_bottlenecks": "Identifier les Goulots d'Étranglement",
+      "suggest_improvements": "Suggérer des Améliorations",
+      "implement_changes": "Mettre en Œuvre les Changements"
+    },
+    "results": {
+      "title": "Modifications des Tâches",
+      "description1": "Le processus d'optimisation a suggéré des modifications pour",
+      "of": "sur",
+      "description2": "tâches. Passez en revue les modifications ci-dessous et enregistrez-les si vous acceptez le planning optimisé.",
+      "changes": "Modifications",
+      "modified": "Modifié",
+      "current_schedule": "Planning Actuel",
+      "optimized_schedule": "Planning Optimisé",
+      "start_date": "Date de Début",
+      "end_date": "Date de Fin",
+      "collaborators": "Collaborateurs",
+      "resources": "Ressources",
+      "new": "Nouveau"
+    },
+    "confirm_save_changes": {
+      "title": "Confirmer les Changements",
+      "description": "Êtes-vous sûr de vouloir enregistrer les modifications apportées à l'optimisation du projet ?"
+    },
+    "dialog": {
+      "success": {
+        "title": "Modifications Terminées !",
+        "description": "Votre projet a été optimisé avec succès."
+      },
+      "save-changes": {
+        "title": "Enregistrer les Modifications",
+        "description": "Veuillez patienter pendant que nous enregistrons vos modifications d'optimisation..."
+      }
+    },
+    "error-occurred": "Une erreur s'est produite lors de l'optimisation du projet.",
+    "re-optimise": "Réoptimiser",
+    "confirm": "Confirmer",
+    "show_results": "Afficher les Résultats",
+    "save_changes": "Enregistrer les Modifications",
+    "cancel": "Annuler"
+  },
+  "profile": {
+    "settings": {
+      "title": "Paramètres",
+      "description": "Personnalisez les paramètres de votre application. Les modifications seront appliquées immédiatement.",
+      "language": "Langue",
+      "2fa": {
+        "title": "Authentification à Deux Facteurs",
+        "description": "Renforcez la sécurité de votre compte avec l'authentification à deux facteurs."
+      },
+      "email_notification": {
+        "title": "Notifications par E-mail",
+        "description": "Recevez des notifications sur les événements importants par e-mail."
+      },
+      "dark_mode": {
+        "title": "Mode Sombre",
+        "description": "Activez le mode sombre pour une meilleure expérience visuelle en faible luminosité."
+      },
+      "save_changes": "Enregistrer les Modifications",
+      "cancel": "Annuler"
+    },
+
+    "edit_profile": {
+      "label": "Modifier le Profil",
+      "description": "Mettez à jour les informations de votre profil. Tous les champs sont facultatifs.",
+      "change_profile_picture": "Changer la Photo de Profil",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "job_title": "Poste",
+      "phone": "Numéro de Téléphone",
+      "bio": "Biographie",
+      "bio_placeholder": "Parlez-nous de vous",
+      "save_changes": "Enregistrer les Modifications",
+      "cancel": "Annuler"
+    },
+    "about": "À propos",
+    "logout": {
+      "title": "Déconnexion",
+      "description": "Êtes-vous sûr de vouloir vous déconnecter ?",
+      "confirm": "Oui, me déconnecter",
+      "cancel": "Non, rester connecté"
     }
   }
 }

@@ -47,6 +47,7 @@ import {
 } from "lucide-react";
 import useStatistics from "../../hooks/useStatistics";
 import Loading from "../ui/loading";
+import { useTranslation } from "react-i18next";
 
 interface Project {
   id: string;
@@ -80,7 +81,7 @@ export function AdminProjects() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const { prjcts, stats } = useStatistics();
-
+  const { t } = useTranslation();
   // Mock data based on your provided structure
   useEffect(() => {
     // Simulate API call with your data
@@ -203,7 +204,7 @@ export function AdminProjects() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <FolderKanban className="h-4 w-4" />
-              Total Projects
+              {t("admin.projects.total_projects")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -212,7 +213,9 @@ export function AdminProjects() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Active</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("admin.projects.active_projects")}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
@@ -222,7 +225,9 @@ export function AdminProjects() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("admin.projects.completed_projects")}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
@@ -232,7 +237,9 @@ export function AdminProjects() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Not Started</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("admin.projects.not_started_projects")}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">
@@ -244,7 +251,7 @@ export function AdminProjects() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              Total Budget
+              {t("admin.projects.total_budget")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -260,14 +267,14 @@ export function AdminProjects() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Project Management</CardTitle>
+              <CardTitle>{t("admin.projects.title")}</CardTitle>
               <CardDescription>
-                Monitor and manage all projects across the platform
+                {t("admin.projects.description")}
               </CardDescription>
             </div>
             <Button variant="outline" onClick={exportToCSV}>
               <Download className="mr-2 h-4 w-4" />
-              Export Report
+              {t("admin.overview.export_report")}
             </Button>
           </div>
         </CardHeader>
@@ -278,7 +285,7 @@ export function AdminProjects() {
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search projects..."
+                  placeholder={t("admin.projects.search")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-8 w-[300px]"
@@ -289,11 +296,22 @@ export function AdminProjects() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="NOT_STARTED">Not Started</SelectItem>
-                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="all">
+                    {" "}
+                    {t("admin.projects.statusList.all")}
+                  </SelectItem>
+                  <SelectItem value="IN_PROGRESS">
+                    {t("admin.projects.statusList.in_progress")}
+                  </SelectItem>
+                  <SelectItem value="COMPLETED">
+                    {t("admin.projects.statusList.completed")}
+                  </SelectItem>
+                  <SelectItem value="NOT_STARTED">
+                    {t("admin.projects.statusList.not_started")}
+                  </SelectItem>
+                  <SelectItem value="CANCELLED">
+                    {t("admin.projects.statusList.canceled")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -303,12 +321,12 @@ export function AdminProjects() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Project</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Creator</TableHead>
-                <TableHead>Budget</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
+                <TableHead>{t("admin.projects.project")}</TableHead>
+                <TableHead>{t("admin.projects.status")}</TableHead>
+                <TableHead>{t("admin.projects.owner")}</TableHead>
+                <TableHead>{t("admin.projects.budget")}</TableHead>
+                <TableHead>{t("admin.projects.start_date")}</TableHead>
+                <TableHead>{t("admin.projects.end_date")}</TableHead>
                 {/* <TableHead className="text-right">Actions</TableHead> */}
               </TableRow>
             </TableHeader>

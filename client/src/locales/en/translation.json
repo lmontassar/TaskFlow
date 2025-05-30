@@ -159,6 +159,23 @@
       "submit_loading": "Creating...",
       "success": "Project created successfully",
       "server_error": "An error occurred while creating the project"
+    },
+    "tabs": {
+      "timeline": {
+        "title": "Project Timeline",
+        "views": {
+          "label": "View",
+          "select": "Select a view",
+          "day": "Day",
+          "week": "Week",
+          "month": "Month"
+        },
+        "done": "Done",
+        "synced": "Synced",
+        "task_name": "Task Name",
+        "start_date": "Start Date",
+        "end_date": "End Date"
+      }
     }
   },
   "tasks": {
@@ -738,6 +755,7 @@
       "analytics": "Analytics"
     },
     "overview": {
+      "export_report": "Export Report",
       "complited_tasks": "Completed Tasks",
       "recent_users": "Recent Users",
       "recent_user_description": "Last 5 registered users",
@@ -751,6 +769,7 @@
       "blocked_users": "Blocked Users",
       "new_this_month": "New This Month",
       "title": "Users Management",
+      "description": "Manage and monitor all users across the platform",
       "search": "Search users...",
       "user": "User",
       "role": "Role",
@@ -766,6 +785,7 @@
         "admin": "Admin",
         "user": "User"
       },
+      "from_last_month": "From Last Month",
       "status": {
         "all": "All Statuses",
         "active": "Active",
@@ -859,6 +879,112 @@
           "description": "Monitor task completion rates in projects"
         }
       }
+    }
+  },
+  "optimise": {
+    "title": "Project Optimization",
+    "description": "Improve your project's efficiency by optimizing resources and tasks.",
+    "schedule": {
+      "title": "Task Planning",
+      "collaborators_affectations": "Collaborator Assignments",
+      "resources_affectations": "Resource Assignments"
+    },
+    "optimization-failed": {
+      "title": "Optimization failed",
+      "description": "An error occurred while optimizing the project. Please try again later."
+    },
+    "steps": {
+      "title": "Optimization Loading",
+      "description": "The optimization process is running. Please wait while we analyze your project.",
+      "1": "Request sent",
+      "2": "Tasks required skills and resources identification",
+      "3": "Preparing data",
+      "4": "Starting optimization",
+      "5": "Optimization completed",
+      "6": "Done"
+    },
+    "actions": {
+      "analyze_resources": "Analyze Resources",
+      "identify_bottlenecks": "Identify Bottlenecks",
+      "suggest_improvements": "Suggest Improvements",
+      "implement_changes": "Implement Changes"
+    },
+    "results": {
+      "title": "Tasks Changes",
+      "description1": "The optimization process has suggested changes to",
+      "of": "of",
+      "description2": "tasks. Review the changes below and save them if you agree with the optimized schedule.",
+      "changes": "Changes",
+      "modified": "Modified",
+      "current_schedule": "Current Schedule",
+      "optimized_schedule": "Optimized Schedule",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "collaborators": "Collaborators",
+      "resources": "Resources",
+      "new": "New"
+    },
+    "confirm_save_changes": {
+      "title": "Confirm Changes",
+      "description": "Are you sure you want to save the changes made to the project optimization?"
+    },
+    "dialog": {
+      "success": {
+        "title": "Changes Complete!",
+        "description": "Your project has been optimized successfully."
+      },
+      "save-changes": {
+        "title": "Save Changes",
+        "description": "Please wait while we save your optimization changes..."
+      }
+    },
+    "error-occurred": "An error occurred while optimizing the project.",
+    "re-optimise": "Re-optimize",
+    "confirm": "Confirm",
+    "save_changes": "Save Changes",
+    "show_results": "Show Results",
+    "cancel": "Cancel"
+  },
+  "profile": {
+    "settings": {
+      "title": "Settings",
+      "description": "Customize your application settings. Changes will be applied immediately.",
+      "language": "Language",
+      "2fa": {
+        "title": "Two-Factor Authentication",
+        "description": "Enhance your account security with two-factor authentication."
+      },
+      "email_notification": {
+        "title": "Email Notifications",
+        "description": "Receive notifications about important events via email."
+      },
+      "dark_mode": {
+        "title": "Dark Mode",
+        "description": "Enable dark mode for a better viewing experience in low light."
+      },
+      "save_changes": "Save Changes",
+      "cancel": "Cancel"
+    },
+
+    "edit_profile": {
+      "label": "Edit Profile",
+      "description": "Update your profile information. All fields are optional.",
+      "change_profile_picture": "Change Profile Picture",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "job_title": "Job Title",
+      "phone": "Phone Number",
+      "bio": "Bio",
+      "bio_placeholder": "Tell us about yourself",
+      "save_changes": "Save Changes",
+      "cancel": "Cancel"
+    },
+    "about": "About",
+    "logout": {
+      "title": "Logout",
+      "description": "Are you sure you want to log out?",
+      "confirm": "Yes, log out",
+      "cancel": "No, stay logged in"
     }
   }
 }

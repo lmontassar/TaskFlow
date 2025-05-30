@@ -48,6 +48,7 @@ import {
 import useStatistics from "../../hooks/useStatistics";
 import Loading from "../ui/loading";
 import { Context } from "../../App";
+import { useTranslation } from "react-i18next";
 
 interface User {
   id: string;
@@ -107,6 +108,7 @@ const exportToCSV = (data: User[], filename: string) => {
 };
 
 export function AdminUsers() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -165,7 +167,9 @@ export function AdminUsers() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("admin.users.total_users")}
+            </CardTitle>
             <Users className={`h-4 w-4 text-blue-500`} />
           </CardHeader>
           <CardContent>
@@ -174,7 +178,9 @@ export function AdminUsers() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("admin.users.active_users")}
+            </CardTitle>
             <CheckCircle className={`h-4 w-4 text-green-600`} />
           </CardHeader>
           <CardContent>
@@ -185,7 +191,9 @@ export function AdminUsers() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Blocked Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t("admin.users.blocked_users")}
+            </CardTitle>
             <Ban className={`h-4 w-4 text-red-500`} />
           </CardHeader>
           <CardContent>
@@ -197,7 +205,7 @@ export function AdminUsers() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              New This Month
+              {t("admin.users.new_this_month")}
             </CardTitle>
             <Users className={`h-4 w-4 text-blue-500`} />
           </CardHeader>
@@ -220,7 +228,7 @@ export function AdminUsers() {
               ).length *
                 100) /
                 users.length}
-              % from last month
+              % {t("admin.users.from_last_month")}
             </p>
           </CardContent>
         </Card>
@@ -231,10 +239,8 @@ export function AdminUsers() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>
-                Manage user accounts, roles, and permissions
-              </CardDescription>
+              <CardTitle> {t("admin.users.title")} </CardTitle>
+              <CardDescription>{t("admin.users.description")}</CardDescription>
             </div>
             <Button
               variant="outline"
@@ -246,7 +252,7 @@ export function AdminUsers() {
               }
             >
               <Download className="mr-2 h-4 w-4" />
-              Export Report
+              {t("admin.overview.export_report")}
             </Button>
           </div>
         </CardHeader>
@@ -257,30 +263,42 @@ export function AdminUsers() {
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search users..."
+                  placeholder={t("admin.users.search")}
                   value={searchTerm}
                   onChange={(e: any) => setSearchTerm(e.target.value)}
                   className="pl-8 w-[300px]"
                 />
               </div>
               <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger className="w-[120px]">
+                <SelectTrigger>
                   <SelectValue placeholder="Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="USER">User</SelectItem>
+                  <SelectItem value="all">
+                    {t("admin.users.roles.all")}
+                  </SelectItem>
+                  <SelectItem value="ADMIN">
+                    {t("admin.users.roles.admin")}
+                  </SelectItem>
+                  <SelectItem value="USER">
+                    {t("admin.users.roles.user")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[120px]">
+                <SelectTrigger className="">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="all">
+                    {t("admin.users.status.all")}
+                  </SelectItem>
+                  <SelectItem value="active">
+                    {t("admin.users.status.active")}
+                  </SelectItem>
+                  <SelectItem value="inactive">
+                    {t("admin.users.status.inactive")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -290,13 +308,15 @@ export function AdminUsers() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Email Activation</TableHead>
-                <TableHead>Blocked</TableHead>
-                <TableHead>Projects</TableHead>
-                <TableHead>Creation Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("admin.users.user")}</TableHead>
+                <TableHead>{t("admin.users.role")}</TableHead>
+                <TableHead>{t("admin.users.email_activation")}</TableHead>
+                <TableHead>{t("admin.users.blocked")}</TableHead>
+                <TableHead>{t("admin.users.projects")}</TableHead>
+                <TableHead>{t("admin.users.creation_date")}</TableHead>
+                <TableHead className="text-right">
+                  {t("admin.users.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -363,7 +383,7 @@ export function AdminUsers() {
                               }}
                             >
                               <Unlock className="mr-2 h-4 w-4" />
-                              Unblock User
+                              {t("admin.users.unblock_user")}
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem
@@ -374,7 +394,9 @@ export function AdminUsers() {
                               }}
                             >
                               <Ban className="mr-2 h-4 w-4 text-red-500" />
-                              <span className="text-red-500">Block User</span>
+                              <span className="text-red-500">
+                                {t("admin.users.block_user")}
+                              </span>
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>

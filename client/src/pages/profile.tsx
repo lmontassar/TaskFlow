@@ -41,6 +41,7 @@ import { Switch } from "@/components/ui/switch";
 import useProfile from "../hooks/useProfile";
 import Input46 from "../components/ui/phoneInput";
 import { Textarea } from "../components/ui/textarea";
+import { useTranslation } from "react-i18next";
 export default function Profile() {
   const {
     userData,
@@ -60,7 +61,7 @@ export default function Profile() {
     isImageChanged,
   } = useProfile();
   console.log(userData);
-
+  const { t } = useTranslation();
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Profile Header */}
@@ -101,134 +102,57 @@ export default function Profile() {
             onClick={() => setSettingsOpen(true)}
           >
             <Settings className="mr-2 h-4 w-4" />
-            Settings
+            {t("profile.settings.title")}
           </Button>
           <Button size="sm" onClick={() => setEditProfileOpen(true)}>
             <Edit className="mr-2 h-4 w-4" />
-            Edit Profile
+            {t("profile.edit_profile.label")}
           </Button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center p-6">
-            <span className="text-3xl font-bold">
-              {userData?.stats.projects}
-            </span>
-            <span className="text-sm text-muted-foreground">Projects</span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center p-6">
-            <span className="text-3xl font-bold">{userData?.stats.tasks}</span>
-            <span className="text-sm text-muted-foreground">Tasks</span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center p-6">
-            <span className="text-3xl font-bold">{userData?.stats.teams}</span>
-            <span className="text-sm text-muted-foreground">Open tasks</span>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Tabs */}
-      <Tabs
-        defaultValue="overview"
-        onValueChange={setActiveTab}
-        className="mb-8"
-      >
-        <TabsList className="mb-8">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="projects">Projects</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {/* Bio and Info */}
-            <div className="md:col-span-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle>About</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="mb-6">{userData?.bio}</p>
-                  <div className="grid gap-4">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>{userData?.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>{userData?.phoneNumber}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>Joined {userData?.joinDate}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4 text-muted-foreground" />
-                      <span>{userData?.department}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Remove the Skills section */}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="projects">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {/* Bio and Info */}
+        <div className="md:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Active Projects</CardTitle>
+              <CardTitle>{t("profile.about")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {userData?.activeProjects.map((project) => (
-                  <div key={project.id} className="rounded-lg border p-4">
-                    <div className="mb-2 flex items-center justify-between">
-                      <h3 className="font-semibold">{project.name}</h3>
-                      <Badge variant="outline">{project.role}</Badge>
-                    </div>
-                    <div className="mb-2 flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {project.tasks.completed} of {project.tasks.total} tasks
-                        completed
-                      </span>
-                      <span className="text-muted-foreground">
-                        Due: {project.dueDate}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Progress
-                        value={project.progress}
-                        className="h-2 flex-1"
-                      />
-                      <span className="text-sm font-medium">
-                        {project.progress}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
+              <p className="mb-6">{userData?.bio}</p>
+              <div className="grid gap-4">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span>{userData?.email}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <span>{userData?.phoneNumber}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span>Joined {userData?.joinDate}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <span>{userData?.department}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
 
-      
-      </Tabs>
+        {/* Remove the Skills section */}
+      </div>
 
       {/* Edit Profile Dialog */}
       <Dialog open={editProfileOpen} onOpenChange={setEditProfileOpen}>
         <DialogContent className="w-full max-w-3xl h-auto max-h-[90vh] overflow-y-auto sm:h-auto md:h-auto lg:max-h-[80vh] sm:max-h-[85vh]">
           <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogTitle>{t("profile.edit_profile.label")}</DialogTitle>
             <DialogDescription>
-              Update your profile information here. Click save when you're done.
+              {t("profile.edit_profile.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-6 py-4">
@@ -250,7 +174,7 @@ export default function Profile() {
                 htmlFor="avatar"
                 className="cursor-pointer text-sm text-primary"
               >
-                Change Profile Picture
+                {t("profile.edit_profile.change_profile_picture")}
                 <Input
                   id="avatar"
                   type="file"
@@ -264,7 +188,9 @@ export default function Profile() {
             {/* Form fields in a responsive grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">
+                  {t("profile.edit_profile.first_name")}
+                </Label>
                 <Input
                   id="firstName"
                   name="firstName"
@@ -274,7 +200,9 @@ export default function Profile() {
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">
+                  {t("profile.edit_profile.last_name")}
+                </Label>
                 <Input
                   id="lastName"
                   name="lastName"
@@ -284,7 +212,9 @@ export default function Profile() {
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="title">Job Title</Label>
+                <Label htmlFor="title">
+                  {t("profile.edit_profile.job_title")}
+                </Label>
                 <Input
                   id="title"
                   name="title"
@@ -304,10 +234,10 @@ export default function Profile() {
               </div>
 
               <div className="grid gap-3 md:col-span-2">
-                <Label htmlFor="bio">Bio</Label>
+                <Label htmlFor="bio">{t("profile.edit_profile.bio")}</Label>
                 {/* <Input id="bio" name="bio" value={profileForm.bio} onChange={handleProfileChange} /> */}
                 <Textarea
-                  placeholder="Tell us a little bit about yourself"
+                  placeholder={t("profile.edit_profile.bio_placeholder")}
                   className="resize-none"
                   id="bio"
                   name="bio"
@@ -323,14 +253,14 @@ export default function Profile() {
               variant="outline"
               onClick={() => setEditProfileOpen(false)}
             >
-              Cancel
+              {t("profile.edit_profile.cancel")}
             </Button>
             <Button
               className="flex-1 flex justify-center items-center"
               onClick={saveProfileChanges}
             >
               {(isLoading && <Loader2 className="animate-spin" />) || (
-                <>Save Changes</>
+                <>{t("profile.edit_profile.save_changes")}</>
               )}
             </Button>
           </DialogFooter>
@@ -341,16 +271,17 @@ export default function Profile() {
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
         <DialogContent className="w-full max-w-3xl h-auto max-h-[90vh] overflow-y-auto sm:h-auto md:h-auto lg:max-h-[80vh] sm:max-h-[85vh]">
           <DialogHeader>
-            <DialogTitle>Settings</DialogTitle>
+            <DialogTitle>{t("profile.settings.title")}</DialogTitle>
             <DialogDescription>
-              Customize your application settings. Changes will be applied
-              immediately.
+              {t("profile.settings.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="grid gap-3 w-full">
-                <Label htmlFor="language">Language</Label>
+                <Label htmlFor="language">
+                  {t("profile.settings.language")}
+                </Label>
                 <Select
                   className="w-1/2 max-w-full"
                   value={settingsForm.language}
@@ -367,18 +298,16 @@ export default function Profile() {
                   </SelectContent>
                 </Select>
               </div>
-
-              
             </div>
 
             <div className="space-y-4 mt-2">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="twoFactorAuth">
-                    Two-Factor Authentication
+                    {t("profile.settings.2fa.title")}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Enhance your account security with 2FA
+                    {t("profile.settings.2fa.description")}
                   </p>
                 </div>
                 <Switch
@@ -394,10 +323,10 @@ export default function Profile() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="emailNotifications">
-                    Email Notifications
+                    {t("profile.settings.email_notification.title")}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Receive email updates about your account activity
+                    {t("profile.settings.email_notification.description")}
                   </p>
                 </div>
                 <Switch
@@ -412,9 +341,11 @@ export default function Profile() {
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="darkMode">Dark Mode</Label>
+                  <Label htmlFor="darkMode">
+                    {t("profile.settings.dark_mode.title")}
+                  </Label>
                   <p className="text-sm text-muted-foreground">
-                    Switch between light and dark theme
+                    {t("profile.settings.dark_mode.description")}
                   </p>
                 </div>
                 <Switch
@@ -434,14 +365,14 @@ export default function Profile() {
               variant="outline"
               onClick={() => setSettingsOpen(false)}
             >
-              Cancel
+              {t("profile.settings.cancel")}
             </Button>
             <Button
               className="flex-1 flex justify-center items-center"
               onClick={saveSettingsChanges}
             >
               {(isLoading && <Loader2 className="animate-spin" />) || (
-                <>Save Changes</>
+                <>{t("profile.settings.save_changes")}</>
               )}
             </Button>
           </DialogFooter>

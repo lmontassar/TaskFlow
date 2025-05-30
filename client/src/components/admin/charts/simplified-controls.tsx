@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 export type TimeRange = "7d" | "30d" | "90d" | "1y" | "all";
 
@@ -41,13 +42,28 @@ export function SimplifiedControls({
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>(
     customDateRange || {}
   );
-
+  const { t } = useTranslation();
   const timeRanges = [
-    { value: "7d", label: "Last 7 days" },
-    { value: "30d", label: "Last 30 days" },
-    { value: "90d", label: "Last 90 days" },
-    { value: "1y", label: "Last year" },
-    { value: "all", label: "All time" },
+    {
+      value: "7d",
+      label: t("admin.analytics.controle.time_range.options.last_7_days"),
+    },
+    {
+      value: "30d",
+      label: t("admin.analytics.controle.time_range.options.last_30_days"),
+    },
+    {
+      value: "90d",
+      label: t("admin.analytics.controle.time_range.options.last_90_days"),
+    },
+    {
+      value: "1y",
+      label: t("admin.analytics.controle.time_range.options.last_year"),
+    },
+    {
+      value: "all",
+      label: t("admin.analytics.controle.time_range.options.all_time"),
+    },
   ];
 
   const handleDateRangeChange = (
@@ -62,13 +78,13 @@ export function SimplifiedControls({
     <Card className="mb-6">
       <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <CardTitle className="text-lg font-semibold">
-          Analytics Controls
+          {t("admin.analytics.title")}
         </CardTitle>
         <div className="flex flex-wrap items-center gap-4">
           {/* Time Range Selector */}
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-slate-600">
-              Time Range:
+              {t("admin.analytics.controle.time_range.title")}
             </span>
             <Select value={timeRange} onValueChange={onTimeRangeChange}>
               <SelectTrigger className="w-[140px]">
@@ -91,7 +107,7 @@ export function SimplifiedControls({
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="h-9">
                 <CalendarIcon className="h-4 w-4 mr-2" />
-                Custom Range
+                {t("admin.analytics.controle.time_range.options.custom")}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -114,7 +130,7 @@ export function SimplifiedControls({
             className="h-9"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh Data
+            {t("admin.analytics.controle.time_range.refresh_data")}
           </Button>
 
           <Button
@@ -124,7 +140,7 @@ export function SimplifiedControls({
             className="h-9"
           >
             <Download className="h-4 w-4 mr-2" />
-            Export Chart
+            {t("admin.analytics.controle.time_range.export_chart")}
           </Button>
         </div>
       </CardHeader>

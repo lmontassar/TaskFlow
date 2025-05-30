@@ -2,6 +2,7 @@ package com.taskflow.server.Services;
 
 import com.taskflow.server.Entities.AIChat;
 import com.taskflow.server.Entities.Project;
+import com.taskflow.server.Entities.Tache;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.AIChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,9 @@ public class AIChatService {
         aiChat.setUser(user);
         Map<String,Object> params = new HashMap<>();
         params.put("role","user");
-        String tasks = tacheService.findTacheByProjectId(aiChat.getProject()).toString();
+        List<Tache> tasksList = tacheService.findTacheByProjectId(aiChat.getProject());
+
+        String tasks = tasksList.isEmpty() ? "":tasksList.toString();
         params.put("content","You are a project management AI assistant named TaskFlowAI. You help users manage projects by creating projects, adding and assigning tasks, tracking progress, and generating reports. If someone asks something unrelated, respond that your scope is limited to project management. this is the project you will help the user for "+project.toString()+" and these are the tasks of the project :"+ tasks+" .");
         aiChat.getMessageList().add(params);
         Map<String,Object> params2 = new HashMap<>();

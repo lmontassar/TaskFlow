@@ -146,7 +146,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 <SidebarMenuButton asChild>
                   <Link to="/profile">
                     <Settings className="h-4 w-4" />
-                    <span>Settings</span>
+                    <span>{t("profile.settings.title")}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -157,7 +157,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                     className="hover:cursor-pointer"
                   >
                     <LogOut className="h-4 w-4" />
-                    <span>Logout</span>
+                    <span>{t("profile.logout.title")}</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -187,9 +187,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Logout</DialogTitle>
+            <DialogTitle>{t("profile.logout.title")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to logout?
+              {t("profile.logout.description")}
             </DialogDescription>
           </DialogHeader>
 
@@ -198,7 +198,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               variant="outline"
               onClick={() => setConfirmDialogOpen(false)}
             >
-              Cancel
+              {t("profile.logout.cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -208,7 +208,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 window.location.reload(); // Reload the page to reflect the logout
               }}
             >
-              Logout
+              {t("profile.logout.confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>

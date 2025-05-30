@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,178 +9,191 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Check, Loader2, AlertCircle, CheckCircle } from "lucide-react"
-import { OptimizationChanges } from "./optimization-changes"
-import useOptimise from "../../../hooks/useOptimise"
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Check, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { OptimizationChanges } from "./optimization-changes";
+import useOptimise from "../../../hooks/useOptimise";
+import { useTranslation } from "react-i18next";
 
 interface OptimizeDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  projectId: string
+  isOpen: boolean;
+  onClose: () => void;
+  projectId: string;
 }
 
-export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogProps) {
-  const [showConfirmation, setShowConfirmation] = useState(true)
-  const [collaboratorsAffectation, setCollaboratorsAffectation] = useState(false)
-  const [resourceAffectation, setResourceAffectation] = useState(false)
-  const [optimisationResult, setOptimizationResult] = useState<any>(null)
+export function OptimizeDialog({
+  isOpen,
+  onClose,
+  projectId,
+}: OptimizeDialogProps) {
+  const [showConfirmation, setShowConfirmation] = useState(true);
+  const [collaboratorsAffectation, setCollaboratorsAffectation] =
+    useState(false);
+  const [resourceAffectation, setResourceAffectation] = useState(false);
+  const [optimisationResult, setOptimizationResult] = useState<any>(null);
   // Optimization progress states
-  const [currentStep, setCurrentStep] = useState(0)
-  const [isOptimizing, setIsOptimizing] = useState(false)
-  const [showChanges, setShowChanges] = useState(false)
-  const { optimise, step, saveChanges } = useOptimise(projectId)
-  const [showError, setShowError] = useState(false)
-  const [errorStep, setErrorStep] = useState<number | null>(null)
-
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [showChanges, setShowChanges] = useState(false);
+  const { optimise, step, saveChanges } = useOptimise(projectId);
+  const [showError, setShowError] = useState(false);
+  const [errorStep, setErrorStep] = useState<number | null>(null);
   // Save flow states
-  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false)
-  const [showSaving, setShowSaving] = useState(false)
-  const [showSaveSuccess, setShowSaveSuccess] = useState(false)
-
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
+  const [showSaving, setShowSaving] = useState(false);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const { t } = useTranslation();
   const steps = [
-    "Request sent",
-    "Tasks required skills and resources identification",
-    "Preparing data",
-    "Starting optimization",
-    "Optimization completed",
-    "Done",
-  ]
+    t("optimise.steps.1"),
+    t("optimise.steps.2"),
+    t("optimise.steps.3"),
+    t("optimise.steps.4"),
+    t("optimise.steps.5"),
+    t("optimise.steps.6"),
+  ];
 
   useEffect(() => {
     // Simulate the optimization process
     if (step < steps.length - 1 && !showError) {
-      setCurrentStep(step)
+      setCurrentStep(step);
     } else if (step === steps.length - 1 && !showError) {
-      setIsOptimizing(false)
-      setCurrentStep(step)
+      setIsOptimizing(false);
+      setCurrentStep(step);
     }
-  }, [step, projectId, showError])
+  }, [step, projectId, showError]);
 
   const handleConfirm = async () => {
-    setShowConfirmation(false)
-    setIsOptimizing(true)
-    setShowError(false)
-    setErrorStep(null)
-    setCurrentStep(0)
+    setShowConfirmation(false);
+    setIsOptimizing(true);
+    setShowError(false);
+    setErrorStep(null);
+    setCurrentStep(0);
 
     try {
-      const opt: any = await optimise(projectId, collaboratorsAffectation, resourceAffectation)
+      const opt: any = await optimise(
+        projectId,
+        collaboratorsAffectation,
+        resourceAffectation
+      );
 
       if (opt) {
-        setOptimizationResult(opt)
-        setIsOptimizing(false)
-        setCurrentStep(steps.length - 1)
+        setOptimizationResult(opt);
+        setIsOptimizing(false);
+        setCurrentStep(steps.length - 1);
       }
     } catch (error) {
-      setShowError(true)
-      setErrorStep(currentStep)
-      setIsOptimizing(false)
+      setShowError(true);
+      setErrorStep(currentStep);
+      setIsOptimizing(false);
     }
-  }
+  };
 
   const handleReOptimize = () => {
-    setShowError(false)
-    setErrorStep(null)
-    setCurrentStep(0)
-    setIsOptimizing(true)
+    setShowError(false);
+    setErrorStep(null);
+    setCurrentStep(0);
+    setIsOptimizing(true);
 
     // Retry the optimization
-    handleConfirm()
-  }
+    handleConfirm();
+  };
 
   const handleCancel = () => {
-    onClose()
+    onClose();
     // Reset states after dialog is closed
     setTimeout(() => {
-      setShowConfirmation(true)
-      setCurrentStep(0)
-      setIsOptimizing(false)
-      setShowChanges(false)
-      setShowError(false)
-      setErrorStep(null)
-      setShowSaveConfirmation(false)
-      setShowSaving(false)
-      setShowSaveSuccess(false)
-    }, 300)
-  }
+      setShowConfirmation(true);
+      setCurrentStep(0);
+      setIsOptimizing(false);
+      setShowChanges(false);
+      setShowError(false);
+      setErrorStep(null);
+      setShowSaveConfirmation(false);
+      setShowSaving(false);
+      setShowSaveSuccess(false);
+    }, 300);
+  };
 
   const handleShowResults = () => {
-    
-
-
-    setShowChanges(true)
-  }
+    setShowChanges(true);
+  };
 
   const handleSaveChanges = () => {
-    setShowSaveConfirmation(true)
-  }
+    setShowSaveConfirmation(true);
+  };
 
   const handleConfirmSave = async () => {
-    setShowSaveConfirmation(false)
-    setShowSaving(true)
+    setShowSaveConfirmation(false);
+    setShowSaving(true);
 
     try {
-      await saveChanges(optimisationResult, collaboratorsAffectation, resourceAffectation)
-      setShowSaving(false)
-      setShowSaveSuccess(true)
+      await saveChanges(
+        optimisationResult,
+        collaboratorsAffectation,
+        resourceAffectation
+      );
+      setShowSaving(false);
+      setShowSaveSuccess(true);
     } catch (error) {
-      setShowSaving(false)
+      setShowSaving(false);
       // Handle save error if needed
-      console.error("Save failed:", error)
+      console.error("Save failed:", error);
     }
-  }
+  };
 
   const handleSaveComplete = () => {
-    setShowSaveSuccess(false)
-    onClose()
+    setShowSaveSuccess(false);
+    onClose();
     // Reset all states after dialog is closed
     setTimeout(() => {
-      setShowConfirmation(true)
-      setCurrentStep(0)
-      setIsOptimizing(false)
-      setShowChanges(false)
-      setShowError(false)
-      setErrorStep(null)
-      setShowSaveConfirmation(false)
-      setShowSaving(false)
-      setShowSaveSuccess(false)
-    }, 300)
-  }
+      setShowConfirmation(true);
+      setCurrentStep(0);
+      setIsOptimizing(false);
+      setShowChanges(false);
+      setShowError(false);
+      setErrorStep(null);
+      setShowSaveConfirmation(false);
+      setShowSaving(false);
+      setShowSaveSuccess(false);
+    }, 300);
+  };
 
   const getStepIcon = (index: number) => {
     if (showError && index === errorStep) {
-      return <AlertCircle className="h-5 w-5 text-red-600" />
+      return <AlertCircle className="h-5 w-5 text-red-600" />;
     }
 
-    if (index < currentStep || (index === currentStep && !isOptimizing && !showError)) {
-      return <Check className="h-5 w-5" />
+    if (
+      index < currentStep ||
+      (index === currentStep && !isOptimizing && !showError)
+    ) {
+      return <Check className="h-5 w-5" />;
     }
 
     if (index === currentStep && isOptimizing) {
-      return <Loader2 className="h-5 w-5 animate-spin" />
+      return <Loader2 className="h-5 w-5 animate-spin" />;
     }
 
-    return <div className="h-2 w-2 rounded-full bg-gray-400" />
-  }
+    return <div className="h-2 w-2 rounded-full bg-gray-400" />;
+  };
 
   const getStepStyle = (index: number) => {
     if (showError && index === errorStep) {
-      return "bg-red-100 text-red-600"
+      return "bg-red-100 text-red-600";
     }
 
     if (index < currentStep) {
-      return "bg-green-100 text-green-600"
+      return "bg-green-100 text-green-600";
     }
 
     if (index === currentStep) {
-      return "bg-blue-100 text-blue-600"
+      return "bg-blue-100 text-blue-600";
     }
 
-    return "bg-gray-100 text-gray-400"
-  }
+    return "bg-gray-100 text-gray-400";
+  };
 
   // Save Success Dialog
   if (showSaveSuccess) {
@@ -188,8 +201,12 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
       <Dialog open={true} onOpenChange={() => {}}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold text-green-600">Changes Complete!</DialogTitle>
-            <DialogDescription className="text-center">Your project has been optimized successfully.</DialogDescription>
+            <DialogTitle className="text-center text-xl font-bold text-green-600">
+              {t("optimise.dialog.success.title")}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {t("optimise.dialog.success.description")}
+            </DialogDescription>
           </DialogHeader>
           <div className="py-6 flex justify-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
@@ -197,13 +214,16 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
             </div>
           </div>
           <DialogFooter className="sm:justify-center">
-            <Button onClick={handleSaveComplete} className="bg-green-600 hover:bg-green-700">
-              OK
+            <Button
+              onClick={handleSaveComplete}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {t("optimise.confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   // Saving Animation Dialog
@@ -212,9 +232,11 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
       <Dialog open={true} onOpenChange={() => {}}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold">Saving Changes</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold">
+              {t("optimise.dialog.save-changes.title")}
+            </DialogTitle>
             <DialogDescription className="text-center">
-              Please wait while we save your optimization changes...
+              {t("optimise.dialog.save-changes.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="py-6 flex justify-center">
@@ -224,7 +246,7 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
           </div>
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   // Save Confirmation Dialog
@@ -233,20 +255,28 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
       <Dialog open={true} onOpenChange={() => {}}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold">Confirm Save Changes</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold">
+              {t("optimise.confirm_save_changes.title")}
+            </DialogTitle>
             <DialogDescription className="text-center">
-              Are you sure you want to save these optimization changes to your project?
+              {t("optimise.confirm_save_changes.description")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-between">
-            <Button variant="outline" onClick={() => setShowSaveConfirmation(false)}>
-              Cancel
+            <Button
+              variant="outline"
+              onClick={() => setShowSaveConfirmation(false)}
+            >
+              {t("optimise.cancel")}
             </Button>
-            <Button onClick={handleConfirmSave}>Confirm Save</Button>
+            <Button onClick={handleConfirmSave}>
+              {" "}
+              {t("optimise.confirm_save_changes.title")}{" "}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   if (showChanges) {
@@ -257,7 +287,7 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
         optimizationResult={optimisationResult}
         onSave={handleSaveChanges}
       />
-    )
+    );
   }
 
   return (
@@ -265,18 +295,23 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
       {showConfirmation ? (
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold">OPTIMIZE YOUR PLANIFICATION</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold">
+              {t("optimise.title")}
+            </DialogTitle>
             <DialogDescription className="text-center">
-              This may take time but it will be safe and we will not change anything if you don&apos;t accept changes
-              before verification.
+              {t("optimise.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="border-t border-b py-4">
-              <h3 className="mb-4 font-medium">Schedule Options</h3>
+              <h3 className="mb-4 font-medium">
+                {t("optimise.schedule.title")}
+              </h3>
               <div className="flex items-center justify-between py-2">
                 <div className="space-y-0.5">
-                  <Label htmlFor="collaborators">Collaborators affectations</Label>
+                  <Label htmlFor="collaborators">
+                    {t("optimise.schedule.collaborators_affectations")}
+                  </Label>
                 </div>
                 <Switch
                   id="collaborators"
@@ -286,36 +321,48 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
               </div>
               <div className="flex items-center justify-between py-2">
                 <div className="space-y-0.5">
-                  <Label htmlFor="resources">Resource affectations</Label>
+                  <Label htmlFor="resources">
+                    {t("optimise.schedule.resources_affectations")}
+                  </Label>
                 </div>
-                <Switch id="resources" checked={resourceAffectation} onCheckedChange={setResourceAffectation} />
+                <Switch
+                  id="resources"
+                  checked={resourceAffectation}
+                  onCheckedChange={setResourceAffectation}
+                />
               </div>
             </div>
           </div>
           <DialogFooter className="sm:justify-between">
             <Button variant="outline" onClick={handleCancel}>
-              Cancel
+              {t("optimise.cancel")}
             </Button>
-            <Button onClick={handleConfirm}>Confirm</Button>
+            <Button onClick={handleConfirm}>{t("optimise.confirm")}</Button>
           </DialogFooter>
         </DialogContent>
       ) : (
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-center text-xl font-bold">
-              {showError ? "Optimization Failed" : "Optimization Loading"}
+              {showError
+                ? t("optimise.optimization-failed.title")
+                : t("optimise.steps.title")}
             </DialogTitle>
             <DialogDescription className="text-center">
               {showError
-                ? "An error occurred during optimization. Please try again."
-                : "Please wait, this may take a few minutes..."}
+                ? t("optimise.optimization-failed.description")
+                : t("optimise.steps.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="py-6">
             <div className="space-y-6">
               {steps.map((step, index) => (
                 <div key={index} className="flex items-center">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${getStepStyle(index)}`}>
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-full ${getStepStyle(
+                      index
+                    )}`}
+                  >
                     {getStepIcon(index)}
                   </div>
                   <div
@@ -323,11 +370,17 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
                       index <= currentStep || (showError && index === errorStep)
                         ? "text-foreground"
                         : "text-muted-foreground"
-                    } ${showError && index === errorStep ? "text-red-600 font-medium" : ""}`}
+                    } ${
+                      showError && index === errorStep
+                        ? "text-red-600 font-medium"
+                        : ""
+                    }`}
                   >
                     {step}
                     {showError && index === errorStep && (
-                      <span className="ml-2 text-sm text-red-500">- Error occurred</span>
+                      <span className="ml-2 text-sm text-red-500">
+                        - {t("optimise.error-occurred")}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -338,16 +391,20 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
             {showError ? (
               <>
                 <Button variant="outline" onClick={handleCancel}>
-                  Cancel
+                  {t("optimise.cancel")}
                 </Button>
-                <Button onClick={handleReOptimize} className="bg-blue-600 hover:bg-blue-700">
-                  Re-Optimize
+                <Button
+                  onClick={handleReOptimize}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {t("optimise.re-optimise")}
                 </Button>
               </>
-            ) : currentStep === steps.length - 1 && optimisationResult!=null ? (
+            ) : currentStep === steps.length - 1 &&
+              optimisationResult != null ? (
               <>
                 <Button variant="outline" onClick={handleCancel}>
-                  Cancel
+                  {t("optimise.cancel")}
                 </Button>
                 <Button onClick={handleShowResults}>Show the results</Button>
               </>
@@ -356,5 +413,5 @@ export function OptimizeDialog({ isOpen, onClose, projectId }: OptimizeDialogPro
         </DialogContent>
       )}
     </Dialog>
-  )
+  );
 }

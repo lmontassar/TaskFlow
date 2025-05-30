@@ -57,21 +57,21 @@ export function AdminOverview() {
   const { user } = useContext(Context);
   const systemStats = [
     {
-      title: "Total Users",
+      title: t("admin.users.total_users"),
       value: overviewData?.user ?? "N/A",
       change: "+12%",
       icon: Users,
       color: "text-blue-600",
     },
     {
-      title: "Active Projects",
+      title: t("admin.projects.active_projects"),
       value: overviewData?.project?.inProgress ?? "N/A",
       change: "0%",
       icon: FolderKanban,
       color: "text-green-600",
     },
     {
-      title: "Completed Tasks",
+      title: t("admin.overview.complited_tasks"),
       value: overviewData?.task?.completed ?? "N/A",
       change: "0%",
       icon: CheckSquare,
@@ -148,10 +148,6 @@ export function AdminOverview() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">{stat.change}</span> from last
-                month
-              </p>
             </CardContent>
           </Card>
         ))}
@@ -159,20 +155,24 @@ export function AdminOverview() {
       {/* Recent Users */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Users</CardTitle>
-          <CardDescription>Overall the recent 5 users.</CardDescription>
+          <CardTitle> {t("admin.overview.recent_users")} </CardTitle>
+          <CardDescription>
+            {t("admin.overview.recent_user_description")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Email Activation</TableHead>
-                <TableHead>Blocked</TableHead>
-                <TableHead>Projects</TableHead>
-                <TableHead>Creation Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("admin.users.user")}</TableHead>
+                <TableHead>{t("admin.users.role")}</TableHead>
+                <TableHead>{t("admin.users.email_activation")}</TableHead>
+                <TableHead>{t("admin.users.blocked")}</TableHead>
+                <TableHead>{t("admin.users.projects")}</TableHead>
+                <TableHead>{t("admin.users.creation_date")}</TableHead>
+                <TableHead className="text-right">
+                  {t("admin.users.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -239,7 +239,7 @@ export function AdminOverview() {
                               }}
                             >
                               <Unlock className="mr-2 h-4 w-4" />
-                              Unblock User
+                              {t("admin.users.unblock_user")}
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem
@@ -250,7 +250,9 @@ export function AdminOverview() {
                               }}
                             >
                               <Ban className="mr-2 h-4 w-4 text-red-500" />
-                              <span className="text-red-500">Block User</span>
+                              <span className="text-red-500">
+                                {t("admin.users.block_user")}
+                              </span>
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
@@ -266,19 +268,21 @@ export function AdminOverview() {
       {/* Recent Projects */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Projects</CardTitle>
-          <CardDescription>Overall the recent 5 projects.</CardDescription>
+          <CardTitle>{t("admin.overview.recent_projects")}</CardTitle>
+          <CardDescription>
+            {t("admin.overview.recent_projects_description")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Project</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Creator</TableHead>
-                <TableHead>Budget</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
+                <TableHead>{t("admin.projects.project")}</TableHead>
+                <TableHead>{t("admin.projects.status")}</TableHead>
+                <TableHead>{t("admin.projects.owner")}</TableHead>
+                <TableHead>{t("admin.projects.budget")}</TableHead>
+                <TableHead>{t("admin.projects.start_date")}</TableHead>
+                <TableHead>{t("admin.projects.end_date")}</TableHead>
                 {/* <TableHead className="text-right">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
