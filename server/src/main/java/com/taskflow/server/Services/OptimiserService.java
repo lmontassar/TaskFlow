@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taskflow.server.Entities.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -35,6 +36,8 @@ public class OptimiserService {
     private AIChatService aiChatService;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Value("${server.ai_url}")
+    private String AI_URL;
     public ArrayNode getDescription(ObjectNode data) throws InterruptedException, JsonProcessingException {
         AIChat aiChat = new AIChat();
         List<Map<String, Object>> messageList = new ArrayList<>();
@@ -372,7 +375,7 @@ public class OptimiserService {
             HttpEntity<String> entity = new HttpEntity<>(json, headers);
             // Send POST request
             ResponseEntity<Map> response = restTemplate.exchange(
-                    "http://localhost:8000/schedule",
+                    AI_URL,
                     HttpMethod.POST,
                     entity,
                     Map.class);
