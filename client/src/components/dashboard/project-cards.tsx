@@ -10,6 +10,10 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import useProject from "../../hooks/useProject";
+import { useTranslation } from "react-i18next";
+import { useContext, useEffect, useState } from "react";
+import { Context } from "../../App";
 
 interface ProjectCardsProps {
   className?: string;
@@ -88,21 +92,34 @@ export function ProjectCards({ className }: ProjectCardsProps) {
       ],
     },
   ];
+  const { user } = useContext(Context);
+
+  const { ProjectSummaryList, loadingSummary } = useProject();
+  const [projectSummary, setProjectSummary] = useState([]);
+  const { t } = useTranslation();
+  // const projectSummary = await ProjectSummaryList(userId);
+  useEffect(() => {
+    const fetchProjectSummary = async () => {
+      const summary = await ProjectSummaryList(user?.id || "");
+      setProjectSummary(summary);
+    };
+    fetchProjectSummary();
+  }, [user?.id]);
+  console.log("projects", projectSummary);
 
   return (
     <div className={cn("space-y-4", className)}>
-      <h2 className="text-xl font-semibold">Active Projects</h2>
       <div className="grid gap-4">
-        {projects.map((project) => (
-          <Card key={project.id}>
+        {projectSummary.map((project: any) => (
+          <Card key={project?.id}>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>{project.name}</CardTitle>
+                <CardTitle>{project?.name}</CardTitle>
                 <Badge
                   variant={
-                    project.status === "In Progress"
+                    project.status === "IN_PROGRESS"
                       ? "default"
-                      : project.status === "Just Started"
+                      : project.status === "NOT_STARTED"
                       ? "secondary"
                       : "outline"
                   }
@@ -110,7 +127,7 @@ export function ProjectCards({ className }: ProjectCardsProps) {
                   {project.status}
                 </Badge>
               </div>
-              <CardDescription>{project.description}</CardDescription>
+              {/* <CardDescription>{project.description}</CardDescription> */}
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -123,9 +140,9 @@ export function ProjectCards({ className }: ProjectCardsProps) {
             </CardContent>
             <CardFooter className="flex justify-between">
               <div className="text-sm text-muted-foreground">
-                Due: {project.dueDate}
+                Due: {project.due}
               </div>
-              <div className="flex -space-x-2">
+              {/* <div className="flex -space-x-2">
                 {project.team.map((member, i) => (
                   <Avatar
                     key={i}
@@ -135,7 +152,7 @@ export function ProjectCards({ className }: ProjectCardsProps) {
                     <AvatarFallback>{member.initials}</AvatarFallback>
                   </Avatar>
                 ))}
-              </div>
+              </div> */}
             </CardFooter>
           </Card>
         ))}

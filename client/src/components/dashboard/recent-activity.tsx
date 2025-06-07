@@ -54,7 +54,7 @@ export function RecentActivity() {
   ];
 
   return (
-    <Card className="col-span-full">
+    <Card className="col-span-full overflow-y-scroll max-h-[400px]">
       <CardHeader>
         <CardTitle>Recent Activity</CardTitle>
       </CardHeader>
