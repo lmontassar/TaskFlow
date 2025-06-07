@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +38,8 @@ import AddResource from "../../ui/AddResource";
 import ResourceDetail from "../../ui/ResourceDetail";
 import EditResource from "../../ui/EditResource";
 import ResourcesTable from "../../ui/ResourcesTable";
+import { Context } from "../../../App";
+import hasPermission from "../../../utils/authz";
 
 interface Resource {
   id: string;
@@ -78,6 +80,7 @@ export function ProjectResources({ project }: { project: any }) {
   const [resources, setResources] = useState<Resource[]>(
     project.listeRessource || []
   );
+  const { user } = useContext(Context);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -103,6 +106,14 @@ export function ProjectResources({ project }: { project: any }) {
 
   const [isOpenDialog, setIsOpenDialog] = useState(false);
   const { createResource, editResource, deleteResource } = useResources();
+  let isAllowedToModifieResource = false;
+  let role = "memeber";
+  if (project?.createur?.id === user?.id) {
+    role = "creator";
+  }
+  if (hasPermission(role, "edit", "resource")) {
+    isAllowedToModifieResource = true;
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -332,10 +343,12 @@ export function ProjectResources({ project }: { project: any }) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>{t("resource.title")}</CardTitle>
-          <Button onClick={openAddDialog}>
-            <Plus className="mr-2 h-4 w-4" />
-            {t("resource.add_resource")}
-          </Button>
+          {isAllowedToModifieResource && (
+            <Button onClick={openAddDialog}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("resource.add_resource")}
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -384,6 +397,7 @@ export function ProjectResources({ project }: { project: any }) {
           </div>
           {/* Resources Table */}
           <ResourcesTable
+            permession={isAllowedToModifieResource}
             filteredResources={filteredResources}
             t={t}
             openDialog={openDialog}

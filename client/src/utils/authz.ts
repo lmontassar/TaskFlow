@@ -4,6 +4,11 @@ const PERMISSIONS = {
     "edit:project",
     "delete:project",
     "addCollaborator:project",
+    "add:resource",
+    "edit:resource",
+    "delete:resource",
+    "delete:collaborator",
+    "edit:collaborator",
   ],
   memeber: ["read"],
 };

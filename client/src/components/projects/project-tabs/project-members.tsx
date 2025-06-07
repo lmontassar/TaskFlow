@@ -6,8 +6,10 @@ import MemberTable from "../../ui/MemberTable";
 import { Search } from "lucide-react";
 import { Input } from "../../ui/input";
 import { useTranslation } from "react-i18next";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Badge } from "../../ui/badge";
+import hasPermission from "../../../utils/authz";
+import { Context } from "../../../App";
 
 export function ProjectMembers({ project, isLoading }: any) {
   const [collaborators, setCollaborators] = useState(
@@ -34,6 +36,15 @@ export function ProjectMembers({ project, isLoading }: any) {
   const [currentMember, setCurrentMember] = useState<any>(null);
   const [deleteTrigger, setDeleteTrigger] = useState(false);
   const { removeCollaborator, addSkill, removeSkill } = useProject();
+  const { user } = useContext(Context);
+  let isAllowedToModifieMembers = false;
+  let role = "memeber";
+  if (project?.createur?.id === user?.id) {
+    role = "creator";
+  }
+  if (hasPermission(role, "edit", "collaborator")) {
+    isAllowedToModifieMembers = true;
+  }
   const handleDelete = async () => {
     if (!currentMember) return;
     const updatedProject = await removeCollaborator(
@@ -118,6 +129,7 @@ export function ProjectMembers({ project, isLoading }: any) {
         </div>
         {/* Resources Table */}
         <MemberTable
+          isAllowedToModifieMembers={isAllowedToModifieMembers}
           filteredMembers={filteredMembers}
           t={t}
           getRoleBadge={getRoleBadge}
