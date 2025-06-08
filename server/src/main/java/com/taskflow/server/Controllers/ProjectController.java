@@ -193,26 +193,21 @@ public class ProjectController {
                                         @PathVariable String projectId,
                                         @PathVariable String userId) {
         try {
-
             User user = userService.findById(userId);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
-
             Project project = projectService.getProjectById(projectId);
             if (project == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found");
             }
-
             Project updatedProject = projectService.removeCollaborator(project, user);
-
             if (updatedProject == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to remove collaborator.");
             }
-
             return ResponseEntity.ok(updatedProject);
         } catch (Exception e) {
-            e.printStackTrace(); // for console debugging
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
@@ -234,7 +229,6 @@ public class ProjectController {
             if (!Objects.equals(project.getCreateur().getId(), userId)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not authorized to update this project");
             }
-
 
             // Prepare the updated project fields from the request body
             String nom = projectUpdateRequest.getNom();
@@ -258,9 +252,6 @@ public class ProjectController {
             // Set the parsed Date objects to the project
             project.setDateDebut(startDateAsDate);
             project.setDateFinEstime(endDateAsDate);
-
-
-
 
             // Update the project object with the new values
             project.setNom(nom);

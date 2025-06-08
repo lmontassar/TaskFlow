@@ -24,7 +24,7 @@ export function Message({ message, isOwn, referencedMessage, onEdit, onDelete, o
 
   const handleEdit = () => {
     setIsEditing(true)
-    setEditText(message.text)
+    setEditText(message?.text)
     setEditAttachments([...message.attachments])
   }
 

@@ -177,7 +177,6 @@ public class TacheService {
     public List<Tache> getTasksCanBePrecedente(Tache task) {
         List<Tache> allTasks = tacheRep.getAllByProject(task.getProject());
         List<Tache> result = new ArrayList<>();
-
         for (Tache t : allTasks) {
             if (t.equals(task))
                 continue;
