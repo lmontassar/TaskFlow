@@ -1,41 +1,86 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import useGetProject from "../../hooks/useGetProjects";
+import { useContext, useEffect, useState } from "react";
+import { Context } from "../../App";
 
 export function TeamMembers() {
-  const members = [
-    {
-      name: "Alex Johnson",
-      role: "Project Manager",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "AJ",
-      status: "online",
-    },
-    {
-      name: "Sarah Miller",
-      role: "UI/UX Designer",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "SM",
-      status: "online",
-    },
-    {
-      name: "David Chen",
-      role: "Frontend Developer",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "DC",
-      status: "offline",
-    },
-    {
-      name: "Emma Wilson",
-      role: "Backend Developer",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "EW",
-      status: "online",
-    },
-  ];
+  const { projects } = useGetProject();
+  type Member = {
+    id: string;
+    name: string;
+    role: any;
+    avatar: string;
+    initials: string;
+    status: any;
+  };
+  const [members, setMembers] = useState<Member[]>([]);
+  const { user } = useContext(Context);
+  // Update members when projects change
+  useEffect(() => {
+    const uniqueMembers: Member[] = [];
+    projects.forEach((project: any) => {
+      if (project.listeCollaborateur) {
+        project.listeCollaborateur.forEach((collaborator: any) => {
+          if (
+            collaborator.user &&
+            collaborator.user.id !== user?.id && // Exclude the current user
+            !uniqueMembers.some((m) => m.id === collaborator.user.id)
+          ) {
+            uniqueMembers.push({
+              id: collaborator.user.id,
+              name: `${collaborator?.user?.prenom ?? ""} ${
+                collaborator?.user?.nom ?? ""
+              }`.trim(),
+              role: collaborator.role,
+              avatar:
+                collaborator.user.avatar ||
+                "/placeholder.svg?height=40&width=40",
+              initials: `${collaborator.user.prenom?.charAt(0) ?? ""}${
+                collaborator.user.nom?.charAt(0) ?? ""
+              }`,
+              status: project.nom,
+            });
+          }
+        });
+      }
+    });
+    setMembers(uniqueMembers);
+  }, [projects]);
+  // const members = [
+  //   {
+  //     name: "Alex Johnson",
+  //     role: "Project Manager",
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     initials: "AJ",
+  //     status: "online",
+  //   },
+  //   {
+  //     name: "Sarah Miller",
+  //     role: "UI/UX Designer",
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     initials: "SM",
+  //     status: "online",
+  //   },
+  //   {
+  //     name: "David Chen",
+  //     role: "Frontend Developer",
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     initials: "DC",
+  //     status: "offline",
+  //   },
+  //   {
+  //     name: "Emma Wilson",
+  //     role: "Backend Developer",
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     initials: "EW",
+  //     status: "online",
+  //   },
+  // ];
 
   return (
-    <Card>
+    <Card className="overflow-y-scroll max-h-[400px]">
       <CardHeader>
         <CardTitle>Team Members</CardTitle>
       </CardHeader>
@@ -56,10 +101,7 @@ export function TeamMembers() {
                   <p className="text-sm text-muted-foreground">{member.role}</p>
                 </div>
               </div>
-              <Badge
-                variant={member.status === "online" ? "default" : "outline"}
-                className="capitalize"
-              >
+              <Badge variant={"default"} className="capitalize">
                 {member.status}
               </Badge>
             </div>

@@ -9,6 +9,7 @@ import {
 } from "./table";
 
 function ResourcesTable({
+  permession,
   filteredResources,
   t,
   openDialog,
@@ -72,14 +73,18 @@ function ResourcesTable({
                       className="mr-2 h-4 w-4 "
                       onClick={() => openDialog(resource)}
                     />
-                    <Edit
-                      className="mr-2 h-4 w-4 text-green-600"
-                      onClick={() => openEditDialog(resource)}
-                    />
-                    <Trash2
-                      className="mr-2 h-4 w-4 text-red-600"
-                      onClick={() => openDeleteDialog(resource)}
-                    />
+                    {permession && (
+                      <>
+                        <Edit
+                          className="mr-2 h-4 w-4 text-green-600"
+                          onClick={() => openEditDialog(resource)}
+                        />
+                        <Trash2
+                          className="mr-2 h-4 w-4 text-red-600"
+                          onClick={() => openDeleteDialog(resource)}
+                        />
+                      </>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

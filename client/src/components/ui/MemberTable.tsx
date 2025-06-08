@@ -30,6 +30,7 @@ import {
 import { Input } from "./input";
 
 function MemberTable({
+  isAllowedToModifieMembers,
   filteredMembers,
   t,
   getRoleBadge,
@@ -66,7 +67,9 @@ function MemberTable({
               <TableHead>{t("member.lastname")}</TableHead>
               <TableHead>{t("member.email")}</TableHead>
               <TableHead>{t("member.role.title")}</TableHead>
-              <TableHead className="w-20"></TableHead>
+              {isAllowedToModifieMembers && (
+                <TableHead className="w-20"></TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -78,24 +81,26 @@ function MemberTable({
                   <TableCell>{member.user.prenom}</TableCell>
                   <TableCell>{member.user.email}</TableCell>
                   <TableCell>{getRoleBadge(member.role)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-2">
-                      <Edit
-                        className="mr-2 h-4 w-4 text-blue-600 cursor-pointer"
-                        onClick={() => {
-                          setEditTrigger(true);
-                          setCurrentMember(member);
-                        }}
-                      />
-                      <Trash2
-                        className="mr-2 h-4 w-4 text-red-600 cursor-pointer"
-                        onClick={() => {
-                          setDeleteTrigger(true);
-                          setCurrentMember(member.user);
-                        }}
-                      />
-                    </div>
-                  </TableCell>
+                  {isAllowedToModifieMembers && (
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-2">
+                        <Edit
+                          className="mr-2 h-4 w-4 text-blue-600 cursor-pointer"
+                          onClick={() => {
+                            setEditTrigger(true);
+                            setCurrentMember(member);
+                          }}
+                        />
+                        <Trash2
+                          className="mr-2 h-4 w-4 text-red-600 cursor-pointer"
+                          onClick={() => {
+                            setDeleteTrigger(true);
+                            setCurrentMember(member.user);
+                          }}
+                        />
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             ) : (
