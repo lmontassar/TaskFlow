@@ -79,12 +79,21 @@ const useLogin = () => {
           setIsLoading(false);
           return;
         }
-        console.log(data);
-        await localStorage.setItem("authToken", data.jwt);
-        setUser(data.user);
-        setIsLoading(false);
+       
+        const decoded:any = jwtDecode(data.jwt);
+         console.log(decoded);
+        if( decoded?.activation == false ){
+          localStorage.setItem("token",data.jwt);
+          navigate("/emailverification");
+        } else {
+          localStorage.setItem("authToken", data.jwt);
+          setUser(data.user);
+          setIsLoading(false);
+          navigate("/home");
+        }
+        
 
-        navigate("/home");
+        
       }
       if (response.status === 400) {
         setError(t("login.error"));

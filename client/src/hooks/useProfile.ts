@@ -180,7 +180,7 @@ const useProfile = () => {
         const res = await fetch("/api/user/update/settings", {
           method: "PUT",
           headers: {
-            Authorization: token,
+            Authorization: `Bearer ${token}`,
           },
           body: updatedSettings,
         });
