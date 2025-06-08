@@ -5,8 +5,10 @@ import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { TeamMembers } from "@/components/dashboard/team-members";
 import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks";
 import { ProjectStats } from "@/components/dashboard/project-stats";
+import useGetProject from "../../hooks/useGetProjects";
 
 export default function DashboardPage() {
+  const { projects } = useGetProject();
   return (
     <>
       <DashboardHeader
@@ -14,16 +16,16 @@ export default function DashboardPage() {
         text="Manage your projects and track progress."
       />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <ProjectStats />
+        <ProjectStats projects={projects} />
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <ProjectCards className="col-span-4" />
         <div className="col-span-3 grid gap-4">
           <UpcomingTasks />
-          <TeamMembers />
+          <TeamMembers projects={projects} />
         </div>
       </div>
-      <RecentActivity />
+      {/* <RecentActivity /> */}
     </>
   );
 }
