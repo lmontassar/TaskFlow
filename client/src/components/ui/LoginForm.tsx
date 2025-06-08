@@ -6,9 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Github, Loader2 } from "lucide-react";
 import React, {
-  useState,
-  ChangeEvent,
-  FormEvent,
   useEffect,
   useContext,
 } from "react";
@@ -56,8 +53,9 @@ const GoogleLoginButton = () => {
 
         if (res.ok) {
           const data = await res.json();
-          await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
+          await localStorage.setItem("authToken", data.jwt);
           setUser(data.user);
+
           navigate("/home");
         } else if (res.status === 401) {
           console.log("Invalid ID token");

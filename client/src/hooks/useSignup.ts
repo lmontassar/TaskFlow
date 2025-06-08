@@ -116,7 +116,7 @@ import { useNavigate } from "react-router-dom";
           setStep(1);
           let ErrorMessage : any ="";
           switch (response.status) {
-            case 400 :{   ErrorMessage = t("errors.server") ;break }
+            case 400:{   ErrorMessage = t("errors.server") ;break }
             case 403:{    ErrorMessage = t("OTP.errors.send_code.status_403") ;break }
             case 429:{    ErrorMessage = t("OTP.errors.send_code.status_429") ;break }
             case 500:{    ErrorMessage = t("OTP.errors.send_code.status_500") ;break }

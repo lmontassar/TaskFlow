@@ -947,12 +947,15 @@
   },
   "profile": {
     "settings": {
+      "select_language": "Select language",
+      "english": "English",
+      "french": "French",
       "title": "Settings",
       "description": "Customize your application settings. Changes will be applied immediately.",
       "language": "Language",
       "2fa": {
         "title": "Two-Factor Authentication",
-        "description": "Enhance your account security with two-factor authentication."
+        "description": "Strengthen your account security with two-factor authentication."
       },
       "email_notification": {
         "title": "Email Notifications",
@@ -960,12 +963,11 @@
       },
       "dark_mode": {
         "title": "Dark Mode",
-        "description": "Enable dark mode for a better viewing experience in low light."
+        "description": "Enable dark mode for a better visual experience in low light."
       },
       "save_changes": "Save Changes",
       "cancel": "Cancel"
     },
-
     "edit_profile": {
       "label": "Edit Profile",
       "description": "Update your profile information. All fields are optional.",
@@ -974,16 +976,18 @@
       "last_name": "Last Name",
       "job_title": "Job Title",
       "phone": "Phone Number",
-      "bio": "Bio",
+      "bio": "Biography",
       "bio_placeholder": "Tell us about yourself",
       "save_changes": "Save Changes",
       "cancel": "Cancel"
     },
     "about": "About",
+    "title_not_provided": "Title not provided",
+    "joined": "Joined",
     "logout": {
       "title": "Logout",
       "description": "Are you sure you want to log out?",
-      "confirm": "Yes, log out",
+      "confirm": "Yes, log me out",
       "cancel": "No, stay logged in"
     }
   }
