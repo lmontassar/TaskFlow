@@ -4,22 +4,15 @@ import {
   Briefcase,
   Calendar,
   Edit,
-  FileText,
   Loader2,
   Mail,
-  MapPin,
   Phone,
   Settings,
-  User,
-  Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -42,10 +35,10 @@ import useProfile from "../hooks/useProfile";
 import Input46 from "../components/ui/phoneInput";
 import { Textarea } from "../components/ui/textarea";
 import { useTranslation } from "react-i18next";
+
 export default function Profile() {
   const {
     userData,
-    setActiveTab,
     editProfileOpen,
     setEditProfileOpen,
     profileForm,
@@ -62,6 +55,7 @@ export default function Profile() {
   } = useProfile();
   console.log(userData);
   const { t } = useTranslation();
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Profile Header */}
@@ -85,13 +79,15 @@ export default function Profile() {
               <BadgeCheck className="h-5 w-5 text-primary" />
             )}
           </div>
-          <p className="text-muted-foreground">{userData?.title}</p>
+          {/* <p className="text-muted-foreground">{userData?.title}</p> */}
           <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4" />
-            <span>{userData?.location}</span>
-            <span className="mx-1">•</span>
             <Briefcase className="h-4 w-4" />
-            <span>{userData?.department}</span>
+            {/* FIX: Translated "Title not provided" */}
+            <span>
+              {userData?.title
+                ? userData?.title
+                : t("profile.title_not_provided")}
+            </span>
           </div>
         </div>
 
@@ -126,17 +122,28 @@ export default function Profile() {
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span>{userData?.email}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{userData?.phoneNumber}</span>
-                </div>
+                {userData?.phoneNumber && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span>{userData?.phoneNumber}</span>
+                  </div>
+                )}
+
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>Joined {userData?.joinDate}</span>
+                   {/* FIX: Translated "Joined" */}
+                  <span>
+                    {t("profile.joined")} {userData?.joinDate}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  <span>{userData?.department}</span>
+                  {/* FIX: Translated "Title not provided" */}
+                  <span>
+                    {userData?.title
+                      ? userData?.title
+                      : t("profile.title_not_provided")}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -290,11 +297,19 @@ export default function Profile() {
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select language" />
+                    {/* FIX: Translated placeholder */}
+                    <SelectValue
+                      placeholder={t("profile.settings.select_language")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="french">French</SelectItem>
+                    {/* FIX: Translated options */}
+                    <SelectItem value="english">
+                      {t("profile.settings.english")}
+                    </SelectItem>
+                    <SelectItem value="french">
+                      {t("profile.settings.french")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -316,44 +331,6 @@ export default function Profile() {
                   checked={settingsForm.twoFactorAuth}
                   onCheckedChange={(checked) =>
                     handleSettingsChange("twoFactorAuth", checked)
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="emailNotifications">
-                    {t("profile.settings.email_notification.title")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("profile.settings.email_notification.description")}
-                  </p>
-                </div>
-                <Switch
-                  disabled
-                  id="emailNotifications"
-                  checked={settingsForm.emailNotifications}
-                  onCheckedChange={(checked) =>
-                    handleSettingsChange("emailNotifications", checked)
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="darkMode">
-                    {t("profile.settings.dark_mode.title")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("profile.settings.dark_mode.description")}
-                  </p>
-                </div>
-                <Switch
-                  disabled
-                  id="darkMode"
-                  checked={settingsForm.darkMode}
-                  onCheckedChange={(checked) =>
-                    handleSettingsChange("darkMode", checked)
                   }
                 />
               </div>

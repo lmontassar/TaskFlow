@@ -904,7 +904,6 @@
       "5": "Optimisation terminée",
       "6": "Terminé"
     },
-
     "actions": {
       "analyze_resources": "Analyser les Ressources",
       "identify_bottlenecks": "Identifier les Goulots d'Étranglement",
@@ -949,6 +948,9 @@
   },
   "profile": {
     "settings": {
+      "select_language": "Sélectionner la langue",
+      "english": "Anglais",
+      "french": "Français",
       "title": "Paramètres",
       "description": "Personnalisez les paramètres de votre application. Les modifications seront appliquées immédiatement.",
       "language": "Langue",
@@ -967,7 +969,6 @@
       "save_changes": "Enregistrer les Modifications",
       "cancel": "Annuler"
     },
-
     "edit_profile": {
       "label": "Modifier le Profil",
       "description": "Mettez à jour les informations de votre profil. Tous les champs sont facultatifs.",
@@ -982,6 +983,8 @@
       "cancel": "Annuler"
     },
     "about": "À propos",
+    "title_not_provided": "Titre non fourni",
+    "joined": "Rejoint le",
     "logout": {
       "title": "Déconnexion",
       "description": "Êtes-vous sûr de vouloir vous déconnecter ?",
