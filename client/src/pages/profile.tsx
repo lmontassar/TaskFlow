@@ -54,7 +54,12 @@ export default function Profile() {
     isImageChanged,
   } = useProfile();
   console.log(userData);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -131,7 +136,7 @@ export default function Profile() {
 
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                   {/* FIX: Translated "Joined" */}
+                  {/* FIX: Translated "Joined" */}
                   <span>
                     {t("profile.joined")} {userData?.joinDate}
                   </span>
@@ -292,22 +297,22 @@ export default function Profile() {
                 <Select
                   className="w-1/2 max-w-full"
                   value={settingsForm.language}
-                  onValueChange={(value) =>
-                    handleSettingsChange("language", value)
+                  onValueChange={(value: any) =>
+                    changeLanguage(value)
                   }
                 >
                   <SelectTrigger className="w-full">
                     {/* FIX: Translated placeholder */}
                     <SelectValue
-                      placeholder={t("profile.settings.select_language")}
-                    />
+                     
+                    >{i18n.language == "en" ? t("profile.settings.english") : t("profile.settings.french")} </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {/* FIX: Translated options */}
-                    <SelectItem value="english">
+                    <SelectItem value="en">
                       {t("profile.settings.english")}
                     </SelectItem>
-                    <SelectItem value="french">
+                    <SelectItem value="fr">
                       {t("profile.settings.french")}
                     </SelectItem>
                   </SelectContent>
