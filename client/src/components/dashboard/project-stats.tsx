@@ -1,7 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, Users, FolderKanban } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { Context } from "../../App";
+import { set } from "lodash";
 
-export function ProjectStats() {
+export function ProjectStats({ projects }: { projects: any[] }) {
+  const [TeamMembers, setTeamMembers] = useState<number>(0);
+  const { user } = useContext(Context);
+  useEffect(() => {
+    const totalMembers = projects.reduce(
+      (sum, project: any) =>
+        sum +
+        (project.listeCollaborateur ? project.listeCollaborateur.length : 0),
+      0
+    );
+    setTeamMembers(totalMembers);
+  }, [projects]);
   return (
     <>
       <Card>
@@ -10,8 +24,7 @@ export function ProjectStats() {
           <FolderKanban className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">12</div>
-          <p className="text-xs text-muted-foreground">+2 from last month</p>
+          <div className="text-2xl font-bold">{projects.length}</div>
         </CardContent>
       </Card>
       <Card>
@@ -20,8 +33,12 @@ export function ProjectStats() {
           <Clock className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">7</div>
-          <p className="text-xs text-muted-foreground">+1 from last week</p>
+          <div className="text-2xl font-bold">
+            {
+              projects.filter((project) => project.status == "IN_PROGRESS")
+                .length
+            }
+          </div>
         </CardContent>
       </Card>
       <Card>
@@ -30,8 +47,9 @@ export function ProjectStats() {
           <CheckCircle className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">5</div>
-          <p className="text-xs text-muted-foreground">+3 from last month</p>
+          <div className="text-2xl font-bold">
+            {projects.filter((project) => project.status == "COMPLETED").length}
+          </div>
         </CardContent>
       </Card>
       <Card>
@@ -40,8 +58,7 @@ export function ProjectStats() {
           <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">24</div>
-          <p className="text-xs text-muted-foreground">+4 new this month</p>
+          <div className="text-2xl font-bold">{TeamMembers}</div>
         </CardContent>
       </Card>
     </>

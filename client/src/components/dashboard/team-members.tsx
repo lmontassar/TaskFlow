@@ -5,8 +5,7 @@ import useGetProject from "../../hooks/useGetProjects";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../App";
 
-export function TeamMembers() {
-  const { projects } = useGetProject();
+export function TeamMembers({ projects }: { projects: any[] }) {
   type Member = {
     id: string;
     name: string;
