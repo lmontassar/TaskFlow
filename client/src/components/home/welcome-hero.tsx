@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, CheckSquare } from "lucide-react";
 import { Link } from "react-router-dom";
+import useTasks from "../../hooks/useTasks";
 
 interface WelcomeHeroProps {
   nom: string;
@@ -13,6 +14,38 @@ interface WelcomeHeroProps {
 export function WelcomeHero({ nom }: WelcomeHeroProps) {
   const [greeting, setGreeting] = useState("Good day");
   const [currentTime, setCurrentTime] = useState("");
+  const { myTasks, isLoading } = useTasks();
+
+  let weeklyProgress = 0;
+  let totalTasks = 0;
+  let completedTasks = 0;
+  let todayTasks = 0;
+  if (myTasks && myTasks.length > 0) {
+    todayTasks = myTasks.filter(
+      (task: any) =>
+        new Date(task.dateFinEstime).toDateString() ===
+        new Date().toDateString()
+    ).length;
+    // Count tasks completed this week
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday as start of week
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+    completedTasks = myTasks.filter((task: any) => {
+      if (task.statut !== "DONE") return false;
+      const taskDate = new Date(task.dateFinEstime);
+      return taskDate >= startOfWeek && taskDate < endOfWeek;
+    }).length;
+    totalTasks = myTasks.filter((task: any) => {
+      const taskDate = new Date(task.dateFinEstime);
+      return taskDate >= startOfWeek && taskDate < endOfWeek;
+    }).length;
+    weeklyProgress = Math.round((completedTasks / totalTasks) * 100);
+  }
 
   useEffect(() => {
     const updateGreeting = () => {
@@ -42,39 +75,76 @@ export function WelcomeHero({ nom }: WelcomeHeroProps) {
   }, []);
 
   return (
-    <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-none">
-      <CardContent className="p-6 sm:p-8">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-4">
+    <Card className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-primary/5">
+      {/* Decorative background shapes */}
+      <div className="absolute -top-10 -left-10 w-48 h-48 bg-primary/20 rounded-full blur-2xl opacity-40 pointer-events-none" />
+      <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-accent/30 rounded-full blur-3xl opacity-30 pointer-events-none" />
+
+      <CardContent className="relative z-10 p-8 sm:p-12">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          {/* Left: Greeting and tasks */}
+          <div className="flex-1 space-y-6">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-primary drop-shadow">
                 {greeting}, {nom}!
               </h1>
-              <p className="text-muted-foreground">{currentTime}</p>
-            </div>
-            <div className="space-y-2">
-              <p>
-                You have <strong>5 tasks</strong> due today
+              <p className="text-muted-foreground text-lg mt-2">
+                {currentTime}
               </p>
-              <div className="flex flex-wrap gap-2">
-                <Button asChild size="sm" variant="default">
-                  <Link to="/tasks">
-                    <CheckSquare className="mr-2 h-4 w-4" />
-                    View Tasks
-                  </Link>
-                </Button>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center bg-background/80 rounded-lg px-4 py-2 shadow">
+                <Calendar className="mr-2 h-5 w-5 text-primary" />
+                <span>
+                  <strong className="text-primary">{todayTasks}</strong> tasks
+                  due today
+                </span>
               </div>
+              <Button asChild size="sm" variant="secondary" className="shadow">
+                <Link to="/tasks">
+                  <CheckSquare className="mr-2 h-4 w-4" />
+                  View Tasks
+                </Link>
+              </Button>
             </div>
           </div>
 
-          <div className="hidden md:flex items-center justify-end">
-            <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-4xl font-bold">75%</span>
+          {/* Right: Weekly progress */}
+          <div className="flex flex-col items-center justify-center min-w-[200px]">
+            <div className="relative flex items-center justify-center">
+              <svg className="w-28 h-28" viewBox="0 0 100 100">
+                <circle
+                  className="text-muted-foreground"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  fill="none"
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  opacity="0.2"
+                />
+                <circle
+                  className="text-primary"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  fill="none"
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  strokeDasharray={251.2}
+                  strokeDashoffset={251.2 - (weeklyProgress / 100) * 251.2}
+                  strokeLinecap="round"
+                  style={{ transition: "stroke-dashoffset 0.6s" }}
+                />
+              </svg>
+              <span className="absolute text-3xl font-bold text-primary drop-shadow">
+                {isNaN(weeklyProgress) ? 0 : weeklyProgress}%
+              </span>
             </div>
-            <div className="ml-4">
-              <p className="font-medium">Weekly Progress</p>
+            <div className="mt-3 text-center">
+              <p className="font-semibold text-primary">Weekly Progress</p>
               <p className="text-sm text-muted-foreground">
-                15 of 20 tasks completed
+                {completedTasks} of {totalTasks} tasks completed
               </p>
             </div>
           </div>

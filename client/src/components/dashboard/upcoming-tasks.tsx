@@ -6,55 +6,17 @@ import { useEffect } from "react";
 import Loading from "../ui/loading";
 
 export function UpcomingTasks() {
-  const { tasks, getMyTasks, isLoading } = useTasks();
-  // const tasks = [
-  //   {
-  //     id: 1,
-  //     title: "Finalize design mockups",
-  //     project: "Website Redesign",
-  //     dueDate: "Today",
-  //     completed: false,
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Review content strategy",
-  //     project: "Marketing Campaign",
-  //     dueDate: "Tomorrow",
-  //     completed: false,
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "API integration planning",
-  //     project: "Mobile App Development",
-  //     dueDate: "Mar 15",
-  //     completed: false,
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "User testing feedback review",
-  //     project: "Website Redesign",
-  //     dueDate: "Mar 12",
-  //     completed: true,
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Sprint planning meeting",
-  //     project: "Mobile App Development",
-  //     dueDate: "Mar 14",
-  //     completed: false,
-  //   },
-  // ];
-  useEffect(() => {
-    getMyTasks();
-  }, [getMyTasks, tasks]);
-  return (
+  const { myTasks, isLoading } = useTasks();
+  return isLoading ? (
+    <Loading />
+  ) : (
     <Card className="overflow-y-scroll max-h-[400px]">
       <CardHeader>
         <CardTitle>Upcoming Tasks</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {tasks
+          {myTasks
             .sort(
               (a: any, b: any) =>
                 new Date(a.dateFinEstime).getTime() -

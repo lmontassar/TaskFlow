@@ -16,10 +16,10 @@ export default function Home() {
 
       <ProjectSummary className="lg:col-span-2" userId={user?.id} />
 
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* <div className="grid gap-6 md:grid-cols-2">
         <TeamUpdates />
         <CompanyNews />
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -46,6 +46,7 @@ public class TacheService {
         return tacheRep.getAllByProject(project);
     }
 
+    @Cacheable(value = "projectTasks", key = "#u.id")
     public List<Tache> findTachesByUser(User u) {
         return tacheRep.findByAssigneeContainingOrRapporteur(u, u);
     }

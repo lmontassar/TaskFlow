@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "../components/ui/badge";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -6,6 +6,7 @@ import { toast } from "sonner";
 const useTasks = () => {
   const token = localStorage.getItem("authToken") || "";
   let [tasks, setTasks] = useState([]);
+  const [myTasks, setMyTasks] = useState([]);
   let [isLoading, setIsLoading] = useState(false);
   const [addTaskError, setAddTaskError] = useState<string | null>("");
   const { t } = useTranslation();
@@ -343,11 +344,16 @@ const useTasks = () => {
     }
     return false;
   };
-  const DeletePrecTask = async (taskID: any, precTaskID: any, to: any = true) => {
+  const DeletePrecTask = async (
+    taskID: any,
+    precTaskID: any,
+    to: any = true
+  ) => {
     let toastId;
-    if (to == true) toastId = toast.loading(
-      t("toast.use_tasks.disassociate_precedentetask.loading")
-    );
+    if (to == true)
+      toastId = toast.loading(
+        t("toast.use_tasks.disassociate_precedentetask.loading")
+      );
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -367,27 +373,33 @@ const useTasks = () => {
       });
 
       if (res.ok) {
-        if (to == true) toast.success(
-          t("toast.use_tasks.disassociate_precedentetask.success"),
-          { id: toastId }
-        );
+        if (to == true)
+          toast.success(
+            t("toast.use_tasks.disassociate_precedentetask.success"),
+            { id: toastId }
+          );
         return true;
       } else {
-        if (to == true) toast.error(t("toast.use_tasks.disassociate_precedentetask.error"), {
-          id: toastId,
-        });
+        if (to == true)
+          toast.error(t("toast.use_tasks.disassociate_precedentetask.error"), {
+            id: toastId,
+          });
       }
     } catch (error) {
       if (to == true) toast.error(t("toast.server_error"), { id: toastId });
     }
     return false;
   };
-  const DeleteParallelTask = async (taskID: any, parallelTaskID: any, to: any = true) => {
-
+  const DeleteParallelTask = async (
+    taskID: any,
+    parallelTaskID: any,
+    to: any = true
+  ) => {
     let toastId;
-    if (to == true) toastId = toast.loading(
-      t("toast.use_tasks.disassociate_parallelestask.loading")
-    );
+    if (to == true)
+      toastId = toast.loading(
+        t("toast.use_tasks.disassociate_parallelestask.loading")
+      );
 
     try {
       const token = localStorage.getItem("authToken");
@@ -408,14 +420,19 @@ const useTasks = () => {
       });
 
       if (!res.ok) {
-        if (to == true) toast.error(t("toast.use_tasks.disassociate_parallelestask.error"), {
-          id: toastId,
-        });
+        if (to == true)
+          toast.error(t("toast.use_tasks.disassociate_parallelestask.error"), {
+            id: toastId,
+          });
         return false;
       }
-      if (to == true) toast.success(t("toast.use_tasks.disassociate_parallelestask.success"), {
-        id: toastId,
-      });
+      if (to == true)
+        toast.success(
+          t("toast.use_tasks.disassociate_parallelestask.success"),
+          {
+            id: toastId,
+          }
+        );
       return true;
     } catch (error) {
       if (to == true) toast.error(t("toast.server_error"), { id: toastId });
@@ -573,6 +590,7 @@ const useTasks = () => {
       if (res.ok) {
         const result = await res.json();
         setIsLoading(false);
+        setMyTasks(result);
         return setTasks(result);
       } else {
         console.log("error");
@@ -583,6 +601,9 @@ const useTasks = () => {
     setIsLoading(false);
     return [];
   };
+  useEffect(() => {
+    getMyTasks();
+  }, [token]);
   const handleDeleteAssignee = async (taskID: any, userID: any) => {
     const toastId = toast.loading(t("toast.use_tasks.delete_assigne.loading"));
     try {
@@ -895,8 +916,6 @@ const useTasks = () => {
     return null;
   };
 
-  
-
   return {
     handleResizeTask,
     deleteAssignResource,
@@ -932,6 +951,7 @@ const useTasks = () => {
     checkIfAssigneeTask,
     generateDescription,
     newDescription,
+    myTasks,
   };
 };
 export default useTasks;
