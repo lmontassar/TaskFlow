@@ -14,6 +14,7 @@ import useProject from "../../hooks/useProject";
 import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../App";
+import i18n from "../../i18n";
 
 interface ProjectCardsProps {
   className?: string;
@@ -34,7 +35,18 @@ export function ProjectCards({ className }: ProjectCardsProps) {
     fetchProjectSummary();
   }, [user?.id]);
   console.log("projects", projectSummary);
-
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "NOT_STARTED":
+        return <Badge variant="default">{t(`project.${status}`)}</Badge>;
+      case "IN_PROGRESS":
+        return <Badge variant="outline">{t(`project.${status}`)}</Badge>;
+      case "COMPLETED":
+        return <Badge variant="ghost">{t(`project.${status}`)}</Badge>;
+      default:
+        return <Badge variant="default">{t(`project.${status}`)}</Badge>;
+    }
+  };
   return (
     <div className={cn("space-y-4", className)}>
       <div className="grid gap-4">
@@ -43,24 +55,15 @@ export function ProjectCards({ className }: ProjectCardsProps) {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>{project?.name}</CardTitle>
-                <Badge
-                  variant={
-                    project.status === "IN_PROGRESS"
-                      ? "default"
-                      : project.status === "NOT_STARTED"
-                      ? "secondary"
-                      : "outline"
-                  }
-                >
-                  {project.status}
-                </Badge>
+
+                {getStatusBadge(project?.status)}
               </div>
               {/* <CardDescription>{project.description}</CardDescription> */}
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Progress</span>
+                  <span>{t("home.dashboard.progress")}</span>
                   <span className="font-medium">{project.progress}%</span>
                 </div>
                 <Progress value={project.progress} className="h-2" />
@@ -68,19 +71,18 @@ export function ProjectCards({ className }: ProjectCardsProps) {
             </CardContent>
             <CardFooter className="flex justify-between">
               <div className="text-sm text-muted-foreground">
-                Due: {project.due}
+                {t("home.project_summery.due")}{" "}
+                {new Date(project?.due).toLocaleDateString(
+                  i18n.language === "fr" ? "fr-FR" : "en-US",
+                  {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                )}
               </div>
-              {/* <div className="flex -space-x-2">
-                {project.team.map((member, i) => (
-                  <Avatar
-                    key={i}
-                    className="border-2 border-background h-8 w-8"
-                  >
-                    <AvatarImage src={member.avatar} alt={member.name} />
-                    <AvatarFallback>{member.initials}</AvatarFallback>
-                  </Avatar>
-                ))}
-              </div> */}
             </CardFooter>
           </Card>
         ))}

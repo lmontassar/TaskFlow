@@ -16,6 +16,7 @@ import useProject from "../../hooks/useProject";
 import { useEffect, useState } from "react";
 import Loading from "../ui/loading";
 import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 
 interface ProjectSummaryProps {
   className?: string;
@@ -50,8 +51,10 @@ export function ProjectSummary({ className, userId }: ProjectSummaryProps) {
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Project Summary</CardTitle>
-          <CardDescription>Overview of your active projects</CardDescription>
+          <CardTitle>{t("home.project_summery.title")}</CardTitle>
+          <CardDescription>
+            {t("home.project_summery.description")}
+          </CardDescription>
         </div>
         <Button variant="outline" asChild>
           <div>
@@ -71,7 +74,19 @@ export function ProjectSummary({ className, userId }: ProjectSummaryProps) {
                     <h3 className="font-medium">{project?.name}</h3>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Clock className="h-3 w-3" />
-                      <span>Due {project?.due}</span>
+                      <span>
+                        {t("home.project_summery.due")}{" "}
+                        {new Date(project?.due).toLocaleDateString(
+                          i18n.language === "fr" ? "fr-FR" : "en-US",
+                          {
+                            weekday: "long",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </span>
                     </div>
                   </div>
                   {getStatusBadge(project?.status)}
@@ -79,8 +94,8 @@ export function ProjectSummary({ className, userId }: ProjectSummaryProps) {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span>
-                      {project.doneTasks} of {project.totalTasks} tasks
-                      completed
+                      {project.doneTasks} {t("home.of")} {project.totalTasks}{" "}
+                      {t("home.completed_tasks")}
                     </span>
                     <span className="font-medium">{project.progress}%</span>
                   </div>

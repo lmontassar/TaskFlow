@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import useGetProject from "../../hooks/useGetProjects";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../App";
+import { useTranslation } from "react-i18next";
 
 export function TeamMembers({ projects }: { projects: any[] }) {
   type Member = {
@@ -14,6 +15,7 @@ export function TeamMembers({ projects }: { projects: any[] }) {
     initials: string;
     status: any;
   };
+  const { t } = useTranslation();
   const [members, setMembers] = useState<Member[]>([]);
   const { user } = useContext(Context);
   // Update members when projects change
@@ -47,41 +49,11 @@ export function TeamMembers({ projects }: { projects: any[] }) {
     });
     setMembers(uniqueMembers);
   }, [projects]);
-  // const members = [
-  //   {
-  //     name: "Alex Johnson",
-  //     role: "Project Manager",
-  //     avatar: "/placeholder.svg?height=40&width=40",
-  //     initials: "AJ",
-  //     status: "online",
-  //   },
-  //   {
-  //     name: "Sarah Miller",
-  //     role: "UI/UX Designer",
-  //     avatar: "/placeholder.svg?height=40&width=40",
-  //     initials: "SM",
-  //     status: "online",
-  //   },
-  //   {
-  //     name: "David Chen",
-  //     role: "Frontend Developer",
-  //     avatar: "/placeholder.svg?height=40&width=40",
-  //     initials: "DC",
-  //     status: "offline",
-  //   },
-  //   {
-  //     name: "Emma Wilson",
-  //     role: "Backend Developer",
-  //     avatar: "/placeholder.svg?height=40&width=40",
-  //     initials: "EW",
-  //     status: "online",
-  //   },
-  // ];
 
   return (
     <Card className="overflow-y-scroll max-h-[400px]">
       <CardHeader>
-        <CardTitle>Team Members</CardTitle>
+        <CardTitle>{t("home.dashboard.collaborators")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

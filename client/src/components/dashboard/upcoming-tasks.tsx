@@ -4,15 +4,17 @@ import { CheckCircle2, Circle } from "lucide-react";
 import useTasks from "../../hooks/useTasks";
 import { useEffect } from "react";
 import Loading from "../ui/loading";
+import { useTranslation } from "react-i18next";
 
 export function UpcomingTasks() {
   const { myTasks, isLoading } = useTasks();
+  const { t } = useTranslation();
   return isLoading ? (
     <Loading />
   ) : (
     <Card className="overflow-y-scroll max-h-[400px]">
       <CardHeader>
-        <CardTitle>Upcoming Tasks</CardTitle>
+        <CardTitle>{t("home.dashboard.upcoming_tasks")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

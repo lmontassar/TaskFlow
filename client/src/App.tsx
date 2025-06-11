@@ -28,6 +28,7 @@ import Loading from "./components/ui/loading";
 import AskAI from "./pages/Main/AskAI";
 import AdminPage from "./pages/Main/Admin";
 import AdminRoutes from "./utils/adminRoutes";
+import ChatPage, { ChatsPage } from "./pages/Main/Chat";
 
 export type UserType = {
   id: string;
@@ -79,6 +80,8 @@ function App() {
                   <Route path="home" element={<Home />} />
                   <Route path="/" element={<Home />} />
                   <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="chat/:id" element={<ChatsPage />} />
+                  <Route path="chat" element={<ChatsPage />} />
                   <Route path="ask-ai/:projectId" element={<AskAI />} />
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="projects/:id" element={<ProjectPage />} />

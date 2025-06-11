@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar, CheckSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import useTasks from "../../hooks/useTasks";
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 
 interface WelcomeHeroProps {
   nom: string;
@@ -14,8 +16,9 @@ interface WelcomeHeroProps {
 export function WelcomeHero({ nom }: WelcomeHeroProps) {
   const [greeting, setGreeting] = useState("Good day");
   const [currentTime, setCurrentTime] = useState("");
+  const selectedLocale = i18n.language === "fr" ? "fr-FR" : "en-US";
   const { myTasks, isLoading } = useTasks();
-
+  const { t } = useTranslation();
   let weeklyProgress = 0;
   let totalTasks = 0;
   let completedTasks = 0;
@@ -50,9 +53,9 @@ export function WelcomeHero({ nom }: WelcomeHeroProps) {
   useEffect(() => {
     const updateGreeting = () => {
       const hour = new Date().getHours();
-      if (hour < 12) setGreeting("Good morning");
-      else if (hour < 18) setGreeting("Good afternoon");
-      else setGreeting("Good evening");
+      if (hour < 12) setGreeting(t("home.good_morning"));
+      else if (hour < 18) setGreeting(t("home.good_afternoon"));
+      else setGreeting(t("home.good_evening"));
     };
 
     const updateTime = () => {
@@ -64,7 +67,7 @@ export function WelcomeHero({ nom }: WelcomeHeroProps) {
         hour: "2-digit",
         minute: "2-digit",
       };
-      setCurrentTime(now.toLocaleDateString("en-US", options));
+      setCurrentTime(now.toLocaleDateString(selectedLocale, options));
     };
 
     updateGreeting();
@@ -72,7 +75,7 @@ export function WelcomeHero({ nom }: WelcomeHeroProps) {
 
     const interval = setInterval(updateTime, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [t]);
 
   return (
     <Card className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-primary/5">
@@ -96,14 +99,14 @@ export function WelcomeHero({ nom }: WelcomeHeroProps) {
               <div className="flex items-center bg-background/80 rounded-lg px-4 py-2 shadow">
                 <Calendar className="mr-2 h-5 w-5 text-primary" />
                 <span>
-                  <strong className="text-primary">{todayTasks}</strong> tasks
-                  due today
+                  <strong className="text-primary">{todayTasks}</strong>{" "}
+                  {t("home.due_today")}
                 </span>
               </div>
               <Button asChild size="sm" variant="secondary" className="shadow">
                 <Link to="/tasks">
                   <CheckSquare className="mr-2 h-4 w-4" />
-                  View Tasks
+                  {t("home.view_tasks")}
                 </Link>
               </Button>
             </div>
@@ -142,9 +145,12 @@ export function WelcomeHero({ nom }: WelcomeHeroProps) {
               </span>
             </div>
             <div className="mt-3 text-center">
-              <p className="font-semibold text-primary">Weekly Progress</p>
+              <p className="font-semibold text-primary">
+                {t("home.weekly_progress")}
+              </p>
               <p className="text-sm text-muted-foreground">
-                {completedTasks} of {totalTasks} tasks completed
+                {completedTasks} {t("home.of")} {totalTasks}{" "}
+                {t("home.completed_tasks")}{" "}
               </p>
             </div>
           </div>

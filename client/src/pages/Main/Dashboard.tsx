@@ -6,14 +6,16 @@ import { TeamMembers } from "@/components/dashboard/team-members";
 import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks";
 import { ProjectStats } from "@/components/dashboard/project-stats";
 import useGetProject from "../../hooks/useGetProjects";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardPage() {
   const { projects } = useGetProject();
+  const { t } = useTranslation();
   return (
     <>
       <DashboardHeader
-        heading="Dashboard"
-        text="Manage your projects and track progress."
+        heading={t("home.dashboard.title")}
+        text={t("home.dashboard.description")}
       />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <ProjectStats projects={projects} />

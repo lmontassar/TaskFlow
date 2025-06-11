@@ -990,5 +990,30 @@
       "confirm": "Yes, log me out",
       "cancel": "No, stay logged in"
     }
+  },
+  "home": {
+    "due_today": "Tasks Due Today",
+    "good_morning": "Good Morning",
+    "good_afternoon": "Good Afternoon",
+    "good_evening": "Good Evening",
+    "view_tasks": "View Tasks",
+    "weekly_progress": "Weekly Progress",
+    "of": "of",
+    "completed_tasks": "Tasks Completed",
+    "project_summery": {
+      "title": "Project Summary",
+      "description": "Overview of your projects and tasks",
+      "due": "Due"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Your personal dashboard with an overview of your projects and tasks.",
+      "total_projects": "Total Projects",
+      "in_progress_projects": "In Progress Projects",
+      "completed_projects": "Completed Projects",
+      "collaborators": "Collaborators",
+      "upcoming_tasks": "Upcoming Tasks",
+      "progress": "Progress"
+    }
   }
 }

@@ -102,7 +102,6 @@ export function AttachmentPreview({
         fetchImage();
       }
     }
-    
 
     return () => {
       if (imageUrl) {
@@ -146,7 +145,7 @@ export function AttachmentPreview({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-[90vw] max-h-[90vh] overflow-hidden overflow-y-scroll">
         <DialogHeader className="flex items-center justify-between px-6 py-4 border-b">
-          <DialogTitle className="flex items-center justify-between w-full">
+          <DialogTitle className="flex items-center justify-between w-[400px]">
             <span className="max-w-[80%] truncate text-lg font-semibold text-ellipsis overflow-hidden whitespace-nowrap">
               {attachment.name}
             </span>

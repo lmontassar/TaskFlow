@@ -991,5 +991,30 @@
       "confirm": "Oui, me déconnecter",
       "cancel": "Non, rester connecté"
     }
+  },
+  "home": {
+    "due_today": "Tâches à faire aujourd'hui",
+    "good_morning": "Bonjour",
+    "good_afternoon": "Bon après-midi",
+    "good_evening": "Bonsoir",
+    "view_tasks": "Voir les tâches",
+    "weekly_progress": "Progression hebdomadaire",
+    "of": "sur",
+    "completed_tasks": "Tâches terminées",
+    "project_summery": {
+      "title": "Résumé du projet",
+      "description": "Aperçu de vos projets et tâches",
+      "due": "À échéance"
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "description": "Votre tableau de bord personnel avec un aperçu de vos projets et tâches.",
+      "total_projects": "Projets totaux",
+      "in_progress_projects": "Projets en cours",
+      "completed_projects": "Projets terminés",
+      "collaborators": "Collaborateurs",
+      "upcoming_tasks": "Tâches à venir",
+      "progress": "Progression"
+    }
   }
 }
