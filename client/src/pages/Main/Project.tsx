@@ -21,6 +21,9 @@ export default function ProjectPage() {
     getProjectById(id);
   }, [id]);
 
+  useEffect(() => {
+    document.title = "TaskFlow - " + project?.nom;
+  }, [project]);
   if (error) {
     return navigate("/home");
   }

@@ -7,10 +7,14 @@ import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks";
 import { ProjectStats } from "@/components/dashboard/project-stats";
 import useGetProject from "../../hooks/useGetProjects";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
   const { projects } = useGetProject();
   const { t } = useTranslation();
+  useEffect(() => {
+    document.title = "TaskFlow - " + t("home.dashboard.title");
+  }, [t]);
   return (
     <>
       <DashboardHeader

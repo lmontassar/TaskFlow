@@ -13,6 +13,9 @@ import useGetProject from "../../hooks/useGetProjects";
 import useProject from "../../hooks/useProject";
 import { Card } from "../../components/ui/card";
 export function ChatsPage() {
+  useEffect(() => {
+    document.title = "TaskFlow - Chats";
+  }, []);
   const { projects } = useGetProject();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null

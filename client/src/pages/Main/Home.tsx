@@ -5,10 +5,15 @@ import { ProjectSummary } from "@/components/home/project-summary";
 import { ActivityFeed } from "@/components/home/activity-feed";
 import { TeamUpdates } from "@/components/home/team-updates";
 import { CompanyNews } from "@/components/home/company-news";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Context } from "../../App";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
+  const { t } = useTranslation();
+  useEffect(() => {
+    document.title = "TaskFlow - " + t("sidebar.home");
+  }, [t]);
   const { user } = useContext(Context);
   return (
     <div className="space-y-8">
