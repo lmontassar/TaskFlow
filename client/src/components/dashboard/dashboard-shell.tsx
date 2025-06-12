@@ -117,7 +117,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 px-4 py-2">
-              <FolderKanban className="h-6 w-6" />
+              <img src="/logo.png" alt="" className="h-6 w-6" />
               <span className="font-semibold">TaskFlow</span>
             </div>
             <Select value={currentLang} onValueChange={changeLanguage}>
