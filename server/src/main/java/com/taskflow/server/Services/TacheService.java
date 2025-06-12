@@ -9,9 +9,6 @@ import com.taskflow.server.Entities.DTO.MonthlyTaskDurationDTO;
 import com.taskflow.server.Entities.MaterialResource;
 import com.taskflow.server.Entities.NecessaryRessource;
 import com.taskflow.server.Entities.Project;
-import com.taskflow.server.Entities.Resource;
-
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -360,5 +357,4 @@ public class TacheService {
     public List<MonthlyTaskDurationDTO> getMonthlyAverageDurations(){
         return tacheRep.getMonthlyAverageDurations();
     }
-
 }

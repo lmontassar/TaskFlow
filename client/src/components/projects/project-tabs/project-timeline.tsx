@@ -659,16 +659,16 @@ export function ProjectTimeline({ project }: any) {
     setViewMode(mode);
   };
 
-  const toggleSorting = () => {
-    import("dhtmlx-gantt").then(({ gantt }) => {
-      setSortByStartDate(!sortByStartDate);
-      if (!sortByStartDate) {
-        gantt.sort("start_date", false);
-      } else {
-        gantt.sort(null, null);
-      }
-    });
-  };
+  // const toggleSorting = () => {
+  //   import("dhtmlx-gantt").then(({ gantt }) => {
+  //     setSortByStartDate(!sortByStartDate);
+  //     if (!sortByStartDate) {
+  //       gantt.sort("start_date", false);
+  //     } else {
+  //       gantt.sort(null, null);
+  //     }
+  //   });
+  // };
 
   return (
     <Card>

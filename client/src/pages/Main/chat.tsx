@@ -11,6 +11,7 @@ import { Stomp } from "@stomp/stompjs";
 import { useParams } from "react-router-dom";
 import useGetProject from "../../hooks/useGetProjects";
 import useProject from "../../hooks/useProject";
+import { Card } from "../../components/ui/card";
 export function ChatsPage() {
   const { projects } = useGetProject();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
@@ -55,9 +56,9 @@ export function ChatsPage() {
       {/* Chat area */}
       <main className="flex-1">
         {project ? (
-          <div className="flex flex-col h-[85dvh]">
+          <Card className="flex flex-col h-[88dvh]">
             <ChatPage project={project} />
-          </div>
+          </Card>
         ) : (
           <div className="flex items-center justify-center h-full text-gray-500">
             Sélectionnez un projet pour commencer la discussion.

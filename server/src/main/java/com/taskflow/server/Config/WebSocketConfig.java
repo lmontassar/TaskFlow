@@ -52,8 +52,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     if (authHeader != null && authHeader.startsWith("Bearer ")) {
                         try {
                             String token = authHeader.substring(7);
-                            String userId = myJWT.extractUserId(token); // or extractUsername(token)
-                            User user = userService.findById(userId); // make sure this method exists
+                            String userId = myJWT.extractUserId(token); 
+                            User user = userService.findById(userId);
 
                             if (user != null) {
                                 accessor.setUser(new StompPrincipal(user.getId()));
