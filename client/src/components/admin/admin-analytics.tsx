@@ -19,15 +19,14 @@ export function AdminAnalytics() {
   }
   const getProjectCompletionRate = () => {
     const now = new Date();
-    const currentMonth = now.getMonth(); // 0 = Jan
+    const currentMonth = now.getMonth(); 
     const currentYear = now.getFullYear();
     const currentQuarter = Math.floor(currentMonth / 3);
     const currentQuarterStart = new Date(currentYear, currentQuarter * 3, 1);
-    const currentQuarterEnd = new Date(currentYear, currentQuarter * 3 + 3, 0); // last day of current quarter
-
+    const currentQuarterEnd = new Date(currentYear, currentQuarter * 3 + 3, 0); 
     const previousQuarterStart =
       currentQuarter === 0
-        ? new Date(currentYear - 1, 9, 1) // Q4 of previous year
+        ? new Date(currentYear - 1, 9, 1)
         : new Date(currentYear, (currentQuarter - 1) * 3, 1);
 
     const previousQuarterEnd =
@@ -82,7 +81,7 @@ export function AdminAnalytics() {
 
     if (currentMonth === 0) {
       previousDate.setFullYear(currentYear - 1);
-      previousDate.setMonth(11); // December
+      previousDate.setMonth(11);
     }
 
     const previousMonthStats = users.filter(
@@ -197,7 +196,7 @@ export function AdminAnalytics() {
 
   return (
     <div className="space-y-6">
-      {/* Key Metrics */}
+     
       <ProfessionalAnalyticsDashboard />
     </div>
   );

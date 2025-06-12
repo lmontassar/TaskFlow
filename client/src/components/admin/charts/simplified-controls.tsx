@@ -81,7 +81,7 @@ export function SimplifiedControls({
           {t("admin.analytics.title")}
         </CardTitle>
         <div className="flex flex-wrap items-center gap-4">
-          {/* Time Range Selector */}
+
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-slate-600">
               {t("admin.analytics.controle.time_range.title")}
@@ -102,7 +102,6 @@ export function SimplifiedControls({
 
           <Separator orientation="vertical" className="h-6" />
 
-          {/* Custom Date Range */}
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="h-9">
@@ -122,7 +121,6 @@ export function SimplifiedControls({
 
           <Separator orientation="vertical" className="h-6" />
 
-          {/* Action Buttons */}
           <Button
             onClick={onRefresh}
             variant="outline"

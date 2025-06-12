@@ -2,9 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useRef, useState } from "react";
 import useTasks from "../../../hooks/useTasks";
 import { useTranslation } from "react-i18next";
-import { format, formatDate, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Cloud, CloudUpload, CloudCog, CheckCircleIcon } from "lucide-react";
+import { Cloud, CloudUpload, CheckCircleIcon } from "lucide-react";
 
 // Import DHTMLX Gantt
 import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
@@ -22,7 +22,6 @@ import {
 } from "../../ui/select";
 import { Button } from "../../ui/button";
 
-// Add custom CSS for link styling
 const customStyles = `
   /* Task styling */
   .gantt_task_line {
@@ -48,7 +47,7 @@ export function ProjectTimeline({ project }: any) {
   const [viewMode, setViewMode] = useState<string>("week");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [ganttInitialized, setGanttInitialized] = useState<boolean>(false);
-  const [sortByStartDate, setSortByStartDate] = useState<boolean>(true);
+  const [sortByStartDate] = useState<boolean>(true);
   const {
     tasks: apiTasks,
     getTasksByProjectID,
@@ -59,6 +58,7 @@ export function ProjectTimeline({ project }: any) {
     handleResizeTask,
     DeleteParallelTask,
     DeletePrecTask,
+    checkIfCreatorOfProject
   } = useTasks();
   type Status = "loading" | "done" | "idle";
   const [dep, setDep] = useState(false);
@@ -71,6 +71,7 @@ export function ProjectTimeline({ project }: any) {
   }>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const ganttRef = useRef<any>(null);
+  const [priv, setPriv] = useState(false);
 
   useEffect(() => {
     if (cloud === "done") {
@@ -135,6 +136,7 @@ export function ProjectTimeline({ project }: any) {
   };
 
   useEffect(() => {
+    setPriv(checkIfCreatorOfProject(project));
     import("dhtmlx-gantt").then(({ gantt }) => {
       const originalConsoleError = console.error;
       console.error = (...args) => {
@@ -180,12 +182,10 @@ export function ProjectTimeline({ project }: any) {
             .filter((d): d is Date => !!d);
 
           if (allDates.length) {
-            // 2) find min & max
             const minTime = Math.min(...allDates.map((d) => d.getTime()));
             const maxTime = Math.max(...allDates.map((d) => d.getTime()));
 
-            // 3) optionally pad by a couple days for breathing room
-            const pad = 10 * 24 * 60 * 60 * 1000; // two days in ms
+            const pad = 10 * 24 * 60 * 60 * 1000;
 
             gantt.config.start_date = new Date(minTime - pad);
             gantt.config.end_date = new Date(maxTime + pad);
@@ -241,14 +241,18 @@ export function ProjectTimeline({ project }: any) {
           );
 
           gantt.attachEvent("onLinkDblClick", (linkId: string) => {
-            const link = gantt.getLink(linkId);
-            setLinkToDelete({ id: linkId, link });
-            setDeleteDialogOpen(true);
-            return false;
+            if (priv) {
+              const link = gantt.getLink(linkId);
+              setLinkToDelete({ id: linkId, link });
+              setDeleteDialogOpen(true);
+              return false;
+            }
+
           });
 
           gantt.attachEvent("onBeforeLinkDelete", (id, link) => {
-            return true;
+
+            return priv;
           });
 
           gantt.attachEvent("onAfterLinkDelete", async (id, link) => {
@@ -331,12 +335,11 @@ export function ProjectTimeline({ project }: any) {
       return true;
     };
     gantt.locale.labels.confirm_link_deleting = "";
-
     gantt.config.date_format = "%Y-%m-%d %H:%i";
     gantt.config.drag_links = true;
     gantt.config.drag_progress = false;
-    gantt.config.drag_resize = true;
-    gantt.config.drag_move = true;
+    gantt.config.drag_resize = priv;
+    gantt.config.drag_move = priv;
     gantt.config.auto_scheduling = false;
     gantt.config.auto_scheduling_strict = false;
     gantt.config.work_time = false;
@@ -476,10 +479,10 @@ export function ProjectTimeline({ project }: any) {
             link.type === "0"
               ? "Finish-to-Start"
               : link.type === "1"
-              ? "Start-to-Start"
-              : link.type === "2"
-              ? "Finish-to-Finish"
-              : "Start-to-Finish";
+                ? "Start-to-Start"
+                : link.type === "2"
+                  ? "Finish-to-Finish"
+                  : "Start-to-Finish";
 
           if (link.source === task.id) {
             tooltip += `<br/>- ${t("Successor")}: ${targetTask.text} (${t(
@@ -649,17 +652,6 @@ export function ProjectTimeline({ project }: any) {
     setViewMode(mode);
   };
 
-  // const toggleSorting = () => {
-  //   import("dhtmlx-gantt").then(({ gantt }) => {
-  //     setSortByStartDate(!sortByStartDate);
-  //     if (!sortByStartDate) {
-  //       gantt.sort("start_date", false);
-  //     } else {
-  //       gantt.sort(null, null);
-  //     }
-  //   });
-  // };
-
   return (
     <Card>
       <CardHeader>
@@ -783,19 +775,18 @@ export function ProjectTimeline({ project }: any) {
                         {Array.from({ length: 5 }).map((_, i) => (
                           <StarIcon
                             key={i}
-                            className={`h-4 w-4 ${
-                              i < (selectedTask.qualite || 0)
+                            className={`h-4 w-4 ${i < (selectedTask.qualite || 0)
                                 ? "text-blue-500 fill-blue-500"
                                 : "text-muted-foreground"
-                            }`}
+                              }`}
                           />
                         ))}
                       </>
                     )) || (
-                      <span className="text-sm">
-                        {t("tasks.details.qualit.zero", "Not Rated")}
-                      </span>
-                    )}
+                        <span className="text-sm">
+                          {t("tasks.details.qualit.zero", "Not Rated")}
+                        </span>
+                      )}
                   </div>
                 </div>
                 {selectedTask.budgetEstime != 0 && (
@@ -902,14 +893,15 @@ export function ProjectTimeline({ project }: any) {
             <Button
               variant="destructive"
               onClick={() => {
+
                 if (linkToDelete) {
                   if (linkToDelete.link.type == 1) {
                     ganttRef.current!.deleteLink(linkToDelete.id);
                     setDep(true);
-                    const [type, source, target] = linkToDelete.id.split("-");
-                    const rev = `${type}-${target}-${source}`;
-                    ganttRef.current!.deleteLink(rev);
-                    setDep(false);
+                    //const [type, source, target] = linkToDelete.id.split("-");
+                    //const rev = `${type}-${target}-${source}`;
+                    //ganttRef.current!.deleteLink(rev);
+                    //setDep(false);
                   } else {
                     ganttRef.current!.deleteLink(linkToDelete.id);
                   }

@@ -1,8 +1,5 @@
 "use client";
-
 import { TasksInterface } from "../../Tasks/tasks-interface";
-import useTasks from "../../../hooks/useTasks";
-import { useEffect } from "react";
 import Loading from "../../ui/loading";
 
 interface ProjectTasksProps {

@@ -60,7 +60,6 @@ export default function ProfessionalAnalyticsDashboard() {
   const { users } = useStatistics();
   const { t } = useTranslation();
   const handleExport = () => {
-    // Export functionality - can export specific chart data
     const exportData = {
       kpis,
       taskStatus,
@@ -193,7 +192,6 @@ export default function ProfessionalAnalyticsDashboard() {
         </Card>
       </div>
 
-      {/* Simplified Controls */}
       <SimplifiedControls
         timeRange={timeRange}
         onTimeRangeChange={setTimeRange}
@@ -203,7 +201,6 @@ export default function ProfessionalAnalyticsDashboard() {
         onCustomDateRangeChange={setCustomDateRange}
       />
 
-      {/* Analytics Tabs */}
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
@@ -360,7 +357,6 @@ export default function ProfessionalAnalyticsDashboard() {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis
                         dataKey="userName"
-                        // rotate labels but also capitalize each word
                         angle={-45}
                         textAnchor="end"
                         height={80}
@@ -375,7 +371,6 @@ export default function ProfessionalAnalyticsDashboard() {
                             .join(" ")
                         }
                       />
-                      {/* left % axis */}
                       <YAxis
                         yAxisId="percent"
                         domain={[0, 100]}
@@ -388,7 +383,6 @@ export default function ProfessionalAnalyticsDashboard() {
                           position: "insideLeft",
                         }}
                       />
-                      {/* right 0–5 axis */}
                       <YAxis
                         yAxisId="quality"
                         orientation="right"
@@ -402,7 +396,6 @@ export default function ProfessionalAnalyticsDashboard() {
                         }}
                       />
                       <Tooltip />
-                      {/* Move legend to very bottom */}
                       <Legend
                         verticalAlign="bottom"
                         align="center"
