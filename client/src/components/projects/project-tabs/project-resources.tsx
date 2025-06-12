@@ -219,7 +219,6 @@ export function ProjectResources({ project }: { project: any }) {
           ? formData.newcategorie!
           : formData.categorie,
     };
-    console.log("Updated Resource:", updatedResource);
     try {
       const update = await editResource(updatedResource);
       if (update) {

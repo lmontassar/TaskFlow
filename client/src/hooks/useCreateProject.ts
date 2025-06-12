@@ -11,13 +11,11 @@ export default function useCreateProject() {
     async (projectData: any) => {
       setIsLoading(true);
       setError(null);
-      console.log(token);
 
       try {
         if (!token) {
           throw new Error("No authentication token found");
         }
-        console.log(projectData);
 
         const response = await fetch("/api/project/create", {
           method: "POST",

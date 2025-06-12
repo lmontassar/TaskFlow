@@ -17,11 +17,7 @@ export function NotificationsHeader() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => console.log("Mark all as read")}
-          >
+          <Button variant="outline" size="sm">
             Mark all as read
           </Button>
         </div>

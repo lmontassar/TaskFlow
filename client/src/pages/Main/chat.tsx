@@ -165,7 +165,6 @@ export default function ChatPage({ project }: any) {
       setMessages([...messages, savedMessage]);
       setReplyTo(null);
     }
-    console.log(savedMessage);
   };
 
   const handleEditMessage = async (

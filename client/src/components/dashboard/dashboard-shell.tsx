@@ -64,8 +64,6 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const { projects, isLoading, error, setProjects } = useGetProject();
   const { user } = useGetUser();
 
-  console.log("projects", projects);
-
   const data = {
     user: {
       name: "shadcn",

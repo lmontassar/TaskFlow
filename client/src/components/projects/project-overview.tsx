@@ -75,8 +75,6 @@ export function ProjectOverview({
     form.append("dateDebut", editForm.dateDebut);
     form.append("dateFinEstime", editForm.dateFinEstime);
 
-    console.log(editForm);
-
     const res = await fetch("/api/project/update", {
       method: "PUT",
       headers: {

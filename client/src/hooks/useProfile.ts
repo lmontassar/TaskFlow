@@ -50,7 +50,6 @@ const useProfile = () => {
     prepareFormData();
     prepareSettingsData();
     setIsImageChanged(false);
-    console.log(settingsForm);
   }, [user, editProfileOpen, settingsOpen]);
 
   const prepareFormData = () => {
@@ -125,7 +124,6 @@ const useProfile = () => {
 
   // Handle settings form changes
   const handleSettingsChange = (name, value) => {
-    console.log(name, value);
     setSettingsForm({
       ...settingsForm,
       [name]: value,
@@ -142,7 +140,6 @@ const useProfile = () => {
     updatedUserData.append("title", profileForm.title);
     updatedUserData.append("phoneNumber", profileForm.phoneNumber);
     updatedUserData.append("avatar", profileForm.avatar);
-    console.log(updatedUserData.get("avatar"));
     updatedUserData.append("bio", profileForm.bio);
 
     const token: any = localStorage.getItem("authToken");

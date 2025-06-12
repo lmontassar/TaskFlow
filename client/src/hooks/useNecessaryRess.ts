@@ -35,7 +35,6 @@ const useNessasaryRess = () => {
                 toast.success(t("task.necessary_ressource.crud.addSuccess"));
                 setIsLoading(false);
                 const result = await res.json();
-                console.log(result)
                 return result;
             } else {
                 switch (res.status) {
@@ -66,7 +65,6 @@ const useNessasaryRess = () => {
                 alert("Authentication token missing!");
                 return;
             }
-            console.log(ressource)
             const data = new FormData();
             data.append("RessourceID", ressource.id);
             data.append("type", ressource.type);

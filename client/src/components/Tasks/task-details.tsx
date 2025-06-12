@@ -154,7 +154,6 @@ export function TaskDetails({
       ["duree"]: duration,
       ["marge"]: Number(marge),
     });
-    console.log(result);
     if (result.result == false) {
       setEditError(result.message);
       return;

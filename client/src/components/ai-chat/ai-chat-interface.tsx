@@ -7,7 +7,6 @@ import { AIChatSidebar } from "@/components/ai-chat/ai-chat-sidebar";
 import { AIChatInput } from "@/components/ai-chat/ai-chat-input";
 import AIChatMessages from "@/components/ai-chat/ai-chat-messages";
 import { useMediaQuery } from "@/hooks/use-mobile";
-import useProject from "../../hooks/useProject";
 import { useParams } from "react-router-dom";
 
 export interface ChatMessage {
@@ -68,7 +67,6 @@ export function AIChatInterface() {
           })),
         }));
 
-        console.log("Fetched sessions:", formattedSessions);
         setSessions(formattedSessions);
         setCurrentSession(formattedSessions[0] || null);
       } catch (error) {
@@ -287,7 +285,6 @@ export function AIChatInterface() {
   };
 
   const handleDeleteSession = async (sessionId: string) => {
-    console.log("Deleting session with ID:", sessionId);
     try {
       const response = await fetch(`/api/ai-chat/${sessionId}`, {
         method: "DELETE",

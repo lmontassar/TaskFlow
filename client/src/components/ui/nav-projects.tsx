@@ -79,20 +79,8 @@ export function NavProjects({
                     <Link to={`/projects/${userProject.id}`}>
                       <span>{userProject.nom}</span>
                     </Link>
-                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem key={`sub-${userProject.id}`}>
-                      <SidebarMenuSubButton>
-                        <Link to={`/projects/${userProject.id}`}>
-                          <span>{userProject.nom}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-                </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>
           ))

@@ -16,10 +16,8 @@ const useOptimise = (projectId: string) => {
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {
-        console.log("Optimisation WebSocket connected :", projectId);
         client.subscribe(`/topic/optimiseSteps/${projectId}`, (message) => {
           const s = JSON.parse(message.body);
-          console.log("Received Step update: ", s);
           setStep(s);
         });
       },
@@ -33,7 +31,6 @@ const useOptimise = (projectId: string) => {
     return () => {
       if (clientRef.current) {
         clientRef.current.disconnect(() => {
-          console.log("WebSocket disconnected");
         });
         clientRef.current = null;
       }

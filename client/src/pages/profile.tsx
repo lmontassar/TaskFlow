@@ -53,9 +53,7 @@ export default function Profile() {
     isLoading,
     isImageChanged,
   } = useProfile();
-  console.log(userData);
   const { t, i18n } = useTranslation();
-
 
   const changeLanguage = (lang: string) => {
     i18n.changeLanguage(lang);
@@ -297,15 +295,15 @@ export default function Profile() {
                 <Select
                   className="w-1/2 max-w-full"
                   value={settingsForm.language}
-                  onValueChange={(value: any) =>
-                    changeLanguage(value)
-                  }
+                  onValueChange={(value: any) => changeLanguage(value)}
                 >
                   <SelectTrigger className="w-full">
                     {/* FIX: Translated placeholder */}
-                    <SelectValue
-                     
-                    >{i18n.language == "en" ? t("profile.settings.english") : t("profile.settings.french")} </SelectValue>
+                    <SelectValue>
+                      {i18n.language == "en"
+                        ? t("profile.settings.english")
+                        : t("profile.settings.french")}{" "}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {/* FIX: Translated options */}

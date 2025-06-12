@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { TabsContent } from "@/components/ui/tabs";
 import { FileUploadArea } from "./file-upload-area";
 import { AttachmentItem, type Attachment } from "./attachment-item";
 import { AttachmentPreview } from "./attachment-preview";
@@ -122,7 +120,6 @@ export function AttachmentsTab({ task }: AttachmentsTabProps) {
         prev.filter((attachment) => attachment.id !== id)
       );
       toast.success(t("tasks.attachments.delete_success"));
-      console.log("Attachment deleted successfully.");
     } catch (error) {
       console.error("Error removing attachment:", error);
     }

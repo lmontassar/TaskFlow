@@ -29,7 +29,6 @@ export default function useGetUser() {
         });
 
         if (response.status === 403) {
-          console.log("Token has expired");
           localStorage.removeItem("authToken"); // Clear the token
           setUser(null); // Log the user out
           return;

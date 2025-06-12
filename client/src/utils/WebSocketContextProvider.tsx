@@ -24,7 +24,6 @@ export const WebSocketContextProvider = ({
     client.connect(
       {},
       () => {
-        console.log("Connected to WebSocket");
         setStompClient(client);
       },
       (error: unknown) => {

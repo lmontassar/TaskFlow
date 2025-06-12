@@ -133,7 +133,6 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
             }
 
             const kpisData = await response.json();
-            console.log('Analytics KPIs:', kpisData);
 
 
             // API 2: Task Status Distribution - Aggregated by status
@@ -438,7 +437,6 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
 
             // setPerformanceTrends(mockPerformanceTrends)
 
-            console.log(teamPerfData)
             setTeamPerformance(teamPerfData)
             setTeamWorkload(mockTeamWorkload)
             setResourceUtilization(mockResourceUtilization)

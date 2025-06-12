@@ -448,7 +448,6 @@ export default function RessourceSpecifiTask({
       formData.append("dateDebut", resourceToDelete.dateDebut);
       formData.append("dateFin", resourceToDelete.dateFin);
     }
-    console.log(resourceToDelete.dateDebut);
 
     // Make API call
     const response: any = await deleteAssignResource(formData);
@@ -613,9 +612,7 @@ export default function RessourceSpecifiTask({
                       <TableHead>
                         {t("task.ressource.table.unit_cost", "Unit Cost")}
                       </TableHead>
-                      {canEdit &&(
-                        <TableHead></TableHead>
-                      )}
+                      {canEdit && <TableHead></TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -656,20 +653,18 @@ export default function RessourceSpecifiTask({
                             : `${resource.qte} ${resource.unitMeasure}`}
                         </TableCell>
                         <TableCell>{resource.coutUnitaire}</TableCell>
-                        {canEdit &&(
+                        {canEdit && (
                           <TableCell>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleSelectResource(resource)}
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleSelectResource(resource)}
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
                               {t("task.ressource.assign")}
-                          </Button>
-                        </TableCell>
+                            </Button>
+                          </TableCell>
                         )}
-                        
-                      
                       </TableRow>
                     ))}
                   </TableBody>
@@ -905,7 +900,7 @@ export default function RessourceSpecifiTask({
                       <TableHead>
                         {t("task.ressource.table2.period", "Period")}
                       </TableHead>
-                      { canEdit && ( 
+                      {canEdit && (
                         <TableHead className="text-right"></TableHead>
                       )}
                     </TableRow>
@@ -956,27 +951,27 @@ export default function RessourceSpecifiTask({
                             <span className="text-muted-foreground">N/A</span>
                           )}
                         </TableCell>
-                        { canEdit && ( 
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleEditClick(assignment)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteClick(assignment)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                              <span className="sr-only">Delete</span>
-                            </Button>
-                          </div>
-                        </TableCell>
+                        {canEdit && (
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEditClick(assignment)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteClick(assignment)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                                <span className="sr-only">Delete</span>
+                              </Button>
+                            </div>
+                          </TableCell>
                         )}
                       </TableRow>
                     ))}

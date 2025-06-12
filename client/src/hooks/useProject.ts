@@ -77,10 +77,8 @@ function useProject() {
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {
-        console.log("Projects WebSocket connected :", project.id);
         client.subscribe(`/topic/projects/${project.id}`, (message) => {
           const p = JSON.parse(message.body);
-          console.log("Received project update:", p);
 
           setProject(p);
         });
@@ -95,7 +93,6 @@ function useProject() {
     return () => {
       if (clientRef.current) {
         clientRef.current.disconnect(() => {
-          console.log("WebSocket disconnected");
         });
         clientRef.current = null;
       }
@@ -151,16 +148,15 @@ function useProject() {
       );
 
       if (res.ok) {
-        console.log("changed");
         const data = await res.json();
         toast.success(t("member.delete.success"));
         setProject(data);
         return project;
       } else {
-        console.log("noo way");
+        console.error("noo way");
       }
     } catch (error) {
-      console.log("noo way");
+      console.error(error);
     }
     return null;
   };
@@ -194,15 +190,14 @@ function useProject() {
       });
 
       if (res.ok) {
-        console.log("changed");
         const data = await res.json();
         toast.success(t("member.editForm.success"));
         return data;
       } else {
-        console.log("noo way");
+        console.error("noo way");
       }
     } catch (error) {
-      console.log("noo way");
+      console.error("noo way");
     }
     return null;
   };
@@ -229,15 +224,14 @@ function useProject() {
       );
 
       if (res.ok) {
-        console.log("changed");
         const data = await res.json();
         toast.success(t("member.editForm.success"));
         return data;
       } else {
-        console.log("noo way");
+        console.error("noo way");
       }
     } catch (error) {
-      console.log("noo way");
+      console.error("noo way");
     }
     return null;
   };
@@ -257,17 +251,14 @@ function useProject() {
       });
 
       if (res.ok) {
-        console.log("changed");
         const data = await res.json();
         setLoadingSummary(false);
         return data;
       } else {
         setLoadingSummary(false);
-        console.log("noo way");
       }
     } catch (error) {
       setLoadingSummary(false);
-      console.log("noo way");
     }
     return [];
   };

@@ -140,7 +140,6 @@ const useGetUserForProfile = () => {
         })
 
         if (response.status === 403) {
-          console.log("Token has expired")
           localStorage.removeItem("authToken") // Clear the token
           setUser(defaultUserData) // Use default data instead of null
           setLoading(false)
@@ -176,7 +175,6 @@ const useGetUserForProfile = () => {
         }
 
         setUser(mergedData)
-        console.log(mergedData);
       } catch (err: any) {
         if (err.name !== "AbortError") {
           console.error("Failed to fetch user data", err)

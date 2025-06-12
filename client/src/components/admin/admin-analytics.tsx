@@ -1,21 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import {
-  TrendingUp,
-  TrendingDown,
-  Users,
-  FolderKanban,
-  CheckSquare,
-  BarChart3,
-  PieChart,
-  Activity,
-} from "lucide-react";
 import useStatistics from "../../hooks/useStatistics";
 import Loading from "../ui/loading";
 import { NumberTicker } from "../ui/number-ticker";
@@ -31,7 +13,6 @@ export function AdminAnalytics() {
     unblockUser,
     prjcts,
   } = useStatistics();
-  console.log("overviewData", overviewData);
 
   if (loading) {
     return <Loading />;

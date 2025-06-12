@@ -12,25 +12,7 @@ type LoginFormData = {
 };
 
 const useLogin = () => {
-  // const [ip, setIp] = useState<string>("");
-  // useEffect(() => {
-  //   async function fetchIpAddress() {
-  //     try {
-  //       const response = await fetch("https://api.ipify.org?format=json");
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch IP address");
-  //       }
-  //       const data = await response.json();
-  //       console.log("IP Address:", data.ip);
-  //     } catch (err) {
-  //       setError("Error fetching IP address");
-  //       console.error(err);
-  //     }
-  //   }
 
-  //   fetchIpAddress();
-  //   console.log("IP Address:", ip);
-  // }, []);
   const navigate = useNavigate();
   const { setUser } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +63,6 @@ const useLogin = () => {
         }
        
         const decoded:any = jwtDecode(data.jwt);
-         console.log(decoded);
         if( decoded?.activation == false ){
           localStorage.setItem("token",data.jwt);
           navigate("/emailverification");

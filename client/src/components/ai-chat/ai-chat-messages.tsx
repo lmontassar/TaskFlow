@@ -1,8 +1,6 @@
 "use client";
 
 import type React from "react";
-
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +11,6 @@ import {
 } from "@/components/ui/tooltip";
 import { Copy, Check, FileText, FileImage } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { format } from "date-fns";
 import type { ChatMessage } from "./ai-chat-interface";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";

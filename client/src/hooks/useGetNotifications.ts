@@ -52,7 +52,6 @@ export function useNotifications() {
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {
-        console.log("WebSocket connected");
         client.subscribe(`/topic/notifications/${user.id}`, (message) => {
           const newNotification = JSON.parse(message.body);
           setNotifications((prev) => {
@@ -73,7 +72,6 @@ export function useNotifications() {
     return () => {
       if (clientRef.current) {
         clientRef.current.disconnect(() => {
-          console.log("WebSocket disconnected");
         });
         clientRef.current = null;
       }

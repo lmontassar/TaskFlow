@@ -17,7 +17,6 @@ const useChat = () => {
                 alert("Authentication token missing!");
                 return;
             }
-            console.log(message)
             const response = await fetch("/api/chat/add",
                 {
                     method: "POST",
@@ -50,7 +49,6 @@ const useChat = () => {
                 alert("Authentication token missing!");
                 return;
             }
-            console.log(message)
             const response = await fetch("/api/chat/edit",
                 {
                     method: "PUT",
@@ -106,7 +104,6 @@ const useChat = () => {
     };
 
     const DeleteFile = async (files: any, messageID: any): Promise<any> => {
-        console.log(files)
         const token = getToken()
         if (!token) {
             alert("Authentication token missing!");

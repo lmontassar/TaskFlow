@@ -5,10 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Github, Loader2 } from "lucide-react";
-import React, {
-  useEffect,
-  useContext,
-} from "react";
+import React, { useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import PasswordInput from "./passwordInput";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -21,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { Context } from "../../App";
 
 const GoogleLoginButton = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { setUser } = useContext(Context);
   const loginGoogle = useGoogleLogin({
@@ -37,7 +34,6 @@ const GoogleLoginButton = () => {
         );
         if (!userInfoResponse.ok) throw new Error("Failed to fetch user info.");
         const userInfo = await userInfoResponse.json();
-        console.log("Google user info:", userInfo);
         const res = await fetch("/api/user/google", {
           method: "POST",
           headers: {
@@ -58,15 +54,15 @@ const GoogleLoginButton = () => {
 
           navigate("/home");
         } else if (res.status === 401) {
-          console.log("Invalid ID token");
+          console.error("Invalid ID token");
         } else {
-          console.log("Login failed");
+          console.error("Login failed");
         }
       } catch (error) {
         console.error("Login error:", error);
       }
     },
-    onError: () => console.log("Login Failed"),
+    onError: () => console.error("Login Failed"),
   });
 
   return (
@@ -82,7 +78,7 @@ const GoogleLoginButton = () => {
 };
 
 const GitHubLogin = () => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const handleGitHubLogin = () => {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${
       import.meta.env.VITE_GITHUB_CLIENT_ID || ""
@@ -121,9 +117,8 @@ const GitHubCallback = () => {
             await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
             setUser(data.user);
             navigate("/home");
-            console.log("GitHub user info:", data);
           } else {
-            console.log("GitHub login failed.");
+            console.error("GitHub login failed.");
           }
         } catch (error) {
           console.error("Error:", error);
@@ -146,7 +141,8 @@ export default function LoginForm({
     handleCheckboxChange,
     error,
     handleSubmit,
-    isLoading,t
+    isLoading,
+    t,
   } = useLogin();
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -183,7 +179,9 @@ export default function LoginForm({
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">{t("login.inputs.password.title")}</Label>
+                  <Label htmlFor="password">
+                    {t("login.inputs.password.title")}
+                  </Label>
                 </div>
                 <PasswordInput
                   id="password"
@@ -212,7 +210,9 @@ export default function LoginForm({
               </div>
 
               <Button type="submit" className="w-full bg-[var(--clickup1)]">
-                {(isLoading && <Loader2 className="animate-spin" />) || <>{t("login.title")}</>}
+                {(isLoading && <Loader2 className="animate-spin" />) || (
+                  <>{t("login.title")}</>
+                )}
               </Button>
               <div className="flex justify-between items-center">
                 <hr className="w-2/5 border-gray-300" />

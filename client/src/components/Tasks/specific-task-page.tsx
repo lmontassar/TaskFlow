@@ -109,10 +109,8 @@ export default function SpecificTaskPage() {
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {
-        console.log("Task WebSocket connected :", taskId);
         client.subscribe(`/topic/tasks/${taskId}`, async (message) => {
           const t = JSON.parse(message.body);
-          console.log("Received task update:", t);
 
           setTask(t);
           setEditedTask(t);
@@ -141,15 +139,12 @@ export default function SpecificTaskPage() {
 
     return () => {
       if (clientRef.current) {
-        clientRef.current.disconnect(() => {
-          console.log("WebSocket disconnected");
-        });
+        clientRef.current.disconnect(() => {});
         clientRef.current = null;
       }
     };
   }, [taskId, token]);
 
-  
   const handleRemoveAssignee = async () => {
     if (!task) return;
 

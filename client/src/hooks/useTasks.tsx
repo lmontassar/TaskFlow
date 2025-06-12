@@ -601,8 +601,36 @@ const useTasks = () => {
     setIsLoading(false);
     return [];
   };
+  const getMyTasks2 = async () => {
+    setIsLoading(true);
+    const token: String = localStorage.getItem("authToken") || "";
+    if (!token) return;
+    const id = JSON.parse(atob(token.split(".")[1])).id;
+
+    try {
+      const res = await fetch(`/api/tache/get/user/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        setIsLoading(false);
+        setMyTasks(result);
+      } else {
+        console.log("error");
+      }
+    } catch (error) {
+      console.log("error");
+    }
+    setIsLoading(false);
+    return [];
+  };
   useEffect(() => {
-    getMyTasks();
+    getMyTasks2();
   }, [token]);
   const handleDeleteAssignee = async (taskID: any, userID: any) => {
     const toastId = toast.loading(t("toast.use_tasks.delete_assigne.loading"));
@@ -952,6 +980,7 @@ const useTasks = () => {
     generateDescription,
     newDescription,
     myTasks,
+    getMyTasks2,
   };
 };
 export default useTasks;

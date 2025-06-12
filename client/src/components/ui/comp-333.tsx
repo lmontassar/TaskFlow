@@ -69,7 +69,6 @@ export default function SearchForm({
       if (!response.ok) throw new Error("Search failed");
 
       const data = await response.json();
-      console.log("Fetched Data:", data); // Debug API response
 
       setResults(Array.isArray(data) ? data : []);
     } catch (error) {

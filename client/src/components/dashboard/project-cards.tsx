@@ -34,7 +34,6 @@ export function ProjectCards({ className }: ProjectCardsProps) {
     };
     fetchProjectSummary();
   }, [user?.id]);
-  console.log("projects", projectSummary);
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "NOT_STARTED":

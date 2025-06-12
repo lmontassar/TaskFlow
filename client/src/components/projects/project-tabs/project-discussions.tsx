@@ -6,11 +6,8 @@ interface ProjectDiscussionsProps {
 }
 
 export function ProjectDiscussions({ project }: ProjectDiscussionsProps) {
-
   if (project == null) {
-    return <Loading></Loading>
-  }else {
-    console.log(project)
+    return <Loading></Loading>;
   }
   return (
     <div className="flex h-[calc(100vh-7rem)] overflow-x-hidden overflow-y-hidden rounded-lg border bg-background shadow-sm">

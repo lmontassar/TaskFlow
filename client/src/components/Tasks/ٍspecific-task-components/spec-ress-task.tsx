@@ -181,7 +181,6 @@ export default function SpecificRessourcesTask({
     resetForm();
   };
   useEffect(() => {
-    console.log(task.necessaryRessource);
     setResources(task.necessaryRessource);
   }, [task]);
 

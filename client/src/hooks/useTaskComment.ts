@@ -45,10 +45,8 @@ const useTaskComment = (taskId: string) => {
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {
-        console.log("WebSocket connected:", taskId);
         client.subscribe(`/topic/comments/${taskId}`, (message) => {
           const updatedComments = JSON.parse(message.body);
-          console.log("Received comments update:", updatedComments);
           setComments(updatedComments);
         });
       },
@@ -58,9 +56,7 @@ const useTaskComment = (taskId: string) => {
     clientRef.current = client;
 
     return () => {
-      clientRef.current?.disconnect(() =>
-        console.log("WebSocket disconnected")
-      );
+      clientRef.current?.disconnect();
       clientRef.current = null;
     };
   };

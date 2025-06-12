@@ -168,8 +168,6 @@ export function ProjectTimeline({ project }: any) {
 
   useEffect(() => {
     if (apiTasks && apiTasks.length > 0 && ganttInitialized) {
-      console.log("Raw tasks data:", apiTasks);
-
       import("dhtmlx-gantt").then(({ gantt }) => {
         try {
           const formattedData = formatTasksForGantt(apiTasks);
@@ -250,8 +248,6 @@ export function ProjectTimeline({ project }: any) {
           });
 
           gantt.attachEvent("onBeforeLinkDelete", (id, link) => {
-            console.log("allowing delete of link", id);
-
             return true;
           });
 
@@ -286,7 +282,7 @@ export function ProjectTimeline({ project }: any) {
             }, 100);
           }
         } catch (error) {
-          console.log("Error parsing tasks:", error);
+          console.error("Error parsing tasks:", error);
         } finally {
           setIsLoading(false);
         }
@@ -529,22 +525,16 @@ export function ProjectTimeline({ project }: any) {
     });
 
     gantt.attachEvent("onTaskClick", (id: string) => {
-      console.log("Task clicked:", gantt.getTask(id));
       return true;
     });
 
     gantt.attachEvent("onLinkCreated", (link: any) => {
-      console.log("Link created:", link);
       return true;
     });
 
     gantt.attachEvent("onBeforeLinkAdd", (id, link) => {
       const sourceTask = gantt.getTask(link.source);
       const targetTask = gantt.getTask(link.target);
-
-      console.log(
-        `Creating link from "${sourceTask.text}" to "${targetTask.text}"`
-      );
       return true;
     });
   };
@@ -913,7 +903,6 @@ export function ProjectTimeline({ project }: any) {
               variant="destructive"
               onClick={() => {
                 if (linkToDelete) {
-                  console.log(linkToDelete);
                   if (linkToDelete.link.type == 1) {
                     ganttRef.current!.deleteLink(linkToDelete.id);
                     setDep(true);
