@@ -16,6 +16,7 @@ function TaskComments({
   handleDeleteComment,
 }: any) {
   const [commentText, setCommentText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useContext(Context);
   const [collabs, setCollabs] = useState([
     ...(task?.project?.listeCollaborateur || []),
@@ -160,11 +161,27 @@ function TaskComments({
 
                 {editingId === comment.id ? (
                   <div className="space-y-2">
-                    <Textarea
+                    <Mention
                       value={editingContent}
-                      onChange={(e) => setEditingContent(e.target.value)}
-                      className="resize-none"
+                      onChange={(e) =>
+                        setEditingContent((e.target as HTMLInputElement).value)
+                      }
+                      suggestions={suggestions}
+                      onSearch={onSearch}
+                      field="user.id"
+                      placeholder="Write a thoughtful comment..."
+                      rows={4}
+                      cols={40}
+                      itemTemplate={itemTemplate}
+                      pt={{
+                        input: {
+                          className:
+                            "p-3 border border-gray-300 dark:border-zinc-700 rounded-lg w-full min-h-[100px] resize-none text-sm bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all",
+                        },
+                      }}
+                      autoResize
                     />
+
                     <div className="flex gap-2">
                       <Button
                         size="sm"
@@ -236,12 +253,16 @@ function TaskComments({
           <div className="flex justify-end">
             <Button
               size="sm"
-              onClick={() => handleAddComment(commentText, setCommentText)}
-              disabled={!commentText.trim()}
+              onClick={() => {
+                setIsLoading(true);
+                handleAddComment(commentText, setCommentText);
+                setIsLoading(false);
+              }}
+              disabled={!commentText.trim() || isLoading}
               className="flex items-center gap-1 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send className="h-4 w-4" />
-              Send
+              {isLoading ? "Sending..." : "Send"}
             </Button>
           </div>
         </div>
