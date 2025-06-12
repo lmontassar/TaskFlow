@@ -361,4 +361,9 @@ public class TacheService {
     public List<Tache> findAllProjectedTachesByProjectId( String projectID) {
         return tacheRep.findAllProjectedTachesByProjectId(projectID);
     }
+
+    public List<Tache> findAllProjectedTachesByRapporteurOrAssigneeContains(User u) {
+        return tacheRep.findAllProjectedTachesByRapporteurOrAssigneeContains(u.getId());
+    }
+
 }

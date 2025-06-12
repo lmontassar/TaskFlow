@@ -464,7 +464,8 @@ public class TacheController {
             User u = getUserFromToken(token);
             if (u == null)
                 return ResponseEntity.notFound().build();
-            List<Tache> tasks = tacheSer.findTachesByUser(u);
+            //List<Tache> tasks = tacheSer.findTachesByUser(u);
+            List<Tache> tasks = tacheSer.findAllProjectedTachesByRapporteurOrAssigneeContains(u);
             if (tasks == null)
                 return ResponseEntity.notFound().build();
 
