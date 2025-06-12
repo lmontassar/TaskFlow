@@ -7,7 +7,6 @@ import { TasksList } from "@/components/tasks/tasks-list";
 import { TaskDetails } from "@/components/tasks/task-details";
 import { TaskCreateModal } from "@/components/tasks/task-create-modal";
 import useTasks from "../../hooks/useTasks";
-import { useTranslation } from "react-i18next";
 
 export type ViewMode = "board" | "list";
 export type GroupBy = "status" | "priority" | "assignee" | "project";
@@ -21,7 +20,6 @@ type taskProps = {
 };
 
 export function TasksInterface({ project }: taskProps) {
-  const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [groupBy, setGroupBy] = useState<GroupBy>("status");
   const [sortBy, setSortBy] = useState<SortBy>("createdAt");
@@ -59,7 +57,13 @@ export function TasksInterface({ project }: taskProps) {
   useEffect(() => {
     if (project) getTasksByProjectID(project?.id);
     else getMyTasks();
+
   }, [project]);
+
+  useEffect(() => {
+    console.log(tasks)
+
+  }, [tasks]);
 
   const thisUserIsACreator = () => {
     if (project == null) return false;

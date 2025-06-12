@@ -3,7 +3,6 @@ package com.taskflow.server.Repositories;
 import com.taskflow.server.Entities.DTO.MonthlyTaskDurationDTO;
 import com.taskflow.server.Entities.Project;
 
-import org.bson.Document;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -18,10 +17,56 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface TacheRepository extends MongoRepository<Tache, String> {
+
+        @Aggregation(pipeline = {
+                        "{ $match: { 'project.$id': ObjectId(?0) } }", // Optional: filters by projectId
+                        "{ $lookup: { from: 'projects', localField: 'project.$id', foreignField: '_id', as: 'project' } }",
+                        "{ $unwind: { path: '$project', preserveNullAndEmptyArrays: true } }",
+
+                        "{ $lookup: { from: 'taches', localField: 'paralleles.$id', foreignField: '_id', as: 'paralleles' } }",
+                        "{ $lookup: { from: 'taches', localField: 'precedentes.$id', foreignField: '_id', as: 'precedentes' } }",
+
+                        "{ $lookup: { from: 'taches', localField: 'parent.$id', foreignField: '_id', as: 'parent' } }",
+                        "{ $unwind: { path: '$parent', preserveNullAndEmptyArrays: true } }",
+
+                        "{ $project: { " +
+                                        "id: 1, " +
+                                        "nomTache: 1, " +
+                                        "description: 1, " +
+                                        "budgetEstime: 1, " +
+                                        "statut: 1, " +
+                                        "qualite: 1, " +
+                                        "difficulte: 1, " +
+                                        "dateCreation: 1, " +
+                                        "dateDebut: 1, " +
+                                        "dateFinEstime: 1, " +
+                                        "dateFin: 1, " +
+                                        "duree: 1, " +
+                                        "marge: 1, " +
+                                        "comments: { $ifNull: ['$comments', []] }, " +
+                                        "attachments: { $ifNull: ['$attachments', []] }, " +
+                                        "rapporteur: 1, " +
+                                        "assignee: { $cond: { if: { $isArray: '$assignee' }, then: '$assignee', else: [] } }, "
+                                        +
+                                        "project: { " +
+                                        "_id: '$project._id', " +
+                                        "nom: '$project.nom', " +
+                                        "listeCollaborateur: '$project.listeCollaborateur', " +
+                                        "createur: { _id: '$project.createur._id' } " +
+                                        "}, "
+                                        +
+                                        "parent: { _id: '$parent._id', nomTache: '$parent.nomTache' }, " +
+                                        "paralleles: { $map: { input: '$paralleles', as: 'p', in: { _id: '$$p._id', nomTache: '$$p.nomTache' } } } "
+                                        +
+                                        "precedentes: { $map: { input: '$precedentes', as: 'p', in: { _id: '$$p._id', nomTache: '$$p.nomTache' } } } "
+                                        +
+                                        "} }"
+        })
+        List<Tache> findAllProjectedTachesByProjectId(String projectId);
+
         public List<Tache> getAllByProject(Project p);
 
         public List<Tache> findByAssigneeContainingOrRapporteur(User u, User u2);

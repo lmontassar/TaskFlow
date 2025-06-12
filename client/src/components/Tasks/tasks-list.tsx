@@ -11,12 +11,10 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { format, isValid, parseISO } from "date-fns";
-import { cn } from "@/lib/utils";
-import type { Task } from "./tasks-interface";
+
 import _ from "lodash";
-import { CheckCircle2, StarIcon, Stars, StarsIcon } from "lucide-react";
 import useTasks from "../../hooks/useTasks";
 import {
   DropdownMenu,
@@ -24,11 +22,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+
+import { Link} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Loading from "../ui/loading";
-
 interface TasksListProps {
   tasks: Task[];
   onTaskClick: (task: Task) => void;

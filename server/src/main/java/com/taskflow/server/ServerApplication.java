@@ -11,7 +11,7 @@ import java.io.File;
 
 
 @SpringBootApplication
-@EnableCaching
+//@EnableCaching
 public class ServerApplication {
 	@PostConstruct
 	public void init() {

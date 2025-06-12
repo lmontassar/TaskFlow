@@ -357,4 +357,8 @@ public class TacheService {
     public List<MonthlyTaskDurationDTO> getMonthlyAverageDurations(){
         return tacheRep.getMonthlyAverageDurations();
     }
+
+    public List<Tache> findAllProjectedTachesByProjectId( String projectID) {
+        return tacheRep.findAllProjectedTachesByProjectId(projectID);
+    }
 }

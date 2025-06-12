@@ -411,7 +411,7 @@ public class TacheController {
             this.setPrivilege(u, p, null);
             if (canGet == false)
                 return ResponseEntity.notFound().build();
-            List<Tache> tasks = tacheSer.findTacheByProjectId(p);
+            List<Tache> tasks = tacheSer.findAllProjectedTachesByProjectId(p.getId());
             if (tasks == null)
                 return ResponseEntity.notFound().build();
             return ResponseEntity.ok().body(tasks);
