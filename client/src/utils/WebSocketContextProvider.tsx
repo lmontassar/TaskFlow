@@ -20,7 +20,7 @@ export const WebSocketContextProvider = ({
 
   useEffect(() => {
     const client = Stomp.client("/api/ws");
-
+    client.debug = () => {};
     client.connect(
       {},
       () => {
@@ -33,7 +33,7 @@ export const WebSocketContextProvider = ({
 
     return () => {
       if (client.connected) {
-        client.disconnect(() => console.log("Disconnected from WebSocket"));
+        client.disconnect();
       }
     };
   }, []);

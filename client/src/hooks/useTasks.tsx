@@ -234,11 +234,9 @@ const useTasks = () => {
       if (res.ok) {
         const result = await res.json();
         return setTasks(result);
-      } else {
-        console.log("error");
       }
     } catch (error) {
-      console.log("error");
+      console.log(error);
     }
     return [];
   };
@@ -563,11 +561,9 @@ const useTasks = () => {
         setTasks(result);
         setIsLoading(false);
         return result;
-      } else {
-        console.log("error");
       }
     } catch (error) {
-      console.log("error");
+      console.log("error", error);
     }
     setIsLoading(false);
     return [];
@@ -592,11 +588,9 @@ const useTasks = () => {
         setIsLoading(false);
         setMyTasks(result);
         return setTasks(result);
-      } else {
-        console.log("error");
       }
     } catch (error) {
-      console.log("error");
+      console.log("error", error);
     }
     setIsLoading(false);
     return [];
@@ -624,7 +618,7 @@ const useTasks = () => {
         console.log("error");
       }
     } catch (error) {
-      console.log("error");
+      console.log("error", error);
     }
     setIsLoading(false);
     return [];
@@ -741,8 +735,6 @@ const useTasks = () => {
       if (res.ok) {
         const result = await res.json();
         return result;
-      } else {
-        console.log("error");
       }
     } catch (error) {
       console.log("error");
@@ -765,8 +757,6 @@ const useTasks = () => {
       if (res.ok) {
         const result = await res.json();
         return result;
-      } else {
-        console.log("error");
       }
     } catch (error) {
       console.log("error");

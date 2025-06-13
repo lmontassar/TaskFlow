@@ -57,13 +57,7 @@ export function TasksInterface({ project }: taskProps) {
   useEffect(() => {
     if (project) getTasksByProjectID(project?.id);
     else getMyTasks();
-
   }, [project]);
-
-  useEffect(() => {
-    console.log(tasks)
-
-  }, [tasks]);
 
   const thisUserIsACreator = () => {
     if (project == null) return false;

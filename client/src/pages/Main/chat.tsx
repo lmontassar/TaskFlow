@@ -125,6 +125,7 @@ export default function ChatPage({ project }: any) {
     if (!project || clientRef.current) return;
     const socket = new SockJS("/ws");
     const client = Stomp.over(socket);
+    client.debug = () => {};
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {

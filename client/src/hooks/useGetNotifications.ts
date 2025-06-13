@@ -48,7 +48,7 @@ export function useNotifications() {
     const client = Stomp.over(socket);
     client.heartbeat.outgoing = 10000;
     client.heartbeat.incoming = 10000;
-
+    client.debug = () => {};
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {

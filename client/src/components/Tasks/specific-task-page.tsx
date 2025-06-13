@@ -105,7 +105,7 @@ export default function SpecificTaskPage() {
 
     const socket = new SockJS("/ws");
     const client = Stomp.over(socket);
-
+    client.debug = () => {};
     client.connect(
       { Authorization: `Bearer ${token}` },
       () => {
