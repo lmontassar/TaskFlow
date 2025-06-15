@@ -636,7 +636,7 @@ export default function RessourceSpecifiTask({
                           >
                             {
                               RESOURCE_TYPE_ICONS[
-                                resource.type as keyof typeof RESOURCE_TYPE_ICONS
+                              resource.type as keyof typeof RESOURCE_TYPE_ICONS
                               ]
                             }
                             {resource.type}
@@ -645,13 +645,12 @@ export default function RessourceSpecifiTask({
                         <TableCell>{resource.categorie}</TableCell>
                         <TableCell>
                           {resource.type === "Energetic"
-                            ? `${
-                                resource.consommationMax -
-                                resource.consommationTotale
-                              } ${resource.unitMeasure}`
+                            ? `${resource.consommationMax -
+                            resource.consommationTotale
+                            } ${resource.unitMeasure}`
                             : resource.type === "Material"
-                            ? `${resource.qteDisponibilite} units`
-                            : `${resource.qte} ${resource.unitMeasure}`}
+                              ? `${resource.qteDisponibilite} units`
+                              : `${resource.qte} ${resource.unitMeasure}`}
                         </TableCell>
                         <TableCell>{resource.coutUnitaire}</TableCell>
                         {canEdit && (
@@ -705,30 +704,30 @@ export default function RessourceSpecifiTask({
                       {/* Quantity field for Material and Temporary */}
                       {(selectedResource.type === "Material" ||
                         selectedResource.type === "Temporary") && (
-                        <div className="space-y-2">
-                          <Label htmlFor="quantity">
-                            Quantity ({selectedResource.unitMeasure || "units"})
-                          </Label>
-                          <div className="flex items-center gap-2">
-                            <Input
-                              id="quantity"
-                              type="number"
-                              min="1"
-                              max={getAvailableQuantity(selectedResource)}
-                              value={quantity}
-                              onChange={(e: any) => setQuantity(e.target.value)}
-                              placeholder={`Max: ${getAvailableQuantity(
-                                selectedResource
-                              )}`}
-                            />
-                            <span className="text-sm text-muted-foreground whitespace-nowrap">
-                              {t("task.ressource.available", "Available")}:{" "}
-                              {getAvailableQuantity(selectedResource)}{" "}
-                              {selectedResource.unitMeasure || "units"}
-                            </span>
+                          <div className="space-y-2">
+                            <Label htmlFor="quantity">
+                              Quantity ({selectedResource.unitMeasure || "units"})
+                            </Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                id="quantity"
+                                type="number"
+                                min="1"
+                                max={getAvailableQuantity(selectedResource)}
+                                value={quantity}
+                                onChange={(e: any) => setQuantity(e.target.value)}
+                                placeholder={`Max: ${getAvailableQuantity(
+                                  selectedResource
+                                )}`}
+                              />
+                              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                                {t("task.ressource.available", "Available")}:{" "}
+                                {getAvailableQuantity(selectedResource)}{" "}
+                                {selectedResource.unitMeasure || "units"}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
                       {/* Consumption field for Energetic */}
                       {selectedResource.type === "Energetic" && (
@@ -751,10 +750,9 @@ export default function RessourceSpecifiTask({
                               onChange={(e: any) =>
                                 setConsumption(e.target.value)
                               }
-                              placeholder={`Max: ${
-                                selectedResource.consommationMax -
+                              placeholder={`Max: ${selectedResource.consommationMax -
                                 selectedResource.consommationTotale
-                              }`}
+                                }`}
                             />
                             <span className="text-sm text-muted-foreground whitespace-nowrap">
                               {t(
@@ -805,12 +803,14 @@ export default function RessourceSpecifiTask({
                                   initialFocus
                                   disabled={{
                                     before: new Date(task.dateDebut),
-                                    after: endDate
-                                      ? new Date(
-                                          new Date(endDate).getTime() -
-                                            24 * 60 * 60 * 1000
-                                        )
-                                      : new Date(task.dateFinEstime),
+                                    after: new Date(
+                                      Math.min(
+                                        endDate
+                                          ? new Date(endDate).getTime() - 1
+                                          :
+                                          new Date(task.dateFinEstime).getTime() - 24 * 60 * 60 * 1000
+                                      )
+                                    ),
                                   }}
                                 />
                               </PopoverContent>
@@ -835,9 +835,9 @@ export default function RessourceSpecifiTask({
                                   {endDate
                                     ? format(endDate, "PPP")
                                     : t(
-                                        "task.ressource.select_date",
-                                        "Select date"
-                                      )}
+                                      "task.ressource.select_date",
+                                      "Select date"
+                                    )}
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent
@@ -854,11 +854,8 @@ export default function RessourceSpecifiTask({
                                   initialFocus
                                   disabled={{
                                     before: startDate
-                                      ? new Date(
-                                          new Date(startDate).getTime() +
-                                            24 * 60 * 60 * 1000
-                                        )
-                                      : new Date(task.dateDebut),
+                                      ? new Date(new Date(startDate).getTime() + 24 * 60 * 60 * 1000) // plus 1 day
+                                      : new Date(new Date(task.dateDebut).getTime() + 24 * 60 * 60 * 1000),
                                     after: new Date(task.dateFinEstime),
                                   }}
                                 />
@@ -877,9 +874,9 @@ export default function RessourceSpecifiTask({
                         {loading
                           ? t("task.ressource.assigning", "Assigning...")
                           : t(
-                              "task.ressource.assign_resource",
-                              "Assign Resource"
-                            )}
+                            "task.ressource.assign_resource",
+                            "Assign Resource"
+                          )}
                       </Button>
                     </DialogFooter>
                   </>
@@ -932,8 +929,8 @@ export default function RessourceSpecifiTask({
                             >
                               {
                                 RESOURCE_TYPE_ICONS[
-                                  assignment.ress
-                                    .type as keyof typeof RESOURCE_TYPE_ICONS
+                                assignment.ress
+                                  .type as keyof typeof RESOURCE_TYPE_ICONS
                                 ]
                               }
                               {assignment.ress.type}
@@ -943,9 +940,8 @@ export default function RessourceSpecifiTask({
                         <TableCell>
                           {assignment.ress?.type === "Energetic"
                             ? `Consumption: ${assignment.consommation} ${assignment.ress.unitMeasure}`
-                            : `Quantity: ${assignment.qte} ${
-                                assignment.ress.unitMeasure || "units"
-                              }`}
+                            : `Quantity: ${assignment.qte} ${assignment.ress.unitMeasure || "units"
+                            }`}
                         </TableCell>
                         <TableCell>
                           {assignment.dateDebut && assignment.dateFin ? (
@@ -1028,21 +1024,21 @@ export default function RessourceSpecifiTask({
                 {/* Quantity field for Material and Temporary */}
                 {(editingResource.ress.type === "Material" ||
                   editingResource.ress.type === "Temporary") && (
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-quantity">
-                      {t("task.ressource.dialog.quantity", {
-                        unit: editingResource.ress.unitMeasure || "units",
-                      })}
-                    </Label>
-                    <Input
-                      id="edit-quantity"
-                      type="number"
-                      min="1"
-                      value={quantity}
-                      onChange={(e: any) => setQuantity(e.target.value)}
-                    />
-                  </div>
-                )}
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-quantity">
+                        {t("task.ressource.dialog.quantity", {
+                          unit: editingResource.ress.unitMeasure || "units",
+                        })}
+                      </Label>
+                      <Input
+                        id="edit-quantity"
+                        type="number"
+                        min="1"
+                        value={quantity}
+                        onChange={(e: any) => setQuantity(e.target.value)}
+                      />
+                    </div>
+                  )}
 
                 {/* Consumption field for Energetic */}
                 {editingResource.ress.type === "Energetic" && (
