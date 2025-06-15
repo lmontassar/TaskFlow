@@ -16,10 +16,33 @@ import { CalendarIcon } from "lucide-react";
 export function DatePickerWithRange({
   className,
   onChange,
+  dateMin,
+  dateMax,
 }: React.HTMLAttributes<HTMLDivElement> & {
   onChange?: (date: DateRange | undefined) => void;
 }) {
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
+  React.useEffect(() => {
+    const min = dateMin ? new Date(dateMin) : null;
+    const max = dateMax ? new Date(dateMax) : null;
+
+    if ((min || max) && date) {
+      let newFrom = date.from;
+      let newTo = date.to;
+
+      if (min && newFrom && newFrom < min) {
+        newFrom = min;
+      }
+
+      if (max && newTo && newTo > max) {
+        newTo = max;
+      }
+
+      if (newFrom !== date.from || newTo !== date.to) {
+        setDate({ from: newFrom, to: newTo });
+      }
+    }
+  }, [dateMin, dateMax, date]);
 
   const handleSelect = (selectedDate: DateRange | undefined) => {
     setDate(selectedDate);
@@ -62,6 +85,10 @@ export function DatePickerWithRange({
             defaultMonth={date?.from}
             selected={date}
             onSelect={handleSelect}
+            disabled={{
+              before: dateMin ? new Date(dateMin) : undefined,
+              after: dateMax ? new Date(dateMax) : undefined,
+            }}
             numberOfMonths={2}
           />
         </PopoverContent>

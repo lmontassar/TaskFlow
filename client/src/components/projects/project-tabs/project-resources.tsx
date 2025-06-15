@@ -127,7 +127,7 @@ export function ProjectResources({ project }: { project: any }) {
         "qteDisponibilite",
         "consommationMax",
       ].includes(name)
-        ? Number.parseFloat(value) || 0
+        ? Number.parseFloat(value) || ""
         : value,
     });
   };

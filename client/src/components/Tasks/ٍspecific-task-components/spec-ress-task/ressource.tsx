@@ -67,6 +67,7 @@ import { useTranslation } from "react-i18next";
 import { toLocalISOString } from "../../../../lib/utils";
 import TaskResourceStatisticEnergitic from "./spec-task-charts-energ";
 import TaskResourceStatisticMaterial from "./spec-task-charts-material";
+import { before } from "lodash";
 
 interface Props {
   task: any;
@@ -802,9 +803,15 @@ export default function RessourceSpecifiTask({
                                   selected={startDate}
                                   onSelect={setStartDate}
                                   initialFocus
-                                  disabled={(date: any) =>
-                                    endDate ? date >= endDate : false
-                                  }
+                                  disabled={{
+                                    before: new Date(task.dateDebut),
+                                    after: endDate
+                                      ? new Date(
+                                          new Date(endDate).getTime() -
+                                            24 * 60 * 60 * 1000
+                                        )
+                                      : new Date(task.dateFinEstime),
+                                  }}
                                 />
                               </PopoverContent>
                             </Popover>
@@ -845,9 +852,15 @@ export default function RessourceSpecifiTask({
                                     if (date) setEndDate(date);
                                   }}
                                   initialFocus
-                                  disabled={(date: any) =>
-                                    startDate ? date < startDate : false
-                                  }
+                                  disabled={{
+                                    before: startDate
+                                      ? new Date(
+                                          new Date(startDate).getTime() +
+                                            24 * 60 * 60 * 1000
+                                        )
+                                      : new Date(task.dateDebut),
+                                    after: new Date(task.dateFinEstime),
+                                  }}
                                 />
                               </PopoverContent>
                             </Popover>

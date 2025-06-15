@@ -289,7 +289,12 @@ export function TaskCreateModal({
               <Label htmlFor="status">
                 {t("tasks.create_modal.date_range", "Date Debut - Date Estimé")}
               </Label>
-              <DatePickerWithRange onChange={setDateRange} className="w-full" />
+              <DatePickerWithRange
+                onChange={setDateRange}
+                className="w-full"
+                dateMin={project?.dateDebut}
+                dateMax={project?.dateFinEstime}
+              />
             </div>
             <div className="flex-1 space-y-2">
               <Label htmlFor="Difficulty">
