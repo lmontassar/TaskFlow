@@ -47,7 +47,7 @@ export default function SearchForm({
       }),
     });
     if (!result.ok) {
-      toast.success(`Collaborator ${collaborate.nom} already invited.`);
+      toast.error(`Collaborator ${collaborate.nom} already invited.`);
       throw new Error(result.statusText);
     }
     const data = await result.json();
