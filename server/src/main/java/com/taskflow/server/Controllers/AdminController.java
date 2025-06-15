@@ -3,7 +3,6 @@ package com.taskflow.server.Controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.taskflow.server.Config.JWT;
-import com.taskflow.server.Entities.User;
 import com.taskflow.server.Services.AdminService;
 import com.taskflow.server.Services.ProjectService;
 
@@ -12,12 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
+    
     @Autowired
     private AdminService adminService;
 
@@ -57,6 +55,7 @@ public class AdminController {
         adminService.blockUser(userId);
         return ResponseEntity.status(200).build();
     }
+
     @PutMapping("/unblock/{userId}")
     public ResponseEntity<?> unblockUser(@PathVariable String userId,@RequestHeader("Authorization") String token)
     {

@@ -1,13 +1,9 @@
 package com.taskflow.server.Services;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.taskflow.server.Entities.NecessaryRessource;
 import com.taskflow.server.Repositories.NecessaryRessourcesRepository;
-
 @Service
 public class NecessaryRessourcesService {
 

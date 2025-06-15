@@ -4,8 +4,6 @@ import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Entities.DTO.ProjectsStatsDTO;
 import com.taskflow.server.Entities.DTO.TaskStatusStatsDTO;
-import com.taskflow.server.Entities.DTO.TeamPerformanceDTO;
-
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -16,22 +14,14 @@ import java.util.List;
 @Repository
 public interface ProjectRepository extends MongoRepository<Project, String> {
         public Project getProjectById(String id);
-
         public Project getProjectByCreateur(User id);
-
         public List<Project> findAllByStatus(Project.Status status);
-
         long countByStatus(Project.Status status);
-
         public interface ProjectStatsAggregation {
                 long getProjects();
-
                 long getNotStartedProjects();
-
                 long getActiveProjects();
-
                 long getCompletedProjects();
-
                 double getBudgets();
         }
 
@@ -43,7 +33,6 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
         Double getTotalBudget(Date startDate, Date endDate);
 
         @Aggregation(pipeline = {
-                        // 1) group over all projects
                         "{ '$group': {"
                                         + "  '_id': null,"
                                         + "  'projects':           { '$sum': 1 },"
@@ -62,7 +51,6 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
                                         + "  },"
                                         + "  'budgets':            { '$sum': '$budgetEstime' }"
                                         + "} }",
-                        // 2) drop the _id field so it maps cleanly
                         "{ '$project': {"
                                         + "  '_id': 0,"
                                         + "  'projects':           1,"
@@ -76,7 +64,6 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
         ProjectsStatsDTO getStatsAllProjects();
 
         @Aggregation(pipeline = {
-                        // project stage: include only the fields we want
                         "{ '$project': {"
                                         + "  '_id': 1,"
                                         + "  'nom': 1,"
@@ -97,6 +84,5 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
                         "{ '$project': { status: '$_id', count: 1, totalBudget: 1, _id: 0 } }"
         })
         List<TaskStatusStatsDTO> getProjectStatusAggregation(Date startDate, Date endDate);
-
 
 }

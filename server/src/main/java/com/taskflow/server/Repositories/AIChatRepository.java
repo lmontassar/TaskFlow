@@ -1,7 +1,5 @@
 package com.taskflow.server.Repositories;
-
 import com.taskflow.server.Entities.AIChat;
-import com.taskflow.server.Entities.Resource;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

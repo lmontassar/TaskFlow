@@ -2,7 +2,6 @@ package com.taskflow.server.Controllers;
 
 import com.taskflow.server.Config.JWT;
 import com.taskflow.server.Entities.Notification;
-import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Services.NotificationService;
 import com.taskflow.server.Services.ProjectService;

@@ -1,20 +1,15 @@
 package com.taskflow.server.Repositories;
-
 import com.taskflow.server.Entities.DTO.MonthlyTaskDurationDTO;
 import com.taskflow.server.Entities.Project;
-
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-
 import com.taskflow.server.Entities.Tache;
 import com.taskflow.server.Entities.User;
 import com.taskflow.server.Entities.DTO.ProjectStatsDTO;
 import com.taskflow.server.Entities.DTO.TasksStatsDTO;
 import com.taskflow.server.Entities.DTO.TeamPerformanceDTO;
-
 import lombok.Data;
-
 import java.util.Date;
 import java.util.List;
 
@@ -22,26 +17,22 @@ import java.util.List;
 public interface TacheRepository extends MongoRepository<Tache, String> {
 
         @Aggregation(pipeline = {
-                        // (1) Match by project ID if provided
                         "{ $match: { 'project.$id': ObjectId(?0) } }",
 
-                        // (2) Lookup the project itself
+
                         "{ $lookup: { from: 'projects', localField: 'project.$id', foreignField: '_id', as: 'project' } }",
                         "{ $unwind: { path: '$project', preserveNullAndEmptyArrays: true } }",
 
-                        // (3) Lookup the creator inside project:
-                        // Use project.createur.$id if it's a DBRef
                         "{ $lookup: { from: 'users', localField: 'project.createur.$id', foreignField: '_id', as: 'createurDoc' } }",
                         "{ $unwind: { path: '$createurDoc', preserveNullAndEmptyArrays: true } }",
 
-                        // (4) Other lookups for taches relationships
+
                         "{ $lookup: { from: 'taches', localField: 'paralleles.$id', foreignField: '_id', as: 'paralleles' } }",
                         "{ $lookup: { from: 'taches', localField: 'precedentes.$id', foreignField: '_id', as: 'precedentes' } }",
 
                         "{ $lookup: { from: 'taches', localField: 'parent.$id', foreignField: '_id', as: 'parent' } }",
                         "{ $unwind: { path: '$parent', preserveNullAndEmptyArrays: true } }",
 
-                        // (5) Final projection: include project fields and embed createurDoc as desired
                         "{ $project: { " +
                                         "id: 1, " +
                                         "nomTache: 1, description: 1, budgetEstime: 1, statut: 1, qualite: 1, difficulte: 1, "
@@ -53,19 +44,16 @@ public interface TacheRepository extends MongoRepository<Tache, String> {
                                         "rapporteur: 1, " +
                                         "assignee: { $cond: { if: { $isArray: '$assignee' }, then: '$assignee', else: [] } }, "
                                         +
-                                        // Project the project subdocument:
                                         "project: { " +
                                         "_id: '$project._id', " +
                                         "nom: '$project.nom', " +
                                         "listeCollaborateur: '$project.listeCollaborateur', " +
-                                        // Embed createur fields from the looked-up createurDoc
                                         "createur: { " +
                                         "_id: '$createurDoc._id', " +
-                                        "nom: '$createurDoc.nom', " + // adjust fields present in users
-                                        "email: '$createurDoc.email' " + // adjust or add more fields as needed
+                                        "nom: '$createurDoc.nom', " + 
+                                        "email: '$createurDoc.email' " + 
                                         " } " +
                                         "}, " +
-                                        // Project parent, paralleles, precedentes as before
                                         "parent: { _id: '$parent._id', nomTache: '$parent.nomTache' }, " +
                                         "paralleles: { $map: { input: '$paralleles', as: 'p', in: { _id: '$$p._id', nomTache: '$$p.nomTache' } } }, "
                                         +
@@ -76,24 +64,15 @@ public interface TacheRepository extends MongoRepository<Tache, String> {
         List<Tache> findAllProjectedTachesByProjectId(String projectId);
 
         @Aggregation(pipeline = {
-                        // (1) Match where user is rapporteur or in assignee
                         "{ $match: { $or: [ { 'rapporteur.$id': ObjectId(?0) }, { 'assignee.$id': ObjectId(?0) } ] } }",
-
-                        // (2) Lookup the project
                         "{ $lookup: { from: 'projects', localField: 'project.$id', foreignField: '_id', as: 'project' } }",
                         "{ $unwind: { path: '$project', preserveNullAndEmptyArrays: true } }",
-
-                        // (3) Lookup the creator of the project
                         "{ $lookup: { from: 'users', localField: 'project.createur.$id', foreignField: '_id', as: 'createurDoc' } }",
                         "{ $unwind: { path: '$createurDoc', preserveNullAndEmptyArrays: true } }",
-
-                        // (4) Lookups for related taches
                         "{ $lookup: { from: 'taches', localField: 'paralleles.$id', foreignField: '_id', as: 'paralleles' } }",
                         "{ $lookup: { from: 'taches', localField: 'precedentes.$id', foreignField: '_id', as: 'precedentes' } }",
                         "{ $lookup: { from: 'taches', localField: 'parent.$id', foreignField: '_id', as: 'parent' } }",
                         "{ $unwind: { path: '$parent', preserveNullAndEmptyArrays: true } }",
-
-                        // (5) Final projection
                         "{ $project: { " +
                                         "id: 1, " +
                                         "nomTache: 1, description: 1, budgetEstime: 1, statut: 1, qualite: 1, difficulte: 1, "
@@ -285,27 +264,21 @@ public interface TacheRepository extends MongoRepository<Tache, String> {
         List<MonthlyTaskDurationDTO> getMonthlyAverageDurations();
 
         @Aggregation(pipeline = {
-                        // Filter tasks by creation date range
                         "{ '$match': { 'dateCreation': { $gte: ?0, $lte: ?1 } } }",
-                        // Group by 'statut' field in MongoDB
                         "{ '$group': { _id: '$statut', count: { $sum: 1 }, totalBudget: { $sum: '$budgetEstime' } } }",
-                        // Project into DTO fields: status from _id, count, totalBudget
                         "{ '$project': { status: '$_id', count: 1, totalBudget: 1, _id: 0 } }"
         })
         List<com.taskflow.server.Entities.DTO.TaskStatusStatsDTO> getTaskStatusAggregation(Date startDate,
                         Date endDate);
 
         @Aggregation(pipeline = {
-                        // 1. Filter by date AND ensure at least one assignee
                         "{ $match: { "
                                         + "dateCreation: { $gte: ?0, $lte: ?1 }, "
                                         + "\"assignee.0\": { $exists: true } "
                                         + "} }",
 
-                        // 2. Unwind assignees
                         "{ $unwind: \"$assignee\" }",
 
-                        // 3. Group per assignee
                         "{ $group: { "
                                         + "_id: \"$assignee.$id\", "
                                         + "tasksAssigned:   { $sum: 1 }, "
@@ -315,13 +288,11 @@ public interface TacheRepository extends MongoRepository<Tache, String> {
                                         + "avgQuality:      { $avg: \"$qualite\" } "
                                         + "} }",
 
-                        // 4. Join back to users
                         "{ $lookup: { "
                                         + "from: \"users\", localField: \"_id\", foreignField: \"_id\", as: \"user\" "
                                         + "} }",
                         "{ $unwind: \"$user\" }",
 
-                        // 5. Shape DTO
                         "{ $project: { "
                                         + "userId:       \"$_id\", "
                                         + "userName:     { $concat: [ \"$user.nom\", \" \", \"$user.prenom\" ] }, "

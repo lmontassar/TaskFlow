@@ -2,7 +2,6 @@ package com.taskflow.server.Services;
 
 import com.taskflow.server.Entities.Project;
 import com.taskflow.server.Entities.DTO.AnalyticsKpisDTO;
-import com.taskflow.server.Entities.DTO.PerformanceTrendDTO;
 import com.taskflow.server.Entities.DTO.TaskStatusStatsDTO;
 import com.taskflow.server.Entities.DTO.TeamPerformanceDTO;
 import com.taskflow.server.Repositories.ProjectRepository;
@@ -11,8 +10,6 @@ import com.taskflow.server.Repositories.TacheRepository.TaskStatsAggregation;
 import com.taskflow.server.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,17 +25,6 @@ public class AnalyticsService {
     @Autowired
     private UserRepository userRepository;
 
-    // public List<PerformanceTrendDTO> getPerformanceTrends(Date startDate, Date
-    // endDate, String groupBy) {
-    // // Determine date format based on groupBy ('day' or 'week')
-    // String format;
-    // if ("week".equalsIgnoreCase(groupBy)) {
-    // format = "%Y-%U"; // year-weekNumber
-    // } else {
-    // format = "%Y-%m-%d"; // full date
-    // }
-    // return tacheRepository.getPerformanceTrends(startDate, endDate, format);
-    // }
 
     public List<TeamPerformanceDTO> getTeamPerformance(Date startDate, Date endDate, int limit, int offset) {
         return tacheRepository.getTeamPerformance(startDate, endDate, limit, offset);
