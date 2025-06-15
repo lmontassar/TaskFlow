@@ -110,7 +110,7 @@ function ResourceDetail({
                   Cost Per Unit
                 </h4>
                 <p className="mt-1">
-                  ${currentResource?.coutUnitaire.toLocaleString()}
+                  TND {currentResource?.coutUnitaire.toLocaleString()}
                 </p>
               </div>
               <div>
@@ -118,7 +118,7 @@ function ResourceDetail({
                   Total Cost
                 </h4>
                 <p className="mt-1 font-medium">
-                  $
+                  TND{" "}
                   {(
                     (currentResource?.qte || currentResource?.consommationMax) *
                     currentResource?.coutUnitaire
