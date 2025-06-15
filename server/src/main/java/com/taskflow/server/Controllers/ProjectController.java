@@ -140,16 +140,18 @@ public class ProjectController {
         String userId = (String)requestBody.get("collabId");
         String projectId = (String) requestBody.get("projectId");
         String id = (String) requestBody.get("id");
-        System.out.println("fetched id : "+id);
         if(projectId==null || projectId.isEmpty()){
+            System.out.println("project id null");
             return ResponseEntity.badRequest().build();
         }
         if(userId==null || userId.isEmpty()){
+            System.out.println("user null");
             return ResponseEntity.badRequest().build();
         }
 
         Project p = projectService.addSkill(projectId,userId,skill,lvl,id);
         if(p==null){
+            System.out.println("project null");
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().body(p.getListeCollaborateur());

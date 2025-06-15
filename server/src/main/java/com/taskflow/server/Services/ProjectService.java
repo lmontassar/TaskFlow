@@ -63,7 +63,7 @@ public class ProjectService {
         LocalDateTime firstTask = tacheService.getFirstDate(project);
         LocalDateTime lastTask = tacheService.getLastDate(project);
         // Check if the project's date range includes the first and last task dates
-        if (projectStartDate.isBefore(firstTask) && projectEndDate.isAfter(lastTask)) {
+        if ((projectStartDate.isBefore(firstTask)||projectStartDate.equals(firstTask)) && (projectEndDate.isAfter(lastTask)||projectEndDate.equals(lastTask))) {
 
             return projectRepository.save(project);
         }
@@ -78,7 +78,6 @@ public class ProjectService {
         if (p.getListeCollaborateur() == null || p.getListeCollaborateur().isEmpty()) {
             return null;
         }
-
         for (Collaborator col : p.getListeCollaborateur()) {
             if (col.getUser() != null && col.getUser().getId().equals(userId)) {
                 if (col.getCompetances() == null) {
@@ -96,6 +95,8 @@ public class ProjectService {
                     // Update skill level
                     existing.get().setTitre(skill);
                     existing.get().setNiveau(lvl);
+                    System.out.println(existing.get().getTitre());
+                    System.out.println(existing.get().getNiveau());
                 } else {
                     // Add new skill
                     Competance newCompetance = new Competance();

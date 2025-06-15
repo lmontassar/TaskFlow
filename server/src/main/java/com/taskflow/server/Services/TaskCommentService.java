@@ -55,7 +55,7 @@ public class TaskCommentService {
 
             String replacement;
             replacement = "@" + user.getNom() + "_" + user.getPrenom();
-
+            replacement = replacement.replace(" ","_");
 
             matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
         }

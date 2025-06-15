@@ -303,23 +303,13 @@ export default function SpecificTaskPage() {
 
   const handleAddPrecTask = async (precTask: any) => {
     const result = await AddPrecTask(task.id, precTask.id);
-    if (result == true)
-      setTask((task: any) => ({
-        ...task,
-        precedentes: [...(task.precedentes || []), precTask],
-      }));
-    else alert("there is a problem");
+
     resetTasksToHide("add", precTask);
   };
 
   const handleAddParallelTask = async (parallelTask: any) => {
     const result = await AddParallelTask(task.id, parallelTask.id);
-    if (result == true)
-      setTask((task: any) => ({
-        ...task,
-        paralleles: [...(task.paralleles || []), parallelTask],
-      }));
-    else alert("there is a problem");
+
     resetTasksToHide("add", parallelTask);
   };
 

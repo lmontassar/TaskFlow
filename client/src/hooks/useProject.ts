@@ -92,8 +92,7 @@ function useProject() {
 
     return () => {
       if (clientRef.current) {
-        clientRef.current.disconnect(() => {
-        });
+        clientRef.current.disconnect(() => {});
         clientRef.current = null;
       }
     };
@@ -194,10 +193,10 @@ function useProject() {
         toast.success(t("member.editForm.success"));
         return data;
       } else {
-        console.error("noo way");
+        console.error(res.statusText);
       }
     } catch (error) {
-      console.error("noo way");
+      console.error(error);
     }
     return null;
   };

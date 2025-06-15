@@ -236,7 +236,7 @@ function MemberTable({
                       Number(e.target.value) >= 0 &&
                       Number(e.target.value) <= 5
                     ) {
-                      setNewSkillLevel(Number(e.target.value));
+                      setNewSkillLevel(Number.parseInt(e.target.value) || 0);
                     }
                   }}
                   placeholder={t("member.editForm.skill_level_placeholder")}
