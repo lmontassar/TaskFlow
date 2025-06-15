@@ -233,7 +233,7 @@ export function ProjectOverview({
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-muted-foreground">
-                  {t("project.creation_form.project_name")}
+                  {t("project.creation_form.name")}
                 </h3>
                 <Input
                   type="text"
