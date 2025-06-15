@@ -63,8 +63,12 @@ public class ProjectService {
         LocalDateTime firstTask = tacheService.getFirstDate(project);
         LocalDateTime lastTask = tacheService.getLastDate(project);
         // Check if the project's date range includes the first and last task dates
-        if ((projectStartDate.isBefore(firstTask)||projectStartDate.equals(firstTask)) && (projectEndDate.isAfter(lastTask)||projectEndDate.equals(lastTask))) {
+        if(firstTask !=null && lastTask!=null){
+            if ((projectStartDate.isBefore(firstTask)||projectStartDate.equals(firstTask)) && (projectEndDate.isAfter(lastTask)||projectEndDate.equals(lastTask))) {
 
+                return projectRepository.save(project);
+            }
+        }else{
             return projectRepository.save(project);
         }
         return null;
