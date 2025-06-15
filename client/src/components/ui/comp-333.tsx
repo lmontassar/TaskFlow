@@ -19,6 +19,7 @@ interface SearchFormProps {
 }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Loading from "./loading";
+import { toast } from "sonner";
 export default function SearchForm({
   children,
   project,
@@ -49,6 +50,9 @@ export default function SearchForm({
       throw new Error(result.statusText);
     }
     const data = await result.json();
+    toast.success(
+      `Collaborator ${collaborate.nom} has been added to the project ${project.nom}.`
+    );
     setProject(data);
   };
 

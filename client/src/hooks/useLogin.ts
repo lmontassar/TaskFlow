@@ -12,7 +12,6 @@ type LoginFormData = {
 };
 
 const useLogin = () => {
-
   const navigate = useNavigate();
   const { setUser } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,20 +60,17 @@ const useLogin = () => {
           setIsLoading(false);
           return;
         }
-       
-        const decoded:any = jwtDecode(data.jwt);
-        if( decoded?.activation == false ){
-          localStorage.setItem("token",data.jwt);
+
+        const decoded: any = jwtDecode(data.jwt);
+        if (decoded?.activation == false) {
+          localStorage.setItem("token", data.jwt);
           navigate("/emailverification");
         } else {
           localStorage.setItem("authToken", data.jwt);
           setUser(data.user);
           setIsLoading(false);
-          navigate("/home");
+          window.location.href = "/home"; // Redirect to home after successful login
         }
-        
-
-        
       }
       if (response.status === 400) {
         setError(t("login.error"));

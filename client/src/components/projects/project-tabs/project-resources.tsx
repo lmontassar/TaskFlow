@@ -393,7 +393,9 @@ export function ProjectResources({ project }: { project: any }) {
               <span className="text-sm text-muted-foreground">
                 {t("resource.total_cost")}:
               </span>
-              <span className="font-medium">${totalCost.toLocaleString()}</span>
+              <span className="font-medium">
+                TND {totalCost.toLocaleString()}
+              </span>
             </div>
           </div>
           {/* Resources Table */}

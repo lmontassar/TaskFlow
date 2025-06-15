@@ -29,7 +29,7 @@ export default function InputNumber({
       minValue={min}
       formatOptions={{
         style: "currency",
-        currency: "EUR",
+        currency: "TND",
         currencySign: "accounting",
       }}
     >

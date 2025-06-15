@@ -58,9 +58,11 @@ function ResourcesTable({
                   </div>
                 </TableCell>
 
-                <TableCell>${resource.coutUnitaire.toLocaleString()}</TableCell>
                 <TableCell>
-                  $
+                  TND {resource.coutUnitaire.toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  TND{" "}
                   {(
                     resource.qte * resource.coutUnitaire ||
                     resource?.consommationMax * resource.coutUnitaire

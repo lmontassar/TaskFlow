@@ -26,7 +26,16 @@ public class NotificationController {
     public ProjectService projectService;
     @Autowired
     private JWT myJWT;
-
+    @PutMapping("/markRead/{id}")
+    public ResponseEntity<?> markRead(@RequestHeader("Authorization") String token,
+                                      @PathVariable String id){
+        Notification notification = notificationService.getNotificationById(id);
+        if(notification!=null){
+            notificationService.markRead(notification);
+            return ResponseEntity.status(200).build();
+        }
+        return ResponseEntity.status(404).build();
+    }
     @PutMapping("/accept-invitation")
     public ResponseEntity<?> AcceptInvitation(@RequestHeader("Authorization") String token,
                                               @RequestBody Map<String, String> requestBody){

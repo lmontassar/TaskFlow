@@ -161,7 +161,7 @@ function EditResource({
                     min="0"
                   />
                 </div>
-                
+
                 {/* <div>
                   <Label className="mb-2" htmlFor="edit-consommationTotale">
                     {t("resource.add_resource_form.total_consumption")}
@@ -179,7 +179,6 @@ function EditResource({
                     min="0"
                   />
                 </div> */}
-                
               </>
             )}
             <div>
@@ -224,14 +223,16 @@ function EditResource({
               }
             >
               <Label className="mb-2" htmlFor="edit-coutUnitaire">
-                {t("resource.cost_per_unit")} ($)
+                {t("resource.cost_per_unit")} (TND)
               </Label>
               <div className="relative">
-                <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <span className="absolute top-[50%] left-2.5 translate-y-[-75%] h-4 w-4 text-muted-foreground">
+                  TND
+                </span>
                 <Input
                   id="edit-coutUnitaire"
                   name="coutUnitaire"
-                  className={`pl-8  ${
+                  className={`pl-12  ${
                     formData.coutUnitaire ? "" : "border-destructive"
                   }`}
                   type="number"

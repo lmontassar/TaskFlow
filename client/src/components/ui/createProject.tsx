@@ -87,7 +87,7 @@ function CreateProjectPage() {
       });
       setCreated(true);
       setTimeout(() => {
-        navigate(`/projects/${newProject.id}`);
+        window.location.reload();
       }, 1500);
     } catch (err) {
       console.error("Failed to create project:", err);

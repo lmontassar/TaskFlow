@@ -45,7 +45,7 @@ export default function SignupVerification() {
           localStorage.removeItem(tokenKey);
           console.log("Token expired and removed. Redirecting...");
           clearInterval(intervalId);
-          navigate("/login");
+          window.location.href = "/login"; // Redirect to login or any other page
         }
       };
 

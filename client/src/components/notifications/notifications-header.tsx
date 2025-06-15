@@ -16,11 +16,6 @@ export function NotificationsHeader() {
             Stay updated with project invites, mentions, and activity.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            Mark all as read
-          </Button>
-        </div>
       </div>
     </div>
   );

@@ -125,7 +125,7 @@ export function AdminProjects() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "TND",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -244,7 +244,6 @@ export function AdminProjects() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
               {t("admin.projects.total_budget")}
             </CardTitle>
           </CardHeader>

@@ -177,17 +177,19 @@ function AddResource({
 
             <div className={"col-span-2"}>
               <Label className="mb-2" htmlFor="coutUnitaire">
-                {t("resource.cost_per_unit")} ($)
+                {t("resource.cost_per_unit")} (TND)
               </Label>
               <div className="relative">
-                <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <span className="absolute top-[50%] left-2.5 translate-y-[-75%] h-4 w-4 text-muted-foreground">
+                  TND
+                </span>
                 <Input
                   id="coutUnitaire"
                   name="coutUnitaire"
                   type="number"
                   min="0"
                   step="0.01"
-                  className="pl-8"
+                  className="pl-12"
                   value={formData.coutUnitaire}
                   onChange={handleInputChange}
                 />

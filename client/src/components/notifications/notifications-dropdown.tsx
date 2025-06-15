@@ -55,6 +55,7 @@ export function NotificationsDropdown() {
     notifications,
     setNotifications,
     unreadCount,
+    markRead,
     setUnreadCount,
   } = useNotifications();
 
@@ -118,6 +119,7 @@ export function NotificationsDropdown() {
   };
 
   const markAsRead = (notificationId: string) => {
+    markRead(notificationId);
     const updatedNotifications = notifications.map((notification) =>
       notification.id === notificationId
         ? { ...notification, read: true }
@@ -164,16 +166,6 @@ export function NotificationsDropdown() {
           <DropdownMenuLabel className="text-base">
             Notifications
           </DropdownMenuLabel>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-auto px-2 py-1 text-xs"
-              onClick={markAllAsRead}
-            >
-              Mark all as read
-            </Button>
-          )}
         </div>
         <DropdownMenuSeparator />
 
@@ -196,6 +188,11 @@ export function NotificationsDropdown() {
                   <DropdownMenuItem
                     key={notification.id}
                     className="flex flex-col items-start p-0 focus:bg-transparent mt-2"
+                    onClick={() => {
+                      if (!notification.read) {
+                        markAsRead(notification.id);
+                      }
+                    }}
                   >
                     <div
                       className={`w-full rounded-md p-3 ${

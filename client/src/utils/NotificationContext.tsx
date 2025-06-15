@@ -85,6 +85,22 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     };
   }, [user, token]);
+  const markRead = async (id: string) => {
+    try {
+      const response = await fetch(`/api/notifications/markRead/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to mark read");
+      }
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
   const AcceptInvitation = async (id: string) => {
     try {
       const response = await fetch(`/api/notifications/accept-invitation`, {
@@ -98,6 +114,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!response.ok) {
         throw new Error("Failed to accept invitation");
       }
+      window.location.reload(); // Reload to reflect changes
     } catch (error: any) {
       setError(error.message);
     }
@@ -160,6 +177,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
         setUnreadCount,
         loading,
         error,
+        markRead,
       }}
     >
       {children}

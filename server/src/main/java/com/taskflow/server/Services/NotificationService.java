@@ -159,7 +159,11 @@ public class NotificationService {
     public List<Notification> getMyNotifications(User receiver){
         return notificationRepository.findAllByReceiver(receiver);
     }
-
+    public Notification markRead(Notification notification)
+    {
+        notification.setRead(true);
+        return notificationRepository.save(notification);
+    }
     public Notification getNotificationById(String id){
         return notificationRepository.findById(id).orElse(null);
     }

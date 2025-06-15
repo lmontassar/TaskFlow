@@ -52,7 +52,7 @@ const GoogleLoginButton = () => {
           await localStorage.setItem("authToken", data.jwt);
           setUser(data.user);
 
-          navigate("/home");
+          window.location.href = "/home"; // Redirect to home after successful login
         } else if (res.status === 401) {
           console.error("Invalid ID token");
         } else {
@@ -116,7 +116,7 @@ const GitHubCallback = () => {
             const data = await res.json();
             await localStorage.setItem("authToken", data.jwt); // Store token or user data in local storage
             setUser(data.user);
-            navigate("/home");
+            window.location.href = "/home"; // Redirect to home after successful login
           } else {
             console.error("GitHub login failed.");
           }

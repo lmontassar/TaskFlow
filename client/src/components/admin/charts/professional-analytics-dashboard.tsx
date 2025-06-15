@@ -181,9 +181,11 @@ export default function ProfessionalAnalyticsDashboard() {
         </Card>
 
         <Card className="text-center p-4 shadow-md border-0 bg-gradient-to-br from-yellow-50 to-yellow-100">
-          <DollarSign className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
+          <span className="text-2xl text-yellow-600 mx-auto mb-2 font-bold">
+            TND
+          </span>
           <div className="text-xl font-bold text-slate-900">
-            $
+            TND{" "}
             <NumberTicker value={kpis.totalBudget / kpis.totalTasks / 1000} />K
           </div>
           <div className="text-xs text-slate-500">
