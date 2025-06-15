@@ -2,16 +2,10 @@ package com.taskflow.server.Services;
 
 import java.util.Date;
 import java.util.Random;
-
-import javax.management.RuntimeErrorException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import com.taskflow.server.Entities.OTPVerification;
 import com.taskflow.server.Repositories.OTPVerificationRepository;
-
 @Service
 public class OTPVerificationService {
     @Autowired

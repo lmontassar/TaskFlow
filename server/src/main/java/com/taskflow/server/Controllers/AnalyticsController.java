@@ -1,7 +1,6 @@
 package com.taskflow.server.Controllers;
 
 import com.taskflow.server.Entities.DTO.AnalyticsKpisDTO;
-import com.taskflow.server.Entities.DTO.PerformanceTrendDTO;
 import com.taskflow.server.Entities.DTO.TaskStatusStatsDTO;
 import com.taskflow.server.Entities.DTO.TeamPerformanceDTO;
 import com.taskflow.server.Services.AnalyticsService;

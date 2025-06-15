@@ -1,13 +1,11 @@
 package com.taskflow.server.Services;
 
 import com.taskflow.server.Entities.LoginSecurity;
-import com.taskflow.server.Entities.User;
 import com.taskflow.server.Repositories.LoginSecurityRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
-
 import java.util.Date;
 import java.util.Optional;
 @Service

@@ -5,13 +5,10 @@ import com.taskflow.server.Repositories.NotificationRepository;
 import com.taskflow.server.Repositories.ProjectRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
-
 @Service
 public class NotificationService {
     @Autowired
