@@ -35,6 +35,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import Textarea03 from "../ui/Textarea-helper";
+import { toLocalISOString } from "../../lib/utils";
 
 interface TaskCreateModalProps {
   isOpen: boolean;
@@ -100,8 +101,8 @@ export function TaskCreateModal({
       budgetEstime: budget,
       project: project,
       difficulte: taskDifficulty as any,
-      dateDebut: dateRange?.from ?? null,
-      dateFinEstime: dateRange?.to ?? null,
+      dateDebut: toLocalISOString(new Date(dateRange?.from)) ?? null,
+      dateFinEstime: toLocalISOString(new Date(dateRange?.to)) ?? null,
       duree: duration,
       marge: marge,
     };

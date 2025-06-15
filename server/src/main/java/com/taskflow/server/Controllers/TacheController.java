@@ -771,6 +771,8 @@ public class TacheController {
             @RequestHeader("Authorization") String token) {
         try {
             Resource ressource = resourceService.getById(ressourceID);
+            System.out.println(dateDebut);
+            System.out.println(dateFin);
             Tache t = tacheSer.findTacheById(taskID);
             switch (ressource.getType()) {
                 case "Temporary": {
@@ -807,10 +809,10 @@ public class TacheController {
                 case "Material": {
                     if (qte == null || dateDebut == null || dateFin == null)
                         return ResponseEntity.badRequest().build();
-                    System.out.println("c1: " + t.getDateDebut().isAfter(dateDebut));
-                    System.out.println("c3: " + t.getDateFinEstime().isBefore(dateFin));
-                    if ((t.getDateDebut() != null && t.getDateDebut().isAfter(dateDebut))
-                            || (t.getDateFinEstime() != null && t.getDateFinEstime().isBefore(dateFin))) {
+                    System.out.println("c1: " + (t.getDateDebut().isAfter(dateDebut)||t.getDateDebut().isEqual(dateDebut)));
+                    System.out.println("c3: " + (t.getDateFinEstime().isBefore(dateFin)||t.getDateFinEstime().isEqual(dateFin)));
+                    if ((t.getDateDebut() != null && (t.getDateDebut().isAfter(dateDebut)))
+                            || (t.getDateFinEstime() != null && (t.getDateFinEstime().isBefore(dateFin)))) {
                         return ResponseEntity.status(416).build();
                     }
 
