@@ -22,7 +22,7 @@ public class User {
     @JsonIgnore
     private String password;
     private String phoneNumber;
-    private Role role;
+    private Role role=Role.USER;
     private Boolean online;
     private LocalDateTime lastOnline;
     private String nom;
