@@ -192,18 +192,9 @@ export default function LoginForm({
                 />
               </div>
               <div className="flex items-center justify-between flex-wrap">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="terms" onClick={handleCheckboxChange} />
-                  <label
-                    htmlFor="terms"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {t("login.remember_me")}
-                  </label>
-                </div>
                 <Link
                   to="/reset"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                  className="mr-auto inline-block text-sm underline-offset-4 hover:underline"
                 >
                   {t("login.forget")}
                 </Link>

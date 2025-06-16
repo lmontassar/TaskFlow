@@ -2,7 +2,12 @@ import "./App.css";
 import { Button } from "@/components/ui/button";
 import Signup from "@/pages/signup";
 import Login from "@/pages/login";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import EmailVerification from "./pages/EmailVerification";
 import Dashboard from "./pages/Main/Dashboard";
 import Home from "./pages/Main/Home";
@@ -85,15 +90,14 @@ function App() {
                   <Route path="ask-ai/:projectId" element={<AskAI />} />
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="projects/:id" element={<ProjectPage />} />
-                  <Route element={<AdminRoutes role={user?.role ?? "USER"} />}>
-                    <Route path="admin" element={<AdminPage />} />
-                  </Route>
                   <Route path="profile" element={<Profile />} />
                   <Route path="tasks" element={<TasksPage />} />
                   <Route path="my-tasks" element={<MyTasksPage />} />
                   <Route path="task/:taskId" element={<SpecificTaskPage />} />
                 </Route>
+                <Route path="/admin" element={<AdminPage />} />
               </Route>
+
               {/* Public Routes */}
               <Route element={<ProtectedLoginRoutes />}>
                 <Route path="/signup" element={<Signup />} />
@@ -105,6 +109,7 @@ function App() {
                 />
               </Route>
               <Route path="/reset" element={<ResetPassword />} />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </Router>
         </NotificationProvider>

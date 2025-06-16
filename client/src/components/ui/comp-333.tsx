@@ -47,6 +47,7 @@ export default function SearchForm({
       }),
     });
     if (!result.ok) {
+      toast.error(`Collaborator ${collaborate.nom} already invited.`);
       throw new Error(result.statusText);
     }
     const data = await result.json();
@@ -156,7 +157,7 @@ export default function SearchForm({
                         </Avatar>
 
                         <span>{result.nom || "Unknown"}</span>
-                        <span className="ml-2 text-muted-foreground">
+                        <span className="ml-2 text-muted-foreground truncate w-40">
                           {result.email || "No Email"}
                         </span>
                         {result?.isAvailable === false && (
