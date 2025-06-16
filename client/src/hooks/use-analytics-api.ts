@@ -73,7 +73,7 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
     const [taskStatus, setTaskStatus] = useState<TaskStatusDistribution[]>([])
     const [projectStatus, setProjectStatus] = useState<any[]>([])
 
-    const [performanceTrends, setPerformanceTrends] = useState<PerformanceTrend[]>([])
+    const [performanceTrends] = useState<PerformanceTrend[]>([])
     const [teamPerformance, setTeamPerformance] = useState<TeamPerformanceMetric[]>([])
     const [teamWorkload, setTeamWorkload] = useState<TeamWorkloadItem[]>([])
     const [resourceUtilization, setResourceUtilization] = useState<ResourceUtilization[]>([])
@@ -98,29 +98,6 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
                 ...(customDateRange?.to && { endDate: customDateRange.to.toISOString() }),
             })
 
-
-
-            // API 1: Dashboard KPIs - Aggregated metrics
-            /*
-             * Expected API: GET /api/analytics/kpis?timeRange=30d&startDate=2024-01-01&endDate=2024-12-31
-             * Expected Response: {
-             *   totalTasks: number,
-             *   completedTasks: number,
-             *   completionRate: number,
-             *   totalBudget: number,
-             *   spentBudget: number,
-             *   budgetUtilization: number,
-             *   activeUsers: number,
-             *   onlineUsers: number,
-             *   activeProjects: number,
-             *   overdueTasks: number,
-             *   highRiskTasks: number,
-             *   avgTaskDuration: number
-             * }
-             */
-            //const kpisResponse = await fetch(`/api/analytics/kpis?${params}`)
-            // const kpisData = await kpisResponse.json()
-
             const response = await fetch(`/api/analytics/kpis?${params}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -134,25 +111,6 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
 
             const kpisData = await response.json();
 
-
-            // API 2: Task Status Distribution - Aggregated by status
-            /*
-             * Expected API: GET /api/analytics/task-status?timeRange=30d
-             * Expected Response: [
-             *   {
-             *     status: "TODO",
-             *     count: 150,
-             *     percentage: 35.5,
-             *     totalBudget: 45000
-             *   },
-             *   {
-             *     status: "IN_PROGRESS",
-             *     count: 89,
-             *     percentage: 21.1,
-             *     totalBudget: 67000
-             *   }
-             * ]
-             */
             const taskStatusResponse = await fetch(`/api/analytics/task-status?${params}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -160,9 +118,6 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
                 }
             })
             const taskStatusData = await taskStatusResponse.json()
-
-
-
 
             const projectStatusResponse = await fetch(`/api/analytics/project-status?${params}`, {
                 headers: {
@@ -172,25 +127,6 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
             })
             const projectStatusData = await projectStatusResponse.json()
 
-
-
-            // API 4: Team Performance - Top performers with pagination
-            /*
-             * Expected API: GET /api/analytics/team-performance?timeRange=30d&limit=20&offset=0
-             * Expected Response: [
-             *   {
-             *     userId: "user123",
-             *     userName: "John Doe",
-             *     role: "Senior Developer",
-             *     tasksAssigned: 25,
-             *     tasksCompleted: 23,
-             *     completionRate: 92.0,
-             *     avgTaskDuration: 18.5,
-             *     totalBudgetManaged: 125000,
-             *     qualityScore: 94.2
-             *   }
-             * ]
-             */
             const teamPerfResponse = await fetch(`/api/analytics/team-performance?${params}&limit=20`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -198,136 +134,6 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
                 }
             })
             const teamPerfData = await teamPerfResponse.json()
-
-            // API 5: Team Workload - Current active workload
-            /*
-             * Expected API: GET /api/analytics/team-workload?limit=20
-             * Expected Response: [
-             *   {
-             *     userId: "user123",
-             *     userName: "John Doe",
-             *     role: "Senior Developer",
-             *     currentTasks: 8,
-             *     capacity: 10,
-             *     utilizationRate: 80.0,
-             *     avgTaskValue: 5000,
-             *     isOnline: true
-             *   }
-             * ]
-             */
-            // const workloadResponse = await fetch(`/api/analytics/team-workload?limit=20`)
-            // const workloadData = await workloadResponse.json()
-
-            // API 6: Resource Utilization - Aggregated resource metrics
-            /*
-             * Expected API: GET /api/analytics/resource-utilization?timeRange=30d
-             * Expected Response: [
-             *   {
-             *     resourceId: "res123",
-             *     name: "Development Workstation",
-             *     type: "Material",
-             *     category: "Hardware",
-             *     totalCapacity: 10,
-             *     currentUsage: 8,
-             *     utilizationRate: 80.0,
-             *     costPerUnit: 2500,
-             *     totalCost: 20000
-             *   }
-             * ]
-             */
-            // const resourceResponse = await fetch(`/api/analytics/resource-utilization?${params}`)
-            // const resourceData = await resourceResponse.json()
-
-            // Mock data for demonstration - Replace with actual API calls
-            const mockKpis: DashboardKPIs = {
-                totalTasks: 1247,
-                completedTasks: 892,
-                completionRate: 71.5,
-                totalBudget: 2450000,
-                spentBudget: 1876000,
-                budgetUtilization: 76.6,
-                activeUsers: 156,
-                onlineUsers: 89,
-                activeProjects: 23,
-                overdueTasks: 34,
-                highRiskTasks: 12,
-                avgTaskDuration: 4.2,
-            }
-
-            const mockTaskStatus: TaskStatusDistribution[] = [
-                { status: "TODO", count: 355, percentage: 28.5, totalBudget: 698000 },
-                { status: "IN_PROGRESS", count: 267, percentage: 21.4, totalBudget: 567000 },
-                { status: "REVIEW", count: 133, percentage: 10.7, totalBudget: 309000 },
-                { status: "DONE", count: 492, percentage: 39.4, totalBudget: 876000 },
-            ]
-
-            const mockPerformanceTrends: PerformanceTrend[] = [
-                { date: "2024-01-01", velocity: 42, quality: 85.2, efficiency: 78.5, burndown: 145 },
-                { date: "2024-01-08", velocity: 48, quality: 87.8, efficiency: 82.1, burndown: 132 },
-                { date: "2024-01-15", velocity: 52, quality: 89.5, efficiency: 85.7, burndown: 118 },
-                { date: "2024-01-22", velocity: 45, quality: 91.2, efficiency: 83.4, burndown: 105 },
-                { date: "2024-01-29", velocity: 58, quality: 93.1, efficiency: 88.9, burndown: 89 },
-                { date: "2024-02-05", velocity: 61, quality: 94.7, efficiency: 91.2, burndown: 72 },
-            ]
-
-            const mockTeamPerformance: TeamPerformanceMetric[] = [
-                {
-                    userId: "u1",
-                    userName: "Sarah Johnson",
-                    role: "Senior Developer",
-                    tasksAssigned: 28,
-                    tasksCompleted: 26,
-                    completionRate: 92.9,
-                    avgTaskDuration: 16.5,
-                    totalBudgetManaged: 145000,
-                    qualityScore: 94.2,
-                },
-                {
-                    userId: "u2",
-                    userName: "Mike Chen",
-                    role: "DevOps Engineer",
-                    tasksAssigned: 22,
-                    tasksCompleted: 19,
-                    completionRate: 86.4,
-                    avgTaskDuration: 24.2,
-                    totalBudgetManaged: 98000,
-                    qualityScore: 89.7,
-                },
-                {
-                    userId: "u3",
-                    userName: "Emily Davis",
-                    role: "QA Engineer",
-                    tasksAssigned: 35,
-                    tasksCompleted: 33,
-                    completionRate: 94.3,
-                    avgTaskDuration: 12.8,
-                    totalBudgetManaged: 87000,
-                    qualityScore: 96.1,
-                },
-                {
-                    userId: "u4",
-                    userName: "Alex Rodriguez",
-                    role: "UI/UX Designer",
-                    tasksAssigned: 18,
-                    tasksCompleted: 15,
-                    completionRate: 83.3,
-                    avgTaskDuration: 20.1,
-                    totalBudgetManaged: 76000,
-                    qualityScore: 91.5,
-                },
-                {
-                    userId: "u5",
-                    userName: "David Kim",
-                    role: "Backend Developer",
-                    tasksAssigned: 31,
-                    tasksCompleted: 27,
-                    completionRate: 87.1,
-                    avgTaskDuration: 18.7,
-                    totalBudgetManaged: 132000,
-                    qualityScore: 88.9,
-                },
-            ]
-
             const mockTeamWorkload: TeamWorkloadItem[] = [
                 {
                     userId: "u1",
@@ -427,19 +233,26 @@ export function useAnalyticsAPI(timeRange: string, customDateRange?: { from?: Da
                     totalCost: 800,
                 },
             ]
-
-            // Simulate API delay
             await new Promise((resolve) => setTimeout(resolve, 800))
 
             setKpis(kpisData)
-            setTaskStatus(taskStatusData)
-            setProjectStatus(projectStatusData)
+            console.log(kpisData)
 
-            // setPerformanceTrends(mockPerformanceTrends)
+            setTaskStatus(taskStatusData)
+            console.log(taskStatusData)
+
+            setProjectStatus(projectStatusData)
+            console.log(projectStatusData)
+
 
             setTeamPerformance(teamPerfData)
+            console.log(teamPerfData)
             setTeamWorkload(mockTeamWorkload)
+            console.log(mockTeamWorkload)
             setResourceUtilization(mockResourceUtilization)
+            console.log(mockResourceUtilization)
+
+            console.log()
         } catch (err) {
             setError("Failed to fetch analytics data")
             console.error("Analytics API Error:", err)

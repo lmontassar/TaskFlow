@@ -43,28 +43,7 @@ export function SimplifiedControls({
     customDateRange || {}
   );
   const { t } = useTranslation();
-  const timeRanges = [
-    {
-      value: "7d",
-      label: t("admin.analytics.controle.time_range.options.last_7_days"),
-    },
-    {
-      value: "30d",
-      label: t("admin.analytics.controle.time_range.options.last_30_days"),
-    },
-    {
-      value: "90d",
-      label: t("admin.analytics.controle.time_range.options.last_90_days"),
-    },
-    {
-      value: "1y",
-      label: t("admin.analytics.controle.time_range.options.last_year"),
-    },
-    {
-      value: "all",
-      label: t("admin.analytics.controle.time_range.options.all_time"),
-    },
-  ];
+
 
   const handleDateRangeChange = (
     newRange: { from?: Date; to?: Date } | undefined
@@ -82,7 +61,7 @@ export function SimplifiedControls({
         </CardTitle>
         <div className="flex flex-wrap items-center gap-4">
 
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-slate-600">
               {t("admin.analytics.controle.time_range.title")}
             </span>
@@ -98,9 +77,9 @@ export function SimplifiedControls({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
 
-          <Separator orientation="vertical" className="h-6" />
+          {/* <Separator orientation="vertical" className="h-6" /> */}
 
           <Popover>
             <PopoverTrigger asChild>

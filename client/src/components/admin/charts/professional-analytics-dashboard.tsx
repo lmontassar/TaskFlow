@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   AlertTriangle,
@@ -42,10 +42,15 @@ import { useTranslation } from "react-i18next";
 
 export default function ProfessionalAnalyticsDashboard() {
   const [timeRange, setTimeRange] = useState<TimeRange>("30d");
+  const currentYear = new Date().getFullYear();
+
   const [customDateRange, setCustomDateRange] = useState<{
     from?: Date;
     to?: Date;
-  }>({});
+  }>({
+    from: new Date(currentYear, 0, 1), // January 1st
+    to: new Date(currentYear, 11, 31), // December 31st
+  });
   const [activeTab, setActiveTab] = useState("overview");
 
   const {
@@ -57,6 +62,12 @@ export default function ProfessionalAnalyticsDashboard() {
     error,
     refetch,
   } = useAnalyticsAPI(timeRange, customDateRange);
+
+
+  useEffect(() => {
+    console.log(taskStatus)
+  }, [loading])
+
   const { users } = useStatistics();
   const { t } = useTranslation();
   const handleExport = () => {
@@ -75,9 +86,8 @@ export default function ProfessionalAnalyticsDashboard() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `analytics-export-${
-      new Date().toISOString().split("T")[0]
-    }.json`;
+    a.download = `analytics-export-${new Date().toISOString().split("T")[0]
+      }.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
