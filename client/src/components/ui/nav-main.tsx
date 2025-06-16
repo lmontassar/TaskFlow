@@ -29,9 +29,12 @@ import {
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useContext } from "react";
+import { Context } from "../../App";
 
 export function NavMain() {
   const { t } = useTranslation();
+  const { user } = useContext(Context);
   const items = [
     {
       title: t("sidebar.home"),
@@ -50,11 +53,19 @@ export function NavMain() {
       url: "/dashboard",
       icon: Gauge,
     },
-    {
-      title: t("sidebar.myTasks"),
-      url: "/my-tasks",
-      icon: ListTodo,
-    },
+
+    user?.role === "ADMIN"
+      ? {
+          title: "Admin",
+          url: "/admin",
+          icon: BookText,
+          isActive: false,
+        }
+      : {
+          title: t("sidebar.myTasks"),
+          url: "/my-tasks",
+          icon: ListTodo,
+        },
   ];
   return (
     <SidebarGroup>
