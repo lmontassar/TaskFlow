@@ -89,13 +89,13 @@ function App() {
                   <Route path="chat" element={<ChatsPage />} />
                   <Route path="ask-ai/:projectId" element={<AskAI />} />
                   <Route path="notifications" element={<Notifications />} />
+                  <Route path="/admin" element={<AdminPage />} />
                   <Route path="projects/:id" element={<ProjectPage />} />
                   <Route path="profile" element={<Profile />} />
                   <Route path="tasks" element={<TasksPage />} />
                   <Route path="my-tasks" element={<MyTasksPage />} />
                   <Route path="task/:taskId" element={<SpecificTaskPage />} />
                 </Route>
-                <Route path="/admin" element={<AdminPage />} />
               </Route>
 
               {/* Public Routes */}

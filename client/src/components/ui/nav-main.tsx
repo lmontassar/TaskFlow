@@ -53,7 +53,11 @@ export function NavMain() {
       url: "/dashboard",
       icon: Gauge,
     },
-
+    {
+      title: t("sidebar.myTasks"),
+      url: "/my-tasks",
+      icon: ListTodo,
+    },
     user?.role === "ADMIN"
       ? {
           title: "Admin",
@@ -61,17 +65,13 @@ export function NavMain() {
           icon: BookText,
           isActive: false,
         }
-      : {
-          title: t("sidebar.myTasks"),
-          url: "/my-tasks",
-          icon: ListTodo,
-        },
+      : null,
   ];
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        {items.filter(Boolean).map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
