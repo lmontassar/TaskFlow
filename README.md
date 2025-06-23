@@ -80,10 +80,12 @@ To get a local copy up and running, follow these simple steps.
 -   A running MongoDB instance (local or cloud)
 
 
+----------
 
 ## 📸 Realisation Screenshots
 
 Here are some screenshots showcasing the core functionalities and user interface of **TaskFlow** during its development:
+
 
 ### 🔐 Authentication  
 1. *Multi-step user registration interface*
@@ -101,8 +103,6 @@ Here are some screenshots showcasing the core functionalities and user interface
 
 ![Image](https://github.com/user-attachments/assets/2bc453f1-6367-4e6e-a6cc-91e583da1ad0)
 
-
-
 4. *User logout interface*
 
 ![Image](https://github.com/user-attachments/assets/abc77038-9c50-4ffc-9da5-f335dbcf545b)
@@ -112,8 +112,153 @@ Here are some screenshots showcasing the core functionalities and user interface
 
 ![Image](https://github.com/user-attachments/assets/5cd5d8ea-80bf-4755-8195-07351937f7ed)
 
+----------
+
+### 📁 Project Management
+
+#### 🧱 Create a Project
+
+_Project creation interface_
+
+![Image](https://github.com/user-attachments/assets/b3687986-e991-4585-b391-d6f21139e2b5)
+
+#### 👥 Add a Collaborator
+
+_Interface to add a project collaborator_
+![Image](https://github.com/user-attachments/assets/e578d257-069f-42df-8f70-00944ffdb9e5)
+![Image](https://github.com/user-attachments/assets/4383f366-173c-40cf-b07d-39e9c9ecbedd)
+
+#### ✅ Create a Task
+
+_Task creation interface with input fields and parameters_
+![Image](https://github.com/user-attachments/assets/50ec781e-908c-49e6-999d-aa931f8914ae)
 
 
+#### 📝 Task List
+
+_Overview of all tasks in a project_
+![Image](https://github.com/user-attachments/assets/c61712bf-1627-455f-aff0-cffb4741c730)
+![Image](https://github.com/user-attachments/assets/ee62d72a-c2fc-4533-9fa8-cb8b79b9a98c)
+
+#### 🔍 Task Detail Page
+
+_Detailed view of a task, with comments, status, and history_
+![Image](https://github.com/user-attachments/assets/feb33499-2ccf-4355-8863-ca9a97d7a1bb)
+
+
+#### 🔗 Task Dependencies
+
+_Visual management of task dependencies_
+![Image](https://github.com/user-attachments/assets/f4c7fd33-8b7b-4d5e-b010-ae332bdb5ef1)
+
+
+#### 🙋 Manual Task Assignment
+
+_Assigning a user manually to a task_
+![Image](https://github.com/user-attachments/assets/87497c4f-2aff-48ce-a6af-6e5233ec43a8)
+
+
+----------
+
+### 🧠 Resource Management
+
+#### 📦 Resource Management Interface
+
+_Manage available resources with roles and availability_
+
+
+
+#### 🧩 Assign Resource to Task
+
+_Assigning appropriate resources to a task_
+
+
+
+#### 📅 Gantt Timeline
+
+_Gantt view showing tasks over time and resource allocation_
+
+
+
+#### 🔍 Resource Identification
+
+_System identifying required resources automatically_
+
+<p align="center"> <img src="screenshots/resource-identification.png" alt="Resource Identification" width="600"/> </p>
+
+#### 📎 File Attachment
+
+_Attach supporting documents or files to a task_
+
+<p align="center"> <img src="screenshots/file-attachment.png" alt="File Attachment" width="600"/> </p>
+
+----------
+
+### 💬 AI & Real-Time Features
+
+#### 💻 Real-Time Discussions
+
+_Chat interface and real-time messaging_
+
+<p align="center"> <img src="screenshots/real-time-chat.png" alt="Real-Time Chat" width="600"/> </p>
+
+#### 🧠 AI-Based Task Optimization
+
+_AI-generated task schedule suggestion view_
+
+<p align="center"> <img src="screenshots/ai-optimization.png" alt="AI Task Optimization" width="600"/> </p>
+
+#### 📈 Gantt & Dynamic Task Handling
+
+_Interactively update task dependencies in Gantt view_
+
+<p align="center"> <img src="screenshots/gantt-dynamic.png" alt="Gantt Dynamic Management" width="600"/> </p>
+
+#### 📝 AI Task Description Generator
+
+_Automatic description suggestion using AI_
+
+<p align="center"> <img src="screenshots/ai-description.png" alt="AI Task Description Generator" width="600"/> </p>
+
+#### 🤖 AI Chat System
+
+_Interact with AI to get help or optimize project_
+
+<p align="center"> <img src="screenshots/ai-chat.png" alt="AI Chat System" width="600"/> </p>
+
+----------
+
+### 🛠️ Admin & Analytics
+
+#### 📤 Export Project Report
+
+_Interface to export project summary as PDF or CSV_
+
+<p align="center"> <img src="screenshots/export-report.png" alt="Export Project Report" width="600"/> </p>
+
+#### 📊 Admin Dashboard
+
+_Overview of system activity, projects, users_
+
+<p align="center"> <img src="screenshots/admin-dashboard.png" alt="Admin Dashboard" width="600"/> </p>
+
+#### 👤 User List Interface
+
+_Admin view of all platform users_
+
+<p align="center"> <img src="screenshots/user-list.png" alt="User List Interface" width="600"/> </p>
+
+#### 📋 Project List Interface
+
+_Admin view of all existing projects_
+
+<p align="center"> <img src="screenshots/project-list.png" alt="Project List Interface" width="600"/> </p>
+
+#### 📈 Analytics Section
+
+_Charts showing productivity, task completion, workload_
+
+<p align="center"> <img src="screenshots/analytics.png" alt="Analytics Charts" width="600"/> </p>
 
 
 
