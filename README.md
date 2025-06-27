@@ -113,6 +113,7 @@ Here are some screenshots showcasing the core functionalities and user interface
 ![Image](https://github.com/user-attachments/assets/5cd5d8ea-80bf-4755-8195-07351937f7ed)
 
 ----------
+----------
 
 ### 📁 Project Management
 
@@ -159,39 +160,71 @@ _Assigning a user manually to a task_
 
 
 ----------
+----------
 
 ### 🧠 Resource Management
 
 #### 📦 Resource Management Interface
 
 _Manage available resources with roles and availability_
+1. add resources
 
+![Image](https://github.com/user-attachments/assets/b711f426-847a-45fa-ad81-a072a8a5464c)
+
+2. Display of a resource
+
+![Image](https://github.com/user-attachments/assets/5c59f243-8478-484d-9c41-be2f995358a7)
+
+3. editing a resource
+
+![Image](https://github.com/user-attachments/assets/7ea6de36-e00d-44e7-b2fc-ca111f067696)
+
+4. Deletion of a resource
+
+![Image](https://github.com/user-attachments/assets/89d67e64-2495-4c45-875f-6ad94e718be9)
 
 
 #### 🧩 Assign Resource to Task
 
 _Assigning appropriate resources to a task_
+1. resources assigned
 
+![Image](https://github.com/user-attachments/assets/ef0150bb-33d3-48ea-befa-35b0695354ca)
 
+![Image](https://github.com/user-attachments/assets/251cf530-bda8-4e2e-b212-0d778593c52a)
+
+2. Modification of assigned resources
+
+![Image](https://github.com/user-attachments/assets/ba07d63c-5f0d-46a8-bc6d-e1e963a0b811)
+
+3. Allocation énergétique - barre chart
+
+![Image](https://github.com/user-attachments/assets/db695280-26c1-4f30-9c87-6f49a71da3f1)
 
 #### 📅 Gantt Timeline
 
 _Gantt view showing tasks over time and resource allocation_
 
+![Image](https://github.com/user-attachments/assets/3974746e-9370-42ff-9cd7-8a3457ba207a)
 
 
 #### 🔍 Resource Identification
 
 _System identifying required resources automatically_
 
-<p align="center"> <img src="screenshots/resource-identification.png" alt="Resource Identification" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/491c150d-215d-41f6-8bb6-dbc17a5eebef)
+
+
 
 #### 📎 File Attachment
 
 _Attach supporting documents or files to a task_
 
-<p align="center"> <img src="screenshots/file-attachment.png" alt="File Attachment" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/e0e2ce0f-409d-4c0d-99fa-3014777e53aa)
 
+![Image](https://github.com/user-attachments/assets/b8a27acb-8b26-4063-a2db-58182fb5349e)
+
+----------
 ----------
 
 ### 💬 AI & Real-Time Features
@@ -226,6 +259,7 @@ _Interact with AI to get help or optimize project_
 
 <p align="center"> <img src="screenshots/ai-chat.png" alt="AI Chat System" width="600"/> </p>
 
+----------
 ----------
 
 ### 🛠️ Admin & Analytics
