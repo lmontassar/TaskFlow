@@ -233,31 +233,33 @@ _Attach supporting documents or files to a task_
 
 _Chat interface and real-time messaging_
 
-<p align="center"> <img src="screenshots/real-time-chat.png" alt="Real-Time Chat" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/bb5d35cc-59df-4259-a4d2-11d8a4af1ea6)
 
 #### 🧠 AI-Based Task Optimization
 
 _AI-generated task schedule suggestion view_
 
-<p align="center"> <img src="screenshots/ai-optimization.png" alt="AI Task Optimization" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/d68dc3b4-d5df-4621-a5e8-ecb1d6b71dde)
+
+![Image](https://github.com/user-attachments/assets/c9bffad8-dd4b-4848-bf26-89e1d31e289f)
 
 #### 📈 Gantt & Dynamic Task Handling
 
 _Interactively update task dependencies in Gantt view_
 
-<p align="center"> <img src="screenshots/gantt-dynamic.png" alt="Gantt Dynamic Management" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/a4a8301e-05fa-4b81-b661-13bb98a81173)
 
 #### 📝 AI Task Description Generator
 
 _Automatic description suggestion using AI_
 
-<p align="center"> <img src="screenshots/ai-description.png" alt="AI Task Description Generator" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/2e4406da-9694-4c10-9173-612c85498d86)
 
 #### 🤖 AI Chat System
 
 _Interact with AI to get help or optimize project_
 
-<p align="center"> <img src="screenshots/ai-chat.png" alt="AI Chat System" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/3aad92d6-aa3c-43f4-877c-c2cddb09576f)
 
 ----------
 ----------
@@ -268,31 +270,31 @@ _Interact with AI to get help or optimize project_
 
 _Interface to export project summary as PDF or CSV_
 
-<p align="center"> <img src="screenshots/export-report.png" alt="Export Project Report" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/75d06e64-d1ea-49b1-8a82-15b2c9ae96f0)
 
 #### 📊 Admin Dashboard
 
 _Overview of system activity, projects, users_
 
-<p align="center"> <img src="screenshots/admin-dashboard.png" alt="Admin Dashboard" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/a19746a8-8749-45b9-94d6-f08b1dd826f4)
 
 #### 👤 User List Interface
 
 _Admin view of all platform users_
 
-<p align="center"> <img src="screenshots/user-list.png" alt="User List Interface" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/e603c2f4-6566-4a5b-a03a-70c396fbeae0)
 
 #### 📋 Project List Interface
 
 _Admin view of all existing projects_
 
-<p align="center"> <img src="screenshots/project-list.png" alt="Project List Interface" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/80116dcb-7aba-4147-b9bc-2f2cab94c332)
 
 #### 📈 Analytics Section
 
 _Charts showing productivity, task completion, workload_
 
-<p align="center"> <img src="screenshots/analytics.png" alt="Analytics Charts" width="600"/> </p>
+![Image](https://github.com/user-attachments/assets/80a811cd-e152-4b72-a18a-455fb3adc0d5)
 
 
 
